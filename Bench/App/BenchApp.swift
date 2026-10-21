@@ -36,6 +36,15 @@ enum Bootstrap {
     /// device only otherwise. The choice is shown in Settings.
     static func makeStore() -> AppStore {
         if let lang = UserDefaults.standard.string(forKey: "bench.lang").flatMap(Lang.init(rawValue:)) { I18n.lang = lang }
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-tab"), i + 1 < args.count { UserDefaults.standard.set(args[i + 1], forKey: "bench.tab") }
+        #if DEBUG
+        if args.contains("-demo") {
+            let store = AppStore(records: try! RecordStore(location: .memory), defaults: UserDefaults(suiteName: "bench-demo")!, rescueURL: nil)
+            DemoData.seed(store)
+            return store
+        }
+        #endif
         let wantsCloud = FileManager.default.ubiquityIdentityToken != nil
             && !ProcessInfo.processInfo.arguments.contains("-localOnly")
         if wantsCloud, let records = try? RecordStore(location: .cloud(containerId: containerId)) {
