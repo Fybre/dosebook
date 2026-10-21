@@ -25,7 +25,13 @@
     "ios_import_not_bench": "That file is not a Bench backup.",
     "ios_imported": "Restored {doses}, {protocols} and {vials}.",
     "ios_calendar_ready": "{doses} ready. Share the file to Calendar or Files.",
-    "ios_share_file": "Share the calendar file"
+    "ios_share_file": "Share the calendar file",
+    "ios_about_data_1": "There is no Bench account, no Bench server and no analytics. Your records are kept in this app on this device.",
+    "ios_about_data_2": "When you are signed in to iCloud, they are also kept in your private iCloud database, so your other devices see the same records. That database belongs to your Apple account; nobody else, including whoever made this app, can read it.",
+    "ios_about_data_3": "Nobody can recover your records for you either. Export a copy from Settings now and then and keep it somewhere you control.",
+    "ios_tracks_weight": "Weight, with Apple Health read-in",
+    "ios_about_port": "This iPhone app is an independent port of **Bench**, the open-source tracker built by Arun. The library, the arithmetic and most of the wording come from the original, which you can find at the link below.",
+    "ios_about_original": "The original Bench"
   },
   "de": {
     "more": "Mehr",
@@ -53,7 +59,13 @@
     "ios_import_not_bench": "Diese Datei ist keine Bench-Sicherung.",
     "ios_imported": "{doses}, {protocols} und {vials} wiederhergestellt.",
     "ios_calendar_ready": "{doses} bereit. Teile die Datei mit Kalender oder Dateien.",
-    "ios_share_file": "Kalenderdatei teilen"
+    "ios_share_file": "Kalenderdatei teilen",
+    "ios_about_data_1": "Es gibt kein Bench-Konto, keinen Bench-Server und keine Analyse. Deine Einträge bleiben in dieser App auf diesem Gerät.",
+    "ios_about_data_2": "Wenn du bei iCloud angemeldet bist, liegen sie auch in deiner privaten iCloud-Datenbank, damit deine anderen Geräte dieselben Einträge sehen. Diese Datenbank gehört zu deinem Apple-Account; niemand sonst, auch nicht wer diese App gemacht hat, kann sie lesen.",
+    "ios_about_data_3": "Niemand kann deine Einträge für dich wiederherstellen. Exportiere ab und zu eine Kopie in den Einstellungen und bewahre sie an einem Ort auf, den du kontrollierst.",
+    "ios_tracks_weight": "Gewicht, mit Übernahme aus Apple Health",
+    "ios_about_port": "Diese iPhone-App ist eine unabhängige Portierung von **Bench**, dem quelloffenen Tracker von Arun. Bibliothek, Rechenwege und die meisten Texte stammen aus dem Original, das du unter dem Link unten findest.",
+    "ios_about_original": "Das Original-Bench"
   },
   "sl": {
     "more": "Več",
@@ -81,7 +93,13 @@
     "ios_import_not_bench": "Ta datoteka ni varnostna kopija Bench.",
     "ios_imported": "Obnovljeno: {doses}, {protocols} in {vials}.",
     "ios_calendar_ready": "{doses} pripravljeno. Datoteko deli s Koledarjem ali Datotekami.",
-    "ios_share_file": "Deli datoteko koledarja"
+    "ios_share_file": "Deli datoteko koledarja",
+    "ios_about_data_1": "Ni računa Bench, ni strežnika Bench in ni analitike. Tvoji zapisi so shranjeni v tej aplikaciji na tej napravi.",
+    "ios_about_data_2": "Ko si prijavljen v iCloud, so shranjeni tudi v tvoji zasebni bazi iCloud, da tvoje druge naprave vidijo iste zapise. Ta baza pripada tvojemu računu Apple; nihče drug, tudi avtor te aplikacije ne, je ne more brati.",
+    "ios_about_data_3": "Tudi obnoviti tvojih zapisov ne more nihče namesto tebe. Občasno izvozi kopijo v Nastavitvah in jo hrani na mestu, ki ga nadzoruješ.",
+    "ios_tracks_weight": "Teža, z branjem iz Apple Health",
+    "ios_about_port": "Ta aplikacija za iPhone je neodvisna predelava aplikacije **Bench**, odprtokodnega sledilnika, ki ga je naredil Arun. Knjižnica, izračuni in večina besedil izvirajo iz izvirnika, ki ga najdeš na spodnji povezavi.",
+    "ios_about_original": "Izvirni Bench"
   },
   "pl": {
     "more": "Więcej",
@@ -109,6 +127,12 @@
     "ios_import_not_bench": "Ten plik nie jest kopią zapasową Bench.",
     "ios_imported": "Przywrócono: {doses}, {protocols} i {vials}.",
     "ios_calendar_ready": "{doses} gotowe. Udostępnij plik do Kalendarza lub Plików.",
-    "ios_share_file": "Udostępnij plik kalendarza"
+    "ios_share_file": "Udostępnij plik kalendarza",
+    "ios_about_data_1": "Nie ma konta Bench, serwera Bench ani analityki. Twoje zapisy są przechowywane w tej aplikacji na tym urządzeniu.",
+    "ios_about_data_2": "Po zalogowaniu do iCloud są też przechowywane w Twojej prywatnej bazie iCloud, więc inne Twoje urządzenia widzą te same zapisy. Ta baza należy do Twojego konta Apple; nikt inny, także twórca tej aplikacji, nie może jej odczytać.",
+    "ios_about_data_3": "Nikt też nie odzyska Twoich zapisów za Ciebie. Od czasu do czasu wyeksportuj kopię w Ustawieniach i trzymaj ją w miejscu, które kontrolujesz.",
+    "ios_tracks_weight": "Waga, z odczytem z Apple Health",
+    "ios_about_port": "Ta aplikacja na iPhone’a to niezależny port **Bench**, otwartoźródłowego trackera stworzonego przez Aruna. Biblioteka, obliczenia i większość tekstów pochodzą z oryginału, który znajdziesz pod linkiem poniżej.",
+    "ios_about_original": "Oryginalny Bench"
   }
 }

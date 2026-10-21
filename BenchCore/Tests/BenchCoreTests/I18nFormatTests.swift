@@ -103,3 +103,18 @@ import Testing
         #expect(translate(.de, "more") == "Mehr" && translate(.en, "nav_now") == "Now")
     }
 }
+
+@Suite struct IosStringsTests {
+    /// Every iOS-only string exists in every language, so no screen falls back to a raw key.
+    @Test func everyKeyInEveryLanguage() throws {
+        let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/BenchCore/Resources/ios-strings.json")
+        let table = try JSONDecoder().decode([String: [String: String]].self, from: Data(contentsOf: url))
+        let keys = Set((table["en"] ?? [:]).keys)
+        #expect(!keys.isEmpty)
+        for lang in Lang.allCases {
+            let missing = keys.subtracting((table[lang.rawValue] ?? [:]).keys)
+            #expect(missing.isEmpty, "\(lang.rawValue) is missing \(missing.sorted())")
+        }
+    }
+}
