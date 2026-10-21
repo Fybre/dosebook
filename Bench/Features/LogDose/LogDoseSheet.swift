@@ -8,6 +8,7 @@ import BenchStore
 struct LogDoseSheet: View {
     @Environment(AppStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var typeSize
     var defaultPeptideId: String?
     var editId: String?
     var anySite = false
@@ -150,18 +151,19 @@ struct LogDoseSheet: View {
 
             if !skipped {
                 Section {
-                    HStack(spacing: 6) {
-                        ForEach(1...5, id: \.self) { n in
-                            let on = feeling == n
-                            Button { feeling = on ? nil : n } label: {
-                                Text(FEELING_LABELS[n] ?? "").font(.caption.weight(.semibold)).frame(maxWidth: .infinity, minHeight: 32)
-                                    .background(on ? (FEELING_TONE[n] ?? .neutral).color : Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 8))
-                                    .foregroundStyle(on ? Color.white : Color.secondary)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityAddTraits(on ? .isSelected : [])
+                    // Five equal buttons, unless the text is too large to fit them on one line.
+                    let feelings = ForEach(1...5, id: \.self) { n in
+                        let on = feeling == n
+                        Button { feeling = on ? nil : n } label: {
+                            Text(FEELING_LABELS[n] ?? "").font(.caption.weight(.semibold)).lineLimit(1).fixedSize()
+                                .padding(.horizontal, 10).frame(maxWidth: typeSize.isAccessibilitySize ? nil : .infinity, minHeight: 32)
+                                .background(on ? (FEELING_TONE[n] ?? .neutral).color : Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 8))
+                                .foregroundStyle(on ? Color.white : Color.secondary)
                         }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(on ? .isSelected : [])
                     }
+                    if typeSize.isAccessibilitySize { FlowLayout(spacing: 6) { feelings } } else { HStack(spacing: 6) { feelings } }
                     Text(t("log_anything_to_note")).font(.caption).foregroundStyle(.secondary)
                     FlowChips(items: COMMON_SIDE_EFFECTS, selected: $effects)
                 }
@@ -393,23 +395,31 @@ struct FlowChips: View {
     }
 }
 
-/// Lays children out in rows, wrapping when a row is full.
+/// Lays children out in rows, wrapping when a row is full. A child wider than
+/// the row is offered the row's width, so its text wraps instead of running off.
 struct FlowLayout: Layout {
     var spacing: CGFloat = 6
+
+    private func sizes(_ subviews: Subviews, _ width: CGFloat) -> [CGSize] {
+        subviews.map { v in
+            let natural = v.sizeThatFits(.unspecified)
+            return natural.width <= width ? natural : v.sizeThatFits(ProposedViewSize(width: width, height: nil))
+        }
+    }
+
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let width = proposal.width ?? .infinity
         var x: CGFloat = 0, y: CGFloat = 0, rowH: CGFloat = 0, maxX: CGFloat = 0
-        for v in subviews {
-            let s = v.sizeThatFits(.unspecified)
+        for s in sizes(subviews, width) {
             if x > 0 && x + s.width > width { x = 0; y += rowH + spacing; rowH = 0 }
-            x += s.width + spacing; rowH = max(rowH, s.height); maxX = max(maxX, x)
+            x += s.width + spacing; rowH = max(rowH, s.height); maxX = max(maxX, x - spacing)
         }
         return CGSize(width: min(width, maxX), height: y + rowH)
     }
+
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         var x = bounds.minX, y = bounds.minY, rowH: CGFloat = 0
-        for v in subviews {
-            let s = v.sizeThatFits(.unspecified)
+        for (v, s) in zip(subviews, sizes(subviews, bounds.width)) {
             if x > bounds.minX && x + s.width > bounds.maxX { x = bounds.minX; y += rowH + spacing; rowH = 0 }
             v.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(s))
             x += s.width + spacing; rowH = max(rowH, s.height)
