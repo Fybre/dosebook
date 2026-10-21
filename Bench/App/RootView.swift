@@ -24,7 +24,7 @@ struct RootView: View {
 }
 
 struct MoreView: View {
-    enum Screen: String, Hashable { case calculator, library, labs, report, settings, about }
+    enum Screen: String, Hashable { case calculator, library, labs, report, settings, about, importer }
 
     var body: some View {
         List {
@@ -48,6 +48,7 @@ struct MoreView: View {
             case .report: ReportView()
             case .settings: SettingsView()
             case .about: AboutView()
+            case .importer: ImportView()
             }
         }
     }

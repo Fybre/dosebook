@@ -9,8 +9,6 @@ struct SettingsView: View {
     @State private var message: (tone: Tone, text: String)?
     @State private var exporting = false
     @State private var exportingCsv = false
-    @State private var importing = false
-    @State private var pendingImport: (raw: Data, preview: AppData)?
     @State private var confirmingReset = false
 
     var body: some View {
@@ -39,7 +37,7 @@ struct SettingsView: View {
                 Text(t("ios_data_note")).font(.footnote).foregroundStyle(.secondary)
                 Button { exporting = true } label: { Label(t("settings_export_file"), systemImage: "square.and.arrow.up") }
                 Button { exportingCsv = true } label: { Label(t("settings_doses_csv"), systemImage: "tablecells") }.disabled(mine.logs.isEmpty)
-                Button { importing = true } label: { Label(t("ios_import_backup"), systemImage: "square.and.arrow.down") }
+                NavigationLink { ImportView() } label: { Label(t("import_title"), systemImage: "square.and.arrow.down") }
                 NavigationLink(value: MoreView.Screen.report) { Label(t("settings_report_clinician"), systemImage: "doc.text") }
             } header: { Text(t("settings_your_data")) } footer: {
                 Text(t("settings_currently_holding", ["doses": .string(t("count_doses", ["n": .number(Double(mine.logs.count))])),
@@ -101,36 +99,6 @@ struct SettingsView: View {
         .fileExporter(isPresented: $exportingCsv, document: CsvDocument(text: csv.text), contentType: .commaSeparatedText,
                       defaultFilename: "bench-doses-\(isoDay())") { result in
             if case .success = result { message = (.sky, t("settings_exported_csv", ["n": .number(Double(csv.rows.count))])) }
-        }
-        .fileImporter(isPresented: $importing, allowedContentTypes: [.json]) { result in
-            guard case .success(let url) = result else { return }
-            let access = url.startAccessingSecurityScopedResource()
-            defer { if access { url.stopAccessingSecurityScopedResource() } }
-            guard let raw = try? Data(contentsOf: url), let preview = try? AppData.load(raw), !preview.logs.isEmpty || !preview.protocols.isEmpty || !preview.vials.isEmpty || !preview.profiles.isEmpty else {
-                message = (.rose, t("ios_import_not_bench")); return
-            }
-            pendingImport = (raw, preview)
-        }
-        .confirmationDialog(t("import_own_export"), isPresented: Binding(get: { pendingImport != nil }, set: { if !$0 { pendingImport = nil } }), titleVisibility: .visible) {
-            Button(t("import_replace_everything"), role: .destructive) {
-                guard let p = pendingImport else { return }
-                do {
-                    try store.importBackup(p.raw)
-                    message = (.sky, t("ios_imported", ["doses": .string(t("count_doses", ["n": .number(Double(p.preview.logs.count))])),
-                                                       "protocols": .string(t("count_protocols", ["n": .number(Double(p.preview.protocols.count))])),
-                                                       "vials": .string(t("count_vials", ["n": .number(Double(p.preview.vials.count))]))]))
-                } catch {
-                    message = (.rose, t("ios_import_not_bench"))
-                }
-                pendingImport = nil
-            }
-            Button(t("settings_keep_what_i_have"), role: .cancel) { pendingImport = nil }
-        } message: {
-            if let p = pendingImport {
-                RichText(t("import_own_export_body", ["doses": .string(t("count_doses", ["n": .number(Double(p.preview.logs.count))])),
-                                                      "protocols": .string(t("count_protocols", ["n": .number(Double(p.preview.protocols.count))])),
-                                                      "vials": .string(t("count_vials", ["n": .number(Double(p.preview.vials.count))]))]))
-            }
         }
         .confirmationDialog(t("settings_erase"), isPresented: $confirmingReset, titleVisibility: .visible) {
             Button(t("settings_erase_confirm", ["n": .number(Double(mine.logs.count + mine.protocols.count + mine.vials.count))]), role: .destructive) {
