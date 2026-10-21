@@ -140,11 +140,21 @@ public final class AppStore {
         return Rescue(at: s.at, losses: s.losses, document: migrateAppData(s.document))
     }
 
+    /// Encrypted at rest on iPhone. macOS refuses file protection on an atomic
+    /// write, and protects the disk as a whole anyway.
+    static var rescueWriteOptions: Data.WritingOptions {
+        #if os(iOS)
+        [.atomic, .completeFileProtection]
+        #else
+        [.atomic]
+        #endif
+    }
+
     static func writeRescue(_ r: Rescue, _ url: URL?) {
         guard let url else { return }
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         if let raw = try? JSONEncoder().encode(StoredRescue(at: r.at, losses: r.losses, document: r.document)) {
-            try? raw.write(to: url, options: [.atomic, .completeFileProtection])
+            try? raw.write(to: url, options: rescueWriteOptions)
         }
     }
 
