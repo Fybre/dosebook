@@ -41,3 +41,19 @@ struct LCG {
         return Double(s) / 4294967296
     }
 }
+
+/// The original tests' `vial({ id, ...over })`: klow, 80 mg, sealed, owned by "me".
+func vial(_ id: String = "a", peptideId: String = "klow", strengthMg: Double = 80, state: VialState = .sealed,
+          diluentMl: Double? = nil, drawnMcg: Double? = nil, budAt: Millis? = nil, expiresAt: Millis? = nil,
+          cost: Double? = nil, currency: String? = nil, orderId: String? = nil, supplier: String? = nil,
+          acquiredAt: Millis? = nil, container: ContainerKind? = nil, mgPerTablet: Double? = nil,
+          mlPerSpray: Double? = nil, reconstitutedAt: Millis? = nil) -> Vial {
+    Vial(id: id, profileId: "me", peptideId: peptideId, strengthMg: strengthMg, state: state, supplier: supplier,
+         cost: cost, currency: currency, orderId: orderId, acquiredAt: acquiredAt, expiresAt: expiresAt,
+         reconstitutedAt: reconstitutedAt, diluentMl: diluentMl, drawnMcg: drawnMcg, budAt: budAt,
+         container: container, mgPerTablet: mgPerTablet, mlPerSpray: mlPerSpray)
+}
+
+extension Vial {
+    func with(_ change: (inout Vial) -> Void) -> Vial { var v = self; change(&v); return v }
+}

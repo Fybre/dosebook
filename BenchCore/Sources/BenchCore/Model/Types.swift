@@ -532,6 +532,19 @@ public struct Profile: Row {
         self.weightKg = weightKg; self.heightCm = heightCm; self.birthYear = birthYear
         self.sex = sex; self.notes = notes
     }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = (try? c.decodeIfPresent(String.self, forKey: .name)) ?? ""
+        tone = (try? c.decodeIfPresent(ProfileTone.self, forKey: .tone)) ?? .mint
+        weightKg = try? c.decodeIfPresent(Double.self, forKey: .weightKg)
+        heightCm = try? c.decodeIfPresent(Double.self, forKey: .heightCm)
+        birthYear = (try? c.decodeIfPresent(Double.self, forKey: .birthYear)).flatMap { $0.map { Int($0) } }
+        sex = try? c.decodeIfPresent(Sex.self, forKey: .sex)
+        createdAt = (try? c.decodeIfPresent(Millis.self, forKey: .createdAt)) ?? 0
+        notes = try? c.decodeIfPresent(String.self, forKey: .notes)
+    }
 }
 
 // MARK: - Protocols and logs
