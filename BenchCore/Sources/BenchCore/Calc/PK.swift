@@ -187,9 +187,14 @@ public func levelSeries(_ fromMs: Millis, _ toMs: Millis, _ steps: Int, _ doses:
                         _ referenceMcg: Double) -> [SeriesPoint] {
     let span = toMs - fromMs
     guard span > 0, steps >= 2 else { return [] }
+    // Only doses that can count anywhere in the window. `levelAt` skips the rest
+    // itself, so this changes no figure; it stops years of history being walked
+    // once per sample point.
+    let horizon = fromMs - params.halfLifeHours * 10 * HOUR_MS
+    let live = doses.filter { $0.at <= toMs && $0.at >= horizon }
     return (0..<steps).map { i in
         let t = fromMs + (span * Double(i)) / Double(steps - 1)
-        return SeriesPoint(t: t, level: levelAt(t, doses, params, referenceMcg))
+        return SeriesPoint(t: t, level: levelAt(t, live, params, referenceMcg))
     }
 }
 

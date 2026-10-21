@@ -43,6 +43,7 @@ enum Bootstrap {
         if args.contains("-demo") {
             let store = AppStore(records: try! RecordStore(location: .memory), defaults: UserDefaults(suiteName: "bench-demo")!, rescueURL: nil)
             DemoData.seed(store)
+            if args.contains("-demoLarge") { DemoData.seedLarge(store) }
             return store
         }
         #endif

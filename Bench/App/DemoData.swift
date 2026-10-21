@@ -7,6 +7,23 @@ import BenchStore
 /// Debug builds only, held in memory, never written to iCloud.
 @MainActor
 enum DemoData {
+    /// `-demoLarge`: three years of twice-daily history on top, for performance checks.
+    static func seedLarge(_ store: AppStore) {
+        let now = nowMillis(), day = DAY_MS
+        store.mutate { d in
+            let bpc = d.protocols.first { $0.peptideId == "bpc-157" }?.id
+            for i in 1...(3 * 365) {
+                let at = startOfLocalDay(now) - Double(i) * day
+                for h in [8.0, 20.0] {
+                    d.logs.append(DoseLog(id: "big-\(i)-\(Int(h))", profileId: d.activeProfileId, protocolId: bpc, peptideId: "bpc-157",
+                                          at: at + h * HOUR_MS, doseMcg: 250, route: .subcutaneous, site: [.abdomenUL, .abdomenUR, .thighL][i % 3]))
+                }
+                d.measurements.append(BodyMeasurement(id: "bigw-\(i)", profileId: d.activeProfileId, at: at + 7 * HOUR_MS, weightKg: 98 + Double(i) / 200))
+            }
+            d.logs.sort { $0.at > $1.at }
+        }
+    }
+
     static func seed(_ store: AppStore) {
         let now = nowMillis()
         let day = DAY_MS

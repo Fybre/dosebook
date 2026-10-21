@@ -229,12 +229,23 @@ struct RowContext {
         guard let p = protocolFor(peptideId) else { return 1 }
         return dosesPerDoseDay(phaseSpanAt(p, now)?.schedule ?? p.schedule)
     }
-    /// When the whole shelf of this compound runs out, spent against its plan.
-    func outlook(_ peptideId: String) -> SupplyOutlook {
-        guard let p = protocolFor(peptideId) else { return .unknown }
-        let container = containerForDose(data.peptide(peptideId)?.preparation, p.route)
-        return supplyOutlook(stockFor(data.mine.vials, peptideId, scheduledDoseMcg(p, now), now, container), p, now)
+    /// When the whole shelf of each compound runs out, spent against its plan. Once per
+    /// compound rather than per row: the walk loops over a year of scheduled doses.
+    let outlooks: [String: SupplyOutlook]
+
+    init(data: AppData, now: Millis) {
+        self.data = data
+        self.now = now
+        var out: [String: SupplyOutlook] = [:]
+        for id in Set(data.mine.vials.map(\.peptideId)) {
+            guard let p = data.mine.protocols.first(where: { $0.active && $0.peptideId == id }) else { out[id] = .unknown; continue }
+            let container = containerForDose(data.peptide(id)?.preparation, p.route)
+            out[id] = supplyOutlook(stockFor(data.mine.vials, id, scheduledDoseMcg(p, now), now, container), p, now)
+        }
+        outlooks = out
     }
+
+    func outlook(_ peptideId: String) -> SupplyOutlook { outlooks[peptideId] ?? .unknown }
     func shipping(_ v: Vial) -> Double { shippingShare(v, data.mine.vials, data.mine.orders) }
 }
 
