@@ -1008,7 +1008,7 @@ public struct Settings: Extensible {
     public var lowStockDoses: Double = 4
     /// 0 = Sunday, 1 = Monday.
     public var weekStartsOn: Int = 1
-    public var currency: String = "INR"
+    public var currency: String = defaultCurrency()
     public var weightUnit: WeightUnit = .kg
     public var groupIdenticalVials: Bool?
     public var waterAtBottom: Bool?
@@ -1176,6 +1176,13 @@ public let DATA_VERSION = 9
 public struct Currency: Sendable {
     public var code: String
     public var label: String
+}
+
+/// The currency of the device's region (Settings > General > Language & Region,
+/// no permission needed) when the app offers it, else Australian dollars.
+public func defaultCurrency(_ locale: Locale = .autoupdatingCurrent) -> String {
+    let code = locale.currency?.identifier ?? ""
+    return CURRENCIES.contains { $0.code == code } ? code : "AUD"
 }
 
 public let CURRENCIES: [Currency] = [

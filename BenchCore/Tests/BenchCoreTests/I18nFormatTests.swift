@@ -118,3 +118,18 @@ import Testing
         }
     }
 }
+
+@Suite struct DefaultCurrencyTests {
+    @Test func followsTheRegion() {
+        #expect(defaultCurrency(Locale(identifier: "en_AU")) == "AUD")
+        #expect(defaultCurrency(Locale(identifier: "en_GB")) == "GBP")
+        #expect(defaultCurrency(Locale(identifier: "de_DE")) == "EUR")
+        #expect(defaultCurrency(Locale(identifier: "en_IN")) == "INR")
+    }
+
+    @Test func fallsBackToAustralianDollars() {
+        // A region whose currency the app does not list.
+        #expect(defaultCurrency(Locale(identifier: "ja_JP")) == (CURRENCIES.contains { $0.code == "JPY" } ? "JPY" : "AUD"))
+        #expect(defaultCurrency(Locale(identifier: "en_001")) == "AUD")
+    }
+}
