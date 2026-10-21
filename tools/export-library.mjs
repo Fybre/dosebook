@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Exports the Bench reference library (TypeScript) to JSON resources for BenchCore.
+// Exports the Bench reference library and UI copy (TypeScript) to JSON resources for BenchCore.
 //
 //   node tools/export-library.mjs <path-to-Bench-clone>
 //
@@ -24,6 +24,8 @@ const groups = ["metabolic", "repair", "growth", "anabolic", "ancillary"];
 mkdirSync(join(work, "peptides"));
 for (const g of groups) copyFileSync(join(src, "src/lib/data/peptides", `${g}.ts`), join(work, "peptides", `${g}.ts`));
 copyFileSync(join(src, "src/lib/data/labs.ts"), join(work, "labs.ts"));
+// UI copy in all four languages. Imports nothing, so it loads as it is.
+copyFileSync(join(src, "src/lib/i18n/translations.ts"), join(work, "translations.ts"));
 
 const load = (p) => import(pathToFileURL(join(work, p)).href);
 const peptides = [];
@@ -42,4 +44,7 @@ writeFileSync(
   join(out, "labs.json"),
   JSON.stringify({ markers: labs.LAB_MARKERS, categoryLabels: labs.LAB_CATEGORY_LABEL }, null, 1) + "\n",
 );
+const tr = await load("translations.ts");
+writeFileSync(join(out, "translations.json"), JSON.stringify(tr.TRANSLATIONS) + "\n");
+console.log(`translations: ${Object.keys(tr.TRANSLATIONS.en).length} keys x ${Object.keys(tr.TRANSLATIONS).length} languages`);
 console.log(`peptides: ${peptides.length}, lab markers: ${labs.LAB_MARKERS.length} -> ${out}`);
