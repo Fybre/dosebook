@@ -240,7 +240,24 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
 - Build outside `~/Documents` (`--scratch-path $TMPDIR/bench2-build`): iCloud-synced Documents
   adds extended attributes and codesign of the test bundle fails. `tools/test.sh` does both.
 
-**Next:** remaining calc (custom, infer, reminders, ics, rescue, backupnag, firstBackup, document,
-dosecsv, palette, healthsync, plus `groundtruth.test.ts`), `format.ts`, `recover.ts`,
-`changelog.ts`; then Phase 1's app shell (project.yml + XcodeGen) and Phase 5 persistence
-(`store.ts`).
+- Remaining calc ported with tests (custom, infer, reminders, ics, rescue, backupnag, document,
+  dosecsv, palette, healthsync), `Format.swift`, i18n (`translations.json` exported from
+  translations.ts, iOS-only strings in `ios-strings.json`, all four languages).
+  Not ported on purpose: firstBackup and sync (hosted sync), recover.ts (web chunk recovery),
+  changelog.ts (iOS gets its own).
+- `Store/Actions.swift`: every store.ts action as an `AppData` mutation.
+- `BenchStore`: envelope records in SwiftData (CloudKit private DB when signed in, local
+  otherwise), per-row diff writes, dedupe on load, row order kept across reloads, rescue copy,
+  `AppStore.mutate {}`.
+- App (XcodeGen `project.yml`, `Bench.xcodeproj` is generated and ignored):
+  Today, Plan (protocol form, phases), Log a dose sheet (drawn syringe), Log (diary),
+  Stock (vials, groups, orders, packs, sprays, water shelf and every form).
+  Placeholders: Calculator, Library (+ peptide detail destination), Labs, Report, Settings, About.
+- Debug launch args: `-demo` (seeded in-memory store), `-tab now|plan|log|stock|more`,
+  `-anchor <id>` (scroll to a section), `-log [peptideId]` (open the log sheet).
+  `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
+
+**Next:** Calculator, Library + peptide detail, Labs, Report (PDF), Settings (profiles, units,
+currency, reminders, backup/import, iCloud status, language), About; then import (JSON,
+CSV/TSV/XLSX, PDF labs), HealthKit read, local notifications, ICS share, app icon, hardening.
+Health strings still say "Health Connect" and need iOS wording.
