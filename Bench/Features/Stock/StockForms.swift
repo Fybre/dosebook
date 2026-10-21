@@ -108,7 +108,7 @@ struct AddVialForm: View {
                 Button { addingCompound = true } label: { Label(t("add_compound_inline"), systemImage: "plus") }
             }
             Section {
-                NumberRow(label: tablets ? t("stock_mg_per_tablet") : t("stock_strength"), value: $strengthMg, suffix: "mg", range: 0...100_000)
+                AmountRow(label: tablets ? t("stock_mg_per_tablet") : t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
                 if tablets {
                     NumberRow(label: t("stock_tablets_per_pack"), value: $tabletsPerPack, range: 1...10_000)
                 }
@@ -341,7 +341,7 @@ struct TabletSizeForm: View {
         let left: Double = ok ? { var c = v; c.strengthMg = packMg; c.mgPerTablet = mgEach; return tabletsRemaining(c) }() : 0
         Form {
             Section {
-                NumberRow(label: t("stock_mg_per_tablet"), value: $mgEach, suffix: "mg", range: 0...100_000)
+                AmountRow(label: t("stock_mg_per_tablet"), value: $mgEach, base: .mg, range: 0...100_000)
                 NumberRow(label: t("stock_tablets_per_pack"), value: $tablets, range: 0...10_000)
             } footer: {
                 if ok { Text(t("stock_pack_after", ["mg": .string(trim(packMg, 3)), "left": .string(t("count_tablets", ["n": .number(left)]))])) }

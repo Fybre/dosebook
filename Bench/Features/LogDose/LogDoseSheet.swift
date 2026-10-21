@@ -23,7 +23,6 @@ struct LogDoseSheet: View {
     @State private var syringeId = "u100-0.5"
     @State private var notes = ""
     @State private var skipped = false
-    @State private var doseUnit: DoseUnit = .mcg
     @State private var siteOverride = false
     @State private var feeling: Int?
     @State private var effects: [String] = []
@@ -87,14 +86,8 @@ struct LogDoseSheet: View {
             }
 
             Section {
-                HStack {
-                    NumberRow(label: t("plan_dose"), value: Binding(
-                        get: { doseUnit == .mg ? jsFixed(doseMcg / 1000, 4) : doseMcg },
-                        set: { doseMcg = doseUnit == .mg ? $0 * 1000 : $0 }), suffix: doseUnit.rawValue, range: 0...100_000_000)
-                        .disabled(skipped)
-                    Button(doseUnit == .mcg ? t("log_switch_to_mg") : t("log_switch_to_mcg")) { doseUnit = doseUnit == .mcg ? .mg : .mcg }
-                        .buttonStyle(.borderless).font(.caption)
-                }
+                AmountRow(label: t("plan_dose"), value: $doseMcg, range: 0...100_000_000)
+                    .disabled(skipped)
                 if let p = protocol_ {
                     Text(t("log_protocol_calls_for", ["dose": .string(formatDose(scheduledDoseMcg(p, at.millis)))])).font(.caption).foregroundStyle(.secondary)
                 }

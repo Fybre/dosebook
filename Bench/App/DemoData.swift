@@ -54,6 +54,21 @@ enum DemoData {
                 let at = startOfLocalDay(now - 9 * day) + Double(i / 2) * day + (i % 2 == 0 ? 7.1 : 19.2) * HOUR_MS
                 if at < now { d.addLog(DoseLog(id: "", profileId: "", protocolId: bpc, peptideId: "bpc-157", at: at, doseMcg: 250, route: .subcutaneous, site: sites[i % 3])) }
             }
+            // A custom blend: CJC-1295 without DAC and ipamorelin, 10 mg of each.
+            var blend = CustomDraft(name: "CJC/Ipa", category: .blend, doseLowMcg: 200, doseHighMcg: 300, perWeek: 7)
+            blend.components = [BlendComponent(peptideId: "cjc-1295-no-dac", name: "CJC-1295 without DAC", mgPerVial: 10),
+                                BlendComponent(peptideId: "ipamorelin", name: "Ipamorelin", mgPerVial: 10)]
+            let cjcIpa = draftToPeptide(blend)
+            d.addCustomPeptide(cjcIpa)
+            let gh = d.addProtocol(DoseProtocol(id: "", profileId: "", peptideId: cjcIpa.id, name: "CJC/Ipa nightly",
+                                                startedAt: startOfLocalDay(now - 6 * day), doseMcg: 200, route: .subcutaneous,
+                                                schedule: Schedule(kind: .daily, timeOfDay: "22:00")))
+            d.addVial(Vial(id: "", profileId: "", peptideId: cjcIpa.id, strengthMg: 20, state: .reconstituted, cost: 60, currency: "EUR",
+                           reconstitutedAt: now - 6 * day, diluentMl: 2, diluent: .bacteriostatic, budAt: now + 22 * day))
+            for i in 0..<6 {
+                let at = startOfLocalDay(now - 6 * day) + Double(i) * day + 22 * HOUR_MS
+                if at < now { d.addLog(DoseLog(id: "", profileId: "", protocolId: gh, peptideId: cjcIpa.id, at: at, doseMcg: 200, route: .subcutaneous, site: .abdomenLL)) }
+            }
             for i in 0..<8 {
                 d.addMeasurement(BodyMeasurement(id: "", profileId: "", at: now - Double(40 - i * 5) * day, weightKg: 98 - Double(i) * 0.7))
             }

@@ -20,6 +20,10 @@ public struct CustomDraft: Equatable, Sendable {
     public var vialSizeMg: Double?
     public var iuPerMg: Double?
     public var notes: String?
+    /// What a blend holds; empty for a single compound.
+    public var components: [BlendComponent] = []
+    /// Whether a dose is the whole blend split by mass, or the amount of each part.
+    public var blendDosing: BlendDosing = .split
 
     public init(name: String = "", category: PeptideCategory = .repair, aka: String? = nil, summary: String? = nil,
                 halfLifeHours: Double? = nil, routes: [Route] = [.subcutaneous], preparation: Preparation = .powder,
@@ -33,7 +37,7 @@ public struct CustomDraft: Equatable, Sendable {
 }
 
 public enum DraftField: String, Sendable {
-    case name, routes, halfLifeHours, doseLowMcg, doseHighMcg, perWeek, iuPerMg, vialSizeMg
+    case name, routes, halfLifeHours, doseLowMcg, doseHighMcg, perWeek, iuPerMg, vialSizeMg, components
 }
 
 public struct DraftProblem: Equatable, Sendable {
@@ -89,6 +93,22 @@ public func validateDraft(_ draft: CustomDraft, existing: [Peptide], editingId: 
     if let v = draft.vialSizeMg, !(v > 0) {
         problems.append(DraftProblem(field: .vialSizeMg, message: "A vial size has to be more than zero."))
     }
+    if !draft.components.isEmpty {
+        let parts = draft.components
+        let selfId = editingId ?? slugifyCompound(name)
+        if parts.count < 2 {
+            problems.append(DraftProblem(field: .components, message: "A blend needs at least two parts."))
+        } else if parts.contains(where: { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+            problems.append(DraftProblem(field: .components, message: "Every part needs a name."))
+        } else if parts.contains(where: { $0.peptideId == selfId }) {
+            problems.append(DraftProblem(field: .components, message: "A blend cannot contain itself."))
+        } else if draft.blendDosing == .split && parts.contains(where: { !(($0.mgPerVial ?? 0) > 0) }) {
+            // Splitting a dose by mass needs every mass.
+            problems.append(DraftProblem(field: .components, message: "Give the amount of each part in one vial, so a dose can be split between them."))
+        } else if parts.contains(where: { ($0.mgPerVial ?? 1) <= 0 }) {
+            problems.append(DraftProblem(field: .components, message: "An amount has to be more than zero."))
+        }
+    }
     return problems
 }
 
@@ -115,9 +135,21 @@ public func draftToPeptide(_ draft: CustomDraft) -> Peptide {
         summary: trimmedOrNil(draft.summary) ?? "A compound you added yourself.",
         mechanism: trimmedOrNil(draft.notes) ?? "Not recorded. Add what you know under notes when you edit this entry.",
         halfLifeHours: draft.halfLifeHours, routes: draft.routes, doseRanges: doseRanges,
-        vialSizesMg: (draft.vialSizeMg ?? 0) != 0 ? [draft.vialSizeMg!] : [],
+        vialSizesMg: vialSize(draft).map { [$0] } ?? [],
         status: "Added by you. The app knows nothing about this compound beyond what you typed.")
-    p.halfLifeNote = draft.halfLifeHours == nil
+    let parts = draft.components.map { c in
+        BlendComponent(peptideId: c.peptideId, name: c.name.trimmingCharacters(in: .whitespacesAndNewlines), mgPerVial: c.mgPerVial)
+    }
+    if !parts.isEmpty {
+        p.components = parts
+        p.blendDosing = draft.blendDosing == .perComponent ? .perComponent : nil
+        if trimmedOrNil(draft.summary) == nil {
+            p.summary = "A blend you added yourself: " + parts.map { c in c.mgPerVial.map { "\(c.name) \(jsNumberString($0)) mg" } ?? c.name }.joined(separator: ", ") + "."
+        }
+    }
+    p.halfLifeNote = !parts.isEmpty && draft.halfLifeHours == nil
+        ? "A blend has no half-life of its own. Each part is drawn on its own curve, from the library entry it is linked to."
+        : draft.halfLifeHours == nil
         ? "You did not give a half-life, so no curve is drawn for this compound. Doses are still logged and counted."
         : "Your own figure. Not checked against any published source."
     p.preparation = draft.preparation
@@ -127,12 +159,31 @@ public func draftToPeptide(_ draft: CustomDraft) -> Peptide {
     return p
 }
 
+/// The vial size as typed, or for a blend the sum of its parts.
+private func vialSize(_ draft: CustomDraft) -> Double? {
+    if let v = draft.vialSizeMg, v != 0 { return v }
+    let masses = draft.components.compactMap(\.mgPerVial)
+    guard !draft.components.isEmpty, masses.count == draft.components.count else { return nil }
+    let total = masses.reduce(0, +)
+    return total > 0 ? jsFixed(total, 6) : nil
+}
+
 /// Read an entry back into a draft for editing. Lossy on purpose.
 public func peptideToDraft(_ p: Peptide) -> CustomDraft {
     let dose = p.doseRanges.first
-    return CustomDraft(name: p.name, category: p.category, aka: p.aka.isEmpty ? nil : p.aka.joined(separator: ", "),
+    var draft = CustomDraft(name: p.name, category: p.category, aka: p.aka.isEmpty ? nil : p.aka.joined(separator: ", "),
                        summary: p.summary, halfLifeHours: p.halfLifeHours, routes: p.routes,
                        preparation: p.preparation ?? .powder, doseLowMcg: dose?.lowMcg, doseHighMcg: dose?.highMcg,
                        frequency: dose?.frequency, perWeek: dose?.perWeek, vialSizeMg: p.vialSizesMg.first,
                        iuPerMg: p.iuPerMg, notes: p.mechanism)
+    draft.components = p.components ?? []
+    draft.blendDosing = blendDosing(p)
+    // A vial size that is only the sum of the parts stays derived, so changing a part moves it.
+    if let v = draft.vialSizeMg, !draft.components.isEmpty {
+        draft.vialSizeMg = nil
+        if vialSize(draft) != v { draft.vialSizeMg = v }
+    }
+    // The summary was written for the parts; let it be rewritten if they change.
+    if isBlend(p) && p.summary.hasPrefix("A blend you added yourself") { draft.summary = nil }
+    return draft
 }

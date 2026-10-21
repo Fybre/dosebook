@@ -50,7 +50,7 @@ private struct LibraryRow: View {
                 if let best {
                     Pill(text: best.label, tone: best == .approved ? .leaf : best == .clinical ? .sky : best == .anecdotal ? .rose : .neutral)
                 }
-                if p.halfLifeHours == nil { Pill(text: t("library_no_pk_data"), tone: .rose) }
+                if p.halfLifeHours == nil && !isBlend(p) { Pill(text: t("library_no_pk_data"), tone: .rose) }
             }
             Text(p.summary).font(.footnote).foregroundStyle(.secondary).lineLimit(3)
             Text("\(t("library_half_life")) \(formatHalfLife(p.halfLifeHours))" + (p.aka.isEmpty ? "" : " · \(t("library_also_known")) \(p.aka.prefix(2).joined(separator: ", "))"))
@@ -79,7 +79,8 @@ private struct CustomCompoundsSection: View {
                         Text(p.name).font(.subheadline.bold())
                         Pill(text: t("library_your_badge"), tone: .grape)
                         Pill(text: p.category.label)
-                        if p.halfLifeHours == nil { Pill(text: t("library_no_half_life"), tone: .tangerine) }
+                        // A blend's curves come from its parts, so it has no half-life to miss.
+                        if p.halfLifeHours == nil && !isBlend(p) { Pill(text: t("library_no_half_life"), tone: .tangerine) }
                     }
                     Text(t("library_usage", ["protocols": .string(String(protocols)), "logs": .string(String(logs))])).font(.caption).foregroundStyle(.secondary)
                 }
@@ -95,24 +96,36 @@ private struct CustomCompoundsSection: View {
             if data.customPeptides.isEmpty {
                 Label(t("library_none_yet"), systemImage: "flask").font(.footnote).foregroundStyle(.secondary)
             }
+            // Sheets and the dialog hang off a row rather than the Section: a Section
+            // inside a List does not reliably present them.
             Button { adding = true } label: { Label(t("library_add_your_own"), systemImage: "plus") }
+        #if DEBUG
+                .onAppear {
+                    // `-editCompound <id>` opens one of your compounds for editing, for screenshots.
+                    let args = ProcessInfo.processInfo.arguments
+                    if editing == nil, let i = args.firstIndex(of: "-editCompound"), i + 1 < args.count {
+                        let p = data.customPeptides.first { $0.id == args[i + 1] }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { editing = p }
+                    }
+                }
+                #endif
+                .sheet(isPresented: $adding) { NavigationStack { CustomCompoundForm() } }
+                .sheet(item: $editing) { p in NavigationStack { CustomCompoundForm(editing: p) } }
+                .confirmationDialog(confirming.map { t("library_delete_compound", ["name": .string($0.name)]) } ?? "",
+                                    isPresented: Binding(get: { confirming != nil }, set: { if !$0 { confirming = nil } }), titleVisibility: .visible, presenting: confirming) { p in
+                    Button(t("library_delete_compound", ["name": .string(p.name)]), role: .destructive) { store.mutate { $0.removeCustomPeptide(p.id) } }
+                    Button(t("library_keep_it"), role: .cancel) {}
+                } message: { p in
+                    let protocols = data.protocols.filter { $0.peptideId == p.id }.count
+                    let logs = data.logs.filter { $0.peptideId == p.id }.count
+                    Text(logs > 0 || protocols > 0
+                         ? t("library_delete_in_use", ["logs": .string(String(logs)), "protocols": .string(String(protocols)), "name": .string(p.name)])
+                         : t("library_delete_safe", ["name": .string(p.name)]))
+                }
         } header: {
             Text(t("library_your_own"))
         } footer: {
             if !data.customPeptides.isEmpty { Text(t("library_stored_on_device")) }
-        }
-        .sheet(isPresented: $adding) { NavigationStack { CustomCompoundForm() } }
-        .sheet(item: $editing) { p in NavigationStack { CustomCompoundForm(editing: p) } }
-        .confirmationDialog(confirming.map { t("library_delete_compound", ["name": .string($0.name)]) } ?? "",
-                            isPresented: Binding(get: { confirming != nil }, set: { if !$0 { confirming = nil } }), titleVisibility: .visible, presenting: confirming) { p in
-            Button(t("library_delete_compound", ["name": .string(p.name)]), role: .destructive) { store.mutate { $0.removeCustomPeptide(p.id) } }
-            Button(t("library_keep_it"), role: .cancel) {}
-        } message: { p in
-            let protocols = data.protocols.filter { $0.peptideId == p.id }.count
-            let logs = data.logs.filter { $0.peptideId == p.id }.count
-            Text(logs > 0 || protocols > 0
-                 ? t("library_delete_in_use", ["logs": .string(String(logs)), "protocols": .string(String(protocols)), "name": .string(p.name)])
-                 : t("library_delete_safe", ["name": .string(p.name)]))
         }
     }
 }

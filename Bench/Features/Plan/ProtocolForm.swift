@@ -136,7 +136,7 @@ struct ProtocolForm: View {
                         LabeledContent(t("plan_starting_dose"), value: formatDose(locked))
                         Text(t("plan_dose_set_by_plan", ["dose": .string(formatDose(locked))])).font(.caption).foregroundStyle(.secondary)
                     } else {
-                        NumberRow(label: t("plan_dose"), value: $doseMcg, suffix: "mcg", range: 0...10_000_000)
+                        AmountRow(label: t("plan_dose"), value: $doseMcg, range: 0...10_000_000)
                         if let r = peptide?.doseRanges.first {
                             Text(t("plan_dose_typical", ["low": .string(formatDose(r.lowMcg)), "high": .string(formatDose(r.highMcg))])).font(.caption).foregroundStyle(.secondary)
                         }

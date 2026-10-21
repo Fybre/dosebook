@@ -157,6 +157,8 @@ struct OptionalNumberField: View {
                 .multilineTextAlignment(.trailing)
                 .monospacedDigit()
                 .onChange(of: text) { _, s in
+                    // Filling the field from the value is not an edit.
+                    if s == (value.map(jsNumberString) ?? "") { return }
                     let trimmed = s.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: ",", with: ".")
                     value = trimmed.isEmpty ? nil : Double(trimmed) ?? value
                 }
@@ -178,6 +180,91 @@ struct OptionalNumberRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             LabeledContent(label) { OptionalNumberField(title: label, value: $value, suffix: suffix).frame(maxWidth: 160) }
+            if let msg = error ?? hint { Text(msg).font(.caption).foregroundStyle(error != nil ? Tone.rose.color : .secondary) }
+        }
+    }
+}
+
+/// The unit an amount is held in, whatever the field shows.
+enum MassBase { case mcg, mg }
+
+private func toMcg(_ v: Double, _ base: MassBase) -> Double { base == .mcg ? v : v * 1000 }
+private func fromMcg(_ mcg: Double, _ base: MassBase) -> Double { base == .mcg ? mcg : jsFixed(mcg / 1000, 9) }
+
+/// Shown in mg when it is at least a milligram and reads cleanly there, else in mcg.
+private func naturalUnit(_ mcg: Double?, _ base: MassBase) -> DoseUnit {
+    guard let mcg, mcg > 0 else { return base == .mg ? .mg : .mcg }
+    return mcg >= 1000 && jsFixed(mcg / 1000, 3) * 1000 == jsFixed(mcg, 6) ? .mg : .mcg
+}
+
+private func shown(_ mcg: Double, _ unit: DoseUnit) -> Double { unit == .mg ? jsFixed(mcg / 1000, 6) : jsFixed(mcg, 3) }
+private func typed(_ n: Double, _ unit: DoseUnit) -> Double { unit == .mg ? jsFixed(n * 1000, 6) : n }
+
+/// A tappable mcg/mg suffix.
+struct UnitToggle: View {
+    @Binding var unit: DoseUnit
+    var body: some View {
+        Button(unit.rawValue) { unit = unit == .mcg ? .mg : .mcg }
+            .buttonStyle(.bordered).controlSize(.mini).font(.caption.weight(.semibold))
+            .accessibilityLabel(t("log_switch_unit", ["unit": .string(unit == .mcg ? "mg" : "mcg")]))
+    }
+}
+
+/// An amount entered in mcg or mg, held as `base` either way. Until it is typed
+/// in or toggled, the unit follows the value (a prefilled 5000 mcg reads 5 mg);
+/// from then on it stays put, so typing 1000 in mcg does not jump to mg.
+struct AmountRow: View {
+    var label: String
+    @Binding var value: Double
+    var base: MassBase = .mcg
+    /// In `base`.
+    var range: ClosedRange<Double>? = nil
+    @State private var unit: DoseUnit?
+
+    var body: some View {
+        let u = unit ?? naturalUnit(toMcg(value, base), base)
+        LabeledContent(label) {
+            HStack(spacing: 6) {
+                NumberField(title: label, value: Binding(
+                    get: { shown(toMcg(value, base), u) },
+                    set: { n in
+                        if unit == nil { unit = u }
+                        let v = fromMcg(typed(n, u), base)
+                        value = range.map { min(max(v, $0.lowerBound), $0.upperBound) } ?? v
+                    }))
+                    .id(u)
+                UnitToggle(unit: Binding(get: { u }, set: { unit = $0 }))
+            }
+            .frame(maxWidth: 190)
+        }
+    }
+}
+
+/// An amount that may be absent; empty means nil, not zero.
+struct OptionalAmountRow: View {
+    var label: String
+    @Binding var value: Double?
+    var base: MassBase = .mcg
+    var hint: String? = nil
+    var error: String? = nil
+    @State private var unit: DoseUnit?
+
+    var body: some View {
+        let u = unit ?? naturalUnit(value.map { toMcg($0, base) }, base)
+        VStack(alignment: .leading, spacing: 4) {
+            LabeledContent(label) {
+                HStack(spacing: 6) {
+                    OptionalNumberField(title: label, value: Binding(
+                        get: { value.map { shown(toMcg($0, base), u) } },
+                        set: { n in
+                            if unit == nil { unit = u }
+                            value = n.map { fromMcg(typed($0, u), base) }
+                        }))
+                        .id(u)
+                    UnitToggle(unit: Binding(get: { u }, set: { unit = $0 }))
+                }
+                .frame(maxWidth: 190)
+            }
             if let msg = error ?? hint { Text(msg).font(.caption).foregroundStyle(error != nil ? Tone.rose.color : .secondary) }
         }
     }

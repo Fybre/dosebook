@@ -7,8 +7,7 @@ struct CalculatorView: View {
     @Environment(AppStore.self) private var store
     @State private var vialMg: Double = 10
     @State private var diluentMl: Double = 2
-    @State private var dose: Double = 500
-    @State private var doseUnit: DoseUnit = .mcg
+    @State private var doseMcg: Double = 500
     @State private var syringeId = "u100-0.5"
     @State private var peptideId = ""
     @State private var addingCompound = false
@@ -16,7 +15,6 @@ struct CalculatorView: View {
 
     var body: some View {
         let syringe = syringeById(syringeId) ?? SYRINGES[2]
-        let doseMcg = doseUnit == .mg ? mgToMcg(dose) : dose
         let vialMcg = mgToMcg(vialMg)
         let draw = calculateDraw(vialMcg: vialMcg, diluentMl: diluentMl, doseMcg: doseMcg, syringe: syringe)
         let suggestions = Array(suggestDiluents(vialMcg, doseMcg, syringe).prefix(4))
@@ -57,17 +55,9 @@ struct CalculatorView: View {
                     ForEach(store.data.allPeptides) { Text($0.name).tag($0.id) }
                 }
                 Button { addingCompound = true } label: { Label(t("add_compound_inline"), systemImage: "plus") }
-                NumberRow(label: t("calc_vial_strength"), value: $vialMg, suffix: "mg", range: 0...100_000)
+                AmountRow(label: t("calc_vial_strength"), value: $vialMg, base: .mg, range: 0...100_000)
                 NumberRow(label: t("calc_water_to_add"), value: $diluentMl, suffix: "mL", range: 0...1000)
-                NumberRow(label: t("calc_dose_you_want"), value: $dose, suffix: doseUnit.rawValue, range: 0...100_000_000)
-                Picker(t("phase_dose_unit"), selection: Binding(get: { doseUnit }, set: { u in
-                    dose = u == .mg ? jsFixed(doseMcg / 1000, 4) : jsFixed(doseMcg, 1)
-                    doseUnit = u
-                })) {
-                    Text("mcg").tag(DoseUnit.mcg)
-                    Text("mg").tag(DoseUnit.mg)
-                }
-                .pickerStyle(.segmented)
+                AmountRow(label: t("calc_dose_you_want"), value: $doseMcg, range: 0...100_000_000)
             } header: { Text(t("calc_vial_and_dose")) } footer: { Text("\(t("calc_peptide_hint")) \(t("calc_water_hint"))") }
 
             Section {
@@ -184,8 +174,7 @@ struct CalculatorView: View {
         if let first = p.vialSizesMg.first { vialMg = first }
         if let range = p.doseRanges.first {
             let mid = (range.lowMcg + range.highMcg) / 2
-            if mid >= 1000 { doseUnit = .mg; dose = jsFixed(mid / 1000, 3) }
-            else { doseUnit = .mcg; dose = jsFixed(mid, 1) }
+            doseMcg = mid >= 1000 ? jsFixed(mid / 1000, 3) * 1000 : jsFixed(mid, 1)
         }
     }
 }

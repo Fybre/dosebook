@@ -29,7 +29,8 @@ struct PeptideDetailView: View {
         let mine = data.halfLifeOverrides[p.id]
         let weekly = p.doseRanges.first?.perWeek ?? 0
         let intervalHours = weekly > 0 ? 7 * 24 / weekly : 0
-        return List {
+        return ScrollViewReader { proxy in
+        List {
             Section {
                 VStack(alignment: .leading, spacing: 8) {
                     Pill(text: p.category.label)
@@ -53,12 +54,16 @@ struct PeptideDetailView: View {
                 FlowLayout(spacing: 6) { ForEach(p.routes, id: \.self) { Pill(text: $0.label) } }
             }
 
-            Section(t("pep_in_the_body")) {
-                pkContent(p, mine: mine, intervalHours: intervalHours)
-                // Offered only where the library has no published human figure.
-                if p.halfLifeHours == nil { YourHalfLifeRow(peptideId: p.id, name: p.name) }
+            Section {
+                if isBlend(p) {
+                    blendContent(p)
+                } else {
+                    pkContent(p, mine: mine, intervalHours: intervalHours)
+                    // Offered only where the library has no published human figure.
+                    if p.halfLifeHours == nil { YourHalfLifeRow(peptideId: p.id, name: p.name) }
+                }
                 if let note = p.halfLifeNote { Text(note).font(.footnote).foregroundStyle(.secondary) }
-            }
+            } header: { Text(t("pep_in_the_body")).id("body") }
 
             Section(t("note_heading")) { CompoundNotesRow(peptideId: p.id, name: p.name) }
 
@@ -135,6 +140,8 @@ struct PeptideDetailView: View {
             }
             Section { Text(t("pep_disclaimer")).font(.caption).foregroundStyle(.secondary) }
         }
+        .debugAnchor(proxy)
+        }
         .navigationTitle(p.name)
     }
 
@@ -177,6 +184,36 @@ struct PeptideDetailView: View {
         }
     }
 
+    /// A blend has no curve of its own: one typical dose, split into its parts,
+    /// each on its own half-life, and the parts that have none named as such.
+    @ViewBuilder private func blendContent(_ p: Peptide) -> some View {
+        let data = store.data
+        let range = p.doseRanges.first
+        let dose = range.map { jsRound(($0.lowMcg + $0.highMcg) / 2) } ?? 1000
+        let parts = decomposeDose(p, dose, resolve: { data.peptide($0) })
+        let now = nowMillis()
+        let tones: [Tone] = [.tangerine, .sky, .grape, .leaf, .rose, .mint]
+        let series: [PkSeries] = parts.enumerated().compactMap { i, part in
+            guard let id = part.peptideId, let peptide = data.peptide(id), let curve = curveFor(peptide, yours: data.halfLifeOverrides[id]) else { return nil }
+            return PkSeries(id: id, label: part.name, doses: [DoseEvent(at: now, amountMcg: part.mcg)], params: curve.params,
+                            referenceMcg: part.mcg, basis: curve.basis, tone: tones[i % tones.count])
+        }
+        ForEach(Array(parts.enumerated()), id: \.offset) { i, part in
+            let peptide = part.peptideId.flatMap { data.peptide($0) }
+            HStack {
+                Circle().fill(tones[i % tones.count].color).frame(width: 8, height: 8)
+                Text(part.name).font(.subheadline)
+                Spacer()
+                Text("\(formatDose(part.mcg)) · \(t("pep_half_life")) \(formatHalfLife(peptide?.halfLifeHours))").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+            }
+        }
+        if !series.isEmpty {
+            let longest = series.map(\.params.halfLifeHours).max() ?? 24
+            PkChartView(series: series, now: now, range: now...(now + min(longest * 5, 24 * 21) * HOUR_MS), compact: true)
+            Text(t("ios_blend_curve_note", ["dose": .string(formatDose(dose))])).font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
     /// One 1 mg dose, now, drawn to at most three weeks.
     private func demoChart(_ p: Peptide, _ curve: Curve) -> some View {
         let now = nowMillis()
@@ -212,7 +249,7 @@ private struct BlendPanel: View {
                     if let id = c.peptideId { NavigationLink(c.name, value: id) } else { Text(c.name) }
                 }
             }
-            NumberRow(label: t("pep_dose_delivers"), value: $doseMcg, suffix: "mcg", range: 0...100_000_000)
+            AmountRow(label: t("pep_dose_delivers"), value: $doseMcg, range: 0...100_000_000)
             BlendBreakdownView(blend: blend, doseMcg: doseMcg, resolve: { store.data.peptide($0) })
         }
         .onAppear {
