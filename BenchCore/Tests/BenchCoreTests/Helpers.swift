@@ -57,3 +57,61 @@ func vial(_ id: String = "a", peptideId: String = "klow", strengthMg: Double = 8
 extension Vial {
     func with(_ change: (inout Vial) -> Void) -> Vial { var v = self; change(&v); return v }
 }
+
+/// A file under Tests/BenchCoreTests/Fixtures, read from the source tree.
+func fixture(_ name: String) -> Data {
+    let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/\(name)")
+    return try! Data(contentsOf: url)
+}
+
+extension CanonicalRecord {
+    var at: Millis { switch self { case .dose(let at, _, _, _, _, _), .weight(let at, _, _): at } }
+    var sourceRow: Int { switch self { case .dose(_, _, _, _, _, let r), .weight(_, _, let r): r } }
+    var isDose: Bool { if case .dose = self { true } else { false } }
+    var label: String? { if case .dose(_, let l, _, _, _, _) = self { l } else { nil } }
+    var doseMcg: Double? { if case .dose(_, _, let d, _, _, _) = self { d } else { nil } }
+    var site: InjectionSite? { if case .dose(_, _, _, let s, _, _) = self { s } else { nil } }
+    var notes: String? { if case .dose(_, _, _, _, let n, _) = self { n } else { nil } }
+    var weightKg: Double? { if case .weight(_, let w, _) = self { w } else { nil } }
+}
+
+func month(_ ms: Millis) -> Int { LocalTime.calendar.component(.month, from: Date(millis: ms)) }
+func year(_ ms: Millis) -> Int { LocalTime.calendar.component(.year, from: Date(millis: ms)) }
+
+import Compression
+
+/// Raw DEFLATE, for building zip and PDF fixtures.
+func deflateRaw(_ input: [UInt8]) -> [UInt8] {
+    var out = [UInt8](repeating: 0, count: input.count + 1024)
+    let n = compression_encode_buffer(&out, out.count, input, input.count, nil, COMPRESSION_ZLIB)
+    return Array(out.prefix(n))
+}
+
+/// A zlib stream: header, DEFLATE, Adler-32.
+func zlibStream(_ input: [UInt8]) -> [UInt8] {
+    var a: UInt32 = 1, b: UInt32 = 0
+    for byte in input { a = (a + UInt32(byte)) % 65521; b = (b + a) % 65521 }
+    let adler = b << 16 | a
+    return [0x78, 0x9C] + deflateRaw(input) + [UInt8(adler >> 24), UInt8(adler >> 16 & 0xFF), UInt8(adler >> 8 & 0xFF), UInt8(adler & 0xFF)]
+}
+
+/// A minimal zip; even-numbered entries are deflated, odd ones stored. CRCs are
+/// left zero, which the reader does not check.
+func zipOf(_ files: [(String, String)]) -> [UInt8] {
+    var body: [UInt8] = [], central: [UInt8] = []
+    func le16(_ v: Int) -> [UInt8] { [UInt8(v & 0xFF), UInt8(v >> 8 & 0xFF)] }
+    func le32(_ v: Int) -> [UInt8] { le16(v & 0xFFFF) + le16(v >> 16 & 0xFFFF) }
+    for (i, (name, text)) in files.enumerated() {
+        let raw = Array(text.utf8), nameBytes = Array(name.utf8)
+        let method = i % 2 == 0 ? 8 : 0
+        let data = method == 8 ? deflateRaw(raw) : raw
+        let offset = body.count
+        body += le32(0x0403_4b50) + le16(20) + le16(0) + le16(method) + le16(0) + le16(0) + le32(0)
+            + le32(data.count) + le32(raw.count) + le16(nameBytes.count) + le16(0) + nameBytes + data
+        central += le32(0x0201_4b50) + le16(20) + le16(20) + le16(0) + le16(method) + le16(0) + le16(0) + le32(0)
+            + le32(data.count) + le32(raw.count) + le16(nameBytes.count) + le16(0) + le16(0) + le16(0) + le16(0)
+            + le32(0) + le32(offset) + nameBytes
+    }
+    let eocd = le32(0x0605_4b50) + le16(0) + le16(0) + le16(files.count) + le16(files.count) + le32(central.count) + le32(body.count) + le16(0)
+    return body + central + eocd
+}

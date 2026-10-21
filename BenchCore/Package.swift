@@ -15,7 +15,7 @@ let package = Package(
         ),
         // Persistence: SwiftData envelope records, synced through CloudKit by the app.
         .target(name: "BenchStore", dependencies: ["BenchCore"]),
-        .testTarget(name: "BenchCoreTests", dependencies: ["BenchCore"]),
+        .testTarget(name: "BenchCoreTests", dependencies: ["BenchCore"], exclude: ["Fixtures"]),
         .testTarget(name: "BenchStoreTests", dependencies: ["BenchStore", "BenchCore"]),
     ]
 )
