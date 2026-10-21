@@ -7,7 +7,8 @@
     "ios_sync_memory": "Storage could not be opened, so nothing will be kept after the app closes. Restart the app, and export a backup if you can.",
     "ios_language": "Language",
     "ios_nag_never": "You have {n} records and no copy of them anywhere else. They live only on this device, so losing or resetting it would take the lot.",
-    "ios_nag_stale": "Your last export was {days} days ago. Everything since then exists only on this device."
+    "ios_nag_stale": "Your last export was {days} days ago. Everything since then exists only on this device.",
+    "ios_log_delete": "Delete dose"
   },
   "de": {
     "more": "Mehr",
@@ -17,7 +18,8 @@
     "ios_sync_memory": "Der Speicher konnte nicht geöffnet werden, daher bleibt nach dem Schließen nichts erhalten. Starte die App neu und exportiere wenn möglich ein Backup.",
     "ios_language": "Sprache",
     "ios_nag_never": "Du hast {n} Einträge und nirgendwo sonst eine Kopie davon. Sie liegen nur auf diesem Gerät, und wenn es verloren geht oder zurückgesetzt wird, ist alles weg.",
-    "ios_nag_stale": "Dein letzter Export ist {days} Tage her. Alles seitdem gibt es nur auf diesem Gerät."
+    "ios_nag_stale": "Dein letzter Export ist {days} Tage her. Alles seitdem gibt es nur auf diesem Gerät.",
+    "ios_log_delete": "Dosis löschen"
   },
   "sl": {
     "more": "Več",
@@ -27,7 +29,8 @@
     "ios_sync_memory": "Shrambe ni bilo mogoče odpreti, zato po zaprtju aplikacije ne bo nič ohranjeno. Znova zaženi aplikacijo in po možnosti izvozi varnostno kopijo.",
     "ios_language": "Jezik",
     "ios_nag_never": "Imaš {n} zapisov in nikjer drugje kopije. Shranjeni so samo v tej napravi, zato bi jih izguba ali ponastavitev naprave vzela vse.",
-    "ios_nag_stale": "Tvoj zadnji izvoz je bil pred {days} dnevi. Vse od takrat obstaja samo v tej napravi."
+    "ios_nag_stale": "Tvoj zadnji izvoz je bil pred {days} dnevi. Vse od takrat obstaja samo v tej napravi.",
+    "ios_log_delete": "Izbriši odmerek"
   },
   "pl": {
     "more": "Więcej",
@@ -37,6 +40,7 @@
     "ios_sync_memory": "Nie udało się otworzyć pamięci, więc po zamknięciu aplikacji nic nie zostanie zachowane. Uruchom aplikację ponownie i w miarę możliwości wyeksportuj kopię zapasową.",
     "ios_language": "Język",
     "ios_nag_never": "Masz {n} wpisów i nigdzie ich kopii. Są tylko na tym urządzeniu, więc jego utrata lub reset zabrałyby wszystko.",
-    "ios_nag_stale": "Twój ostatni eksport był {days} dni temu. Wszystko od tego czasu istnieje tylko na tym urządzeniu."
+    "ios_nag_stale": "Twój ostatni eksport był {days} dni temu. Wszystko od tego czasu istnieje tylko na tym urządzeniu.",
+    "ios_log_delete": "Usuń dawkę"
   }
 }

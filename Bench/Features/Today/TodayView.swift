@@ -69,7 +69,15 @@ struct TodayView: View {
             }
         }
         .onReceive(tick) { _ in now = nowMillis() }
-        .onAppear { now = nowMillis() }
+        .onAppear {
+            now = nowMillis()
+            #if DEBUG
+            if let i = ProcessInfo.processInfo.arguments.firstIndex(of: "-log"), logRequest == nil {
+                let rest = ProcessInfo.processInfo.arguments.dropFirst(i + 1).first
+                logRequest = LogRequest(peptideId: rest.flatMap { $0.hasPrefix("-") ? nil : $0 })
+            }
+            #endif
+        }
         .sheet(item: $logRequest) { req in
             NavigationStack { LogDoseSheet(defaultPeptideId: req.peptideId, anySite: req.anySite) }
         }
