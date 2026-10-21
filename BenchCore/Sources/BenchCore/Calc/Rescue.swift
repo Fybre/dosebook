@@ -38,6 +38,7 @@ public struct Loss: Equatable, Sendable, Codable {
     public var key: RecordKey
     public var from: Int
     public var to: Int
+    public init(key: RecordKey, from: Int, to: Int) { self.key = key; self.from = from; self.to = to }
 }
 
 /// Which collections lost rows, and how many.
