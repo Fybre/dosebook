@@ -95,3 +95,11 @@ import Testing
         }
     }
 }
+
+@Suite struct IOSStringsTests {
+    @Test func overlayCoversEveryLanguageAndNeverShadows() {
+        let ios = ["more", "ios_sync_title", "ios_sync_cloud", "ios_sync_local", "ios_sync_memory", "ios_language"]
+        for lang in Lang.allCases { for k in ios { #expect(translate(lang, k) != k, "\(lang) \(k)") } }
+        #expect(translate(.de, "more") == "Mehr" && translate(.en, "nav_now") == "Now")
+    }
+}

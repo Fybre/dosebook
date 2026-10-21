@@ -62,11 +62,20 @@ public enum I18n {
         set { current.withLock { $0 = newValue } }
     }
 
+    /// The original's copy, overlaid with the few strings only this app needs
+    /// (`ios-strings.json`), which never replace one of the original's.
     static let dictionaries: [String: [String: String]] = {
-        guard let url = Bundle.module.url(forResource: "translations", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode([String: [String: String]].self, from: data) else { return [:] }
-        return decoded
+        func read(_ name: String) -> [String: [String: String]] {
+            guard let url = Bundle.module.url(forResource: name, withExtension: "json"),
+                  let data = try? Data(contentsOf: url),
+                  let decoded = try? JSONDecoder().decode([String: [String: String]].self, from: data) else { return [:] }
+            return decoded
+        }
+        var out = read("translations")
+        for (lang, strings) in read("ios-strings") {
+            out[lang, default: [:]].merge(strings) { original, _ in original }
+        }
+        return out
     }()
 
     public static func hasKey(_ key: String) -> Bool { dictionaries["en"]?[key] != nil || dictionaries["en"]?["\(key)_other"] != nil }

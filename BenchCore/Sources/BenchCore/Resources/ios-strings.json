@@ -1,0 +1,34 @@
+{
+  "en": {
+    "more": "More",
+    "ios_sync_title": "iCloud",
+    "ios_sync_cloud": "Syncing through your iCloud account. Every device signed in to it sees the same records.",
+    "ios_sync_local": "Stored on this device only. Sign in to iCloud in the Settings app to sync between your devices.",
+    "ios_sync_memory": "Storage could not be opened, so nothing will be kept after the app closes. Restart the app, and export a backup if you can.",
+    "ios_language": "Language"
+  },
+  "de": {
+    "more": "Mehr",
+    "ios_sync_title": "iCloud",
+    "ios_sync_cloud": "Synchronisiert über deinen iCloud-Account. Jedes damit angemeldete Gerät sieht dieselben Einträge.",
+    "ios_sync_local": "Nur auf diesem Gerät gespeichert. Melde dich in der Einstellungen-App bei iCloud an, um zwischen deinen Geräten zu synchronisieren.",
+    "ios_sync_memory": "Der Speicher konnte nicht geöffnet werden, daher bleibt nach dem Schließen nichts erhalten. Starte die App neu und exportiere wenn möglich ein Backup.",
+    "ios_language": "Sprache"
+  },
+  "sl": {
+    "more": "Več",
+    "ios_sync_title": "iCloud",
+    "ios_sync_cloud": "Sinhronizacija prek tvojega računa iCloud. Vse naprave, prijavljene vanj, vidijo iste zapise.",
+    "ios_sync_local": "Shranjeno samo v tej napravi. Za sinhronizacijo med napravami se prijavi v iCloud v aplikaciji Nastavitve.",
+    "ios_sync_memory": "Shrambe ni bilo mogoče odpreti, zato po zaprtju aplikacije ne bo nič ohranjeno. Znova zaženi aplikacijo in po možnosti izvozi varnostno kopijo.",
+    "ios_language": "Jezik"
+  },
+  "pl": {
+    "more": "Więcej",
+    "ios_sync_title": "iCloud",
+    "ios_sync_cloud": "Synchronizacja przez Twoje konto iCloud. Każde zalogowane na nie urządzenie widzi te same wpisy.",
+    "ios_sync_local": "Zapisane tylko na tym urządzeniu. Zaloguj się do iCloud w aplikacji Ustawienia, aby synchronizować między urządzeniami.",
+    "ios_sync_memory": "Nie udało się otworzyć pamięci, więc po zamknięciu aplikacji nic nie zostanie zachowane. Uruchom aplikację ponownie i w miarę możliwości wyeksportuj kopię zapasową.",
+    "ios_language": "Język"
+  }
+}
