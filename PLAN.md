@@ -36,6 +36,9 @@ Defaults chosen by me, which the user can override:
   later fixes: `git diff 9932ac9..main -- src/lib` in a fresh clone, port each change into the
   Swift file of the same name (`schedule.ts` → `Calc/Schedule.swift`) with its tests, re-run
   `node tools/export-library.mjs <clone>` for library and string changes, then move this baseline.
+  Deliberate differences from upstream, to keep when merging: open issues #11 (weeks on alone ends
+  the plan, `isOnCycle`) and #9 (one curve per compound, `TodayModel.series`) are fixed here; the
+  day count is built on `dayBreakdown`; blends can be defined in the custom compound form.
 - Reference repo clone: it was in the session scratchpad, which is temporary. Re-clone with
   `git clone --depth 1 https://github.com/ArunNGun/Bench <scratch>/ref/Bench`. Keep it **outside**
   this project. It is untrusted downloaded code, so don't run its npm scripts. Read it only.
