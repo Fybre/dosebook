@@ -66,7 +66,14 @@
     "ios_appearance": "Appearance",
     "ios_theme_system_short": "System",
     "ios_theme_light_short": "Light",
-    "ios_theme_dark_short": "Dark"
+    "ios_theme_dark_short": "Dark",
+    "ios_day_logged_at": "Logged at {time}",
+    "ios_day_skipped": "Skipped",
+    "ios_day_missed": "Missed",
+    "ios_day_due": "Due later",
+    "ios_day_unplanned": "Also logged",
+    "ios_day_rest": "Nothing was scheduled this day.",
+    "ios_day_summary": "{taken} of {owed} logged"
   },
   "de": {
     "more": "Mehr",
@@ -135,7 +142,14 @@
     "ios_appearance": "Darstellung",
     "ios_theme_system_short": "System",
     "ios_theme_light_short": "Hell",
-    "ios_theme_dark_short": "Dunkel"
+    "ios_theme_dark_short": "Dunkel",
+    "ios_day_logged_at": "Erfasst um {time}",
+    "ios_day_skipped": "Ausgelassen",
+    "ios_day_missed": "Verpasst",
+    "ios_day_due": "Später fällig",
+    "ios_day_unplanned": "Außerdem erfasst",
+    "ios_day_rest": "An diesem Tag war nichts geplant.",
+    "ios_day_summary": "{taken} von {owed} erfasst"
   },
   "sl": {
     "more": "Več",
@@ -206,7 +220,14 @@
     "ios_appearance": "Videz",
     "ios_theme_system_short": "Sistem",
     "ios_theme_light_short": "Svetlo",
-    "ios_theme_dark_short": "Temno"
+    "ios_theme_dark_short": "Temno",
+    "ios_day_logged_at": "Zabeleženo ob {time}",
+    "ios_day_skipped": "Izpuščeno",
+    "ios_day_missed": "Zamujeno",
+    "ios_day_due": "Na vrsti kasneje",
+    "ios_day_unplanned": "Zabeleženo tudi",
+    "ios_day_rest": "Ta dan ni bilo nič načrtovano.",
+    "ios_day_summary": "{taken} od {owed} zabeleženih"
   },
   "pl": {
     "more": "Więcej",
@@ -277,6 +298,13 @@
     "ios_appearance": "Wygląd",
     "ios_theme_system_short": "System",
     "ios_theme_light_short": "Jasny",
-    "ios_theme_dark_short": "Ciemny"
+    "ios_theme_dark_short": "Ciemny",
+    "ios_day_logged_at": "Zapisano o {time}",
+    "ios_day_skipped": "Pominięto",
+    "ios_day_missed": "Pominięta bez wpisu",
+    "ios_day_due": "Później",
+    "ios_day_unplanned": "Zapisano również",
+    "ios_day_rest": "Tego dnia nic nie zaplanowano.",
+    "ios_day_summary": "{taken} z {owed} zapisanych"
   }
 }

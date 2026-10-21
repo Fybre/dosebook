@@ -264,7 +264,7 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
   cached; tests in BenchStoreTests), Dynamic Type at accessibility sizes, VoiceOver labels.
 - Debug launch args: `-demo`, `-demoLarge`, `-tab now|plan|log|stock|more`, `-anchor <id>`,
   `-log [peptideId]`, `-more calculator|library|labs|report|settings|about|importer [peptideId]`,
-  `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`. `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
+  `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`. `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
 
 **Needs the user / real devices:** set `DEVELOPMENT_TEAM` in project.yml; then test CloudKit sync
 between two devices on one Apple ID, HealthKit permission and reads on a phone, notification

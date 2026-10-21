@@ -52,7 +52,8 @@ enum DemoData {
             let sites: [InjectionSite] = [.abdomenUL, .abdomenUR, .thighL]
             for i in 0..<16 {
                 let at = startOfLocalDay(now - 9 * day) + Double(i / 2) * day + (i % 2 == 0 ? 7.1 : 19.2) * HOUR_MS
-                if at < now { d.addLog(DoseLog(id: "", profileId: "", protocolId: bpc, peptideId: "bpc-157", at: at, doseMcg: 250, route: .subcutaneous, site: sites[i % 3])) }
+                // Four days ago nothing was logged at all, so the week strip shows a missed day.
+                if at < now && i / 2 != 5 { d.addLog(DoseLog(id: "", profileId: "", protocolId: bpc, peptideId: "bpc-157", at: at, doseMcg: 250, route: .subcutaneous, site: sites[i % 3])) }
             }
             // A custom blend: CJC-1295 without DAC and ipamorelin, 10 mg of each.
             var blend = CustomDraft(name: "CJC/Ipa", category: .blend, doseLowMcg: 200, doseHighMcg: 300, perWeek: 7)
@@ -67,7 +68,7 @@ enum DemoData {
                            reconstitutedAt: now - 6 * day, diluentMl: 2, diluent: .bacteriostatic, budAt: now + 22 * day))
             for i in 0..<6 {
                 let at = startOfLocalDay(now - 6 * day) + Double(i) * day + 22 * HOUR_MS
-                if at < now { d.addLog(DoseLog(id: "", profileId: "", protocolId: gh, peptideId: cjcIpa.id, at: at, doseMcg: 200, route: .subcutaneous, site: .abdomenLL)) }
+                if at < now && i != 2 { d.addLog(DoseLog(id: "", profileId: "", protocolId: gh, peptideId: cjcIpa.id, at: at, doseMcg: 200, route: .subcutaneous, site: .abdomenLL)) }
             }
             for i in 0..<8 {
                 d.addMeasurement(BodyMeasurement(id: "", profileId: "", at: now - Double(40 - i * 5) * day, weightKg: 98 - Double(i) * 0.7))

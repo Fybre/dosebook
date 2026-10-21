@@ -17,32 +17,81 @@ public struct DayProgress: Equatable, Sendable {
     public var complete: Bool
 }
 
-/// How a single day went. Each log is credited to the protocol it names, else
-/// by compound, and no protocol past what it asked for.
-public func dayProgress(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs: Millis) -> DayProgress {
+/// What one protocol asked for on a day, and what answered it.
+public struct ProtocolDay: Equatable, Sendable {
+    public enum Slot: Equatable, Sendable {
+        case taken(DoseLog)
+        case skipped(DoseLog)
+        /// Its time has passed with nothing logged.
+        case missed
+        /// Still ahead, later today.
+        case due
+    }
+    public var protocolId: String
+    public var peptideId: String
+    /// Scheduled times, each with what became of it, in time order.
+    public var slots: [(at: Millis, slot: Slot)]
+
+    public static func == (a: ProtocolDay, b: ProtocolDay) -> Bool {
+        a.protocolId == b.protocolId && a.peptideId == b.peptideId
+            && a.slots.map(\.at) == b.slots.map(\.at) && a.slots.map(\.slot) == b.slots.map(\.slot)
+    }
+}
+
+/// A day dose by dose: the same crediting `dayProgress` counts, laid out per
+/// protocol, plus whatever was logged that no protocol asked for.
+public struct DayBreakdown: Equatable, Sendable {
+    public var day: Millis
+    public var protocols: [ProtocolDay]
+    public var unplanned: [DoseLog]
+}
+
+/// Each log is credited to the protocol it names, else by compound, and no
+/// protocol past what it asked for. Within a protocol, logs answer the nearest
+/// scheduled time; times left over are missed once passed, due before.
+public func dayBreakdown(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs: Millis, nowMs: Millis = nowMillis()) -> DayBreakdown {
     let day = startOfLocalDay(dayMs)
     let end = endOfLocalDay(dayMs)
     let active = protocols.filter(\.active)
-    let slots = active.map { protocolDoseTimesBetween($0, day, end).count }
-    let expected = slots.reduce(0, +)
+    let times = active.map { protocolDoseTimesBetween($0, day, end).sorted() }
     let onDay = logs.filter { $0.at >= day && $0.at <= end }
-    var taken = Array(repeating: 0, count: active.count)
-    var skipped = Array(repeating: 0, count: active.count)
+    var credited: [[DoseLog]] = Array(repeating: [], count: active.count)
     var claimed = Set<Int>()
-    func room(_ i: Int) -> Int { slots[i] - taken[i] - skipped[i] }
-    func credit(_ i: Int, _ l: DoseLog, _ idx: Int) {
-        if l.isSkipped { skipped[i] += 1 } else { taken[i] += 1 }
-        claimed.insert(idx)
-    }
+    func room(_ i: Int) -> Int { times[i].count - credited[i].count }
     for (idx, l) in onDay.enumerated() {
-        if let i = active.firstIndex(where: { l.protocolId == $0.id }), room(i) > 0 { credit(i, l, idx) }
+        if let i = active.firstIndex(where: { l.protocolId == $0.id }), room(i) > 0 { credited[i].append(l); claimed.insert(idx) }
     }
     for (idx, l) in onDay.enumerated() where !claimed.contains(idx) {
-        if let i = active.indices.first(where: { active[$0].peptideId == l.peptideId && room($0) > 0 }) { credit(i, l, idx) }
+        if let i = active.indices.first(where: { active[$0].peptideId == l.peptideId && room($0) > 0 }) { credited[i].append(l); claimed.insert(idx) }
     }
-    let t = taken.reduce(0, +), s = skipped.reduce(0, +)
+    let protocolDays = active.indices.compactMap { i -> ProtocolDay? in
+        guard !times[i].isEmpty else { return nil }
+        var open = Array(times[i].indices)
+        var answered: [Int: DoseLog] = [:]
+        for l in credited[i].stableSorted(by: { $0.at < $1.at }) {
+            guard let best = open.min(by: { abs(times[i][$0] - l.at) < abs(times[i][$1] - l.at) }) else { break }
+            answered[best] = l
+            open.removeAll { $0 == best }
+        }
+        return ProtocolDay(protocolId: active[i].id, peptideId: active[i].peptideId, slots: times[i].indices.map { k in
+            let at = times[i][k]
+            if let l = answered[k] { return (at, l.isSkipped ? .skipped(l) : .taken(l)) }
+            return (at, at <= nowMs ? .missed : .due)
+        })
+    }
+    let unplanned = onDay.indices.filter { !claimed.contains($0) }.map { onDay[$0] }.stableSorted { $0.at < $1.at }
+    return DayBreakdown(day: day, protocols: protocolDays, unplanned: unplanned)
+}
+
+/// How a single day went, counted from the same crediting as `dayBreakdown`.
+public func dayProgress(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs: Millis) -> DayProgress {
+    let breakdown = dayBreakdown(protocols, logs, dayMs, nowMs: .infinity)
+    let slots = breakdown.protocols.flatMap { $0.slots.map(\.slot) }
+    let expected = slots.count
+    let t = slots.filter { if case .taken = $0 { true } else { false } }.count
+    let s = slots.filter { if case .skipped = $0 { true } else { false } }.count
     let owed = expected - s
-    return DayProgress(day: day, expected: expected, taken: t, skipped: s, owed: owed,
+    return DayProgress(day: breakdown.day, expected: expected, taken: t, skipped: s, owed: owed,
                        fraction: owed == 0 ? 1 : min(1, Double(t) / Double(owed)),
                        restDay: expected == 0, complete: t >= owed)
 }
