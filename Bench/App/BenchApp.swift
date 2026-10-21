@@ -22,8 +22,9 @@ struct BenchApp: App {
                     store.reload()
                 }
                 .onChange(of: scenePhase) { _, phase in
-                    if phase == .active { store.reload() }
+                    if phase == .active { store.reload(); BackupFolder.runIfDue(store) }
                 }
+                .task { BackupFolder.runIfDue(store) }
         }
     }
 }

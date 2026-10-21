@@ -36,7 +36,10 @@
     "ios_health_not_asked": "Bench has not asked to read from Apple Health yet.",
     "ios_health_asked": "Bench has asked to read your weight, sleep and resting heart rate. Apple Health does not tell apps whether you allowed it, so if nothing arrives, check Health > your profile > Apps > Bench.",
     "ios_health_allow": "Allow reading from Apple Health",
-    "ios_health_failed": "Sync failed. Check Apple Health permissions and try again."
+    "ios_health_failed": "Sync failed. Check Apple Health permissions and try again.",
+    "ios_backups_desc": "Writes a full copy into the **Bench** folder on this iPhone, which the Files app shows under On My iPhone, keeping the most recent few. Nothing leaves the phone. It is a second copy in a folder you can reach yourself, not a cloud backup.",
+    "ios_backups_count_one": "{n} backup in On My iPhone › Bench.",
+    "ios_backups_count_other": "{n} backups in On My iPhone › Bench."
   },
   "de": {
     "more": "Mehr",
@@ -75,7 +78,10 @@
     "ios_health_not_asked": "Bench hat noch nicht um Lesezugriff auf Apple Health gebeten.",
     "ios_health_asked": "Bench hat um Lesezugriff auf Gewicht, Schlaf und Ruhepuls gebeten. Apple Health teilt Apps nicht mit, ob du es erlaubt hast; kommt nichts an, prüfe Health > dein Profil > Apps > Bench.",
     "ios_health_allow": "Lesen aus Apple Health erlauben",
-    "ios_health_failed": "Synchronisierung fehlgeschlagen. Prüfe die Berechtigungen in Apple Health und versuche es erneut."
+    "ios_health_failed": "Synchronisierung fehlgeschlagen. Prüfe die Berechtigungen in Apple Health und versuche es erneut.",
+    "ios_backups_desc": "Schreibt eine vollständige Kopie in den Ordner **Bench** auf diesem iPhone, den die Dateien-App unter „Auf meinem iPhone“ zeigt, und behält die neuesten. Nichts verlässt das Telefon. Es ist eine zweite Kopie in einem Ordner, den du selbst erreichst, keine Cloud-Sicherung.",
+    "ios_backups_count_one": "{n} Sicherung in Auf meinem iPhone › Bench.",
+    "ios_backups_count_other": "{n} Sicherungen in Auf meinem iPhone › Bench."
   },
   "sl": {
     "more": "Več",
@@ -114,7 +120,12 @@
     "ios_health_not_asked": "Bench še ni prosil za branje iz Apple Health.",
     "ios_health_asked": "Bench je prosil za branje teže, spanja in srčnega utripa v mirovanju. Apple Health aplikacijam ne pove, ali si to dovolil, zato, če nič ne pride, preveri Zdravje > tvoj profil > Aplikacije > Bench.",
     "ios_health_allow": "Dovoli branje iz Apple Health",
-    "ios_health_failed": "Sinhronizacija ni uspela. Preveri dovoljenja v Apple Health in poskusi znova."
+    "ios_health_failed": "Sinhronizacija ni uspela. Preveri dovoljenja v Apple Health in poskusi znova.",
+    "ios_backups_desc": "Zapiše celotno kopijo v mapo **Bench** na tem iPhonu, ki jo aplikacija Datoteke pokaže pod Na mojem iPhonu, in obdrži nekaj najnovejših. Nič ne zapusti telefona. To je druga kopija v mapi, do katere prideš sam, ne varnostna kopija v oblaku.",
+    "ios_backups_count_one": "{n} varnostna kopija v Na mojem iPhonu › Bench.",
+    "ios_backups_count_other": "{n} varnostnih kopij v Na mojem iPhonu › Bench.",
+    "ios_backups_count_two": "{n} varnostni kopiji v Na mojem iPhonu › Bench.",
+    "ios_backups_count_few": "{n} varnostne kopije v Na mojem iPhonu › Bench."
   },
   "pl": {
     "more": "Więcej",
@@ -153,6 +164,11 @@
     "ios_health_not_asked": "Bench jeszcze nie prosił o odczyt z Apple Health.",
     "ios_health_asked": "Bench poprosił o odczyt wagi, snu i tętna spoczynkowego. Apple Health nie informuje aplikacji, czy na to pozwolono, więc jeśli nic nie dociera, sprawdź Zdrowie > Twój profil > Aplikacje > Bench.",
     "ios_health_allow": "Zezwól na odczyt z Apple Health",
-    "ios_health_failed": "Synchronizacja nie powiodła się. Sprawdź uprawnienia w Apple Health i spróbuj ponownie."
+    "ios_health_failed": "Synchronizacja nie powiodła się. Sprawdź uprawnienia w Apple Health i spróbuj ponownie.",
+    "ios_backups_desc": "Zapisuje pełną kopię w folderze **Bench** na tym iPhonie, który aplikacja Pliki pokazuje w sekcji Na moim iPhonie, zachowując kilka najnowszych. Nic nie opuszcza telefonu. To druga kopia w folderze, do którego masz dostęp sam, a nie kopia w chmurze.",
+    "ios_backups_count_one": "{n} kopia w Na moim iPhonie › Bench.",
+    "ios_backups_count_other": "{n} kopii w Na moim iPhonie › Bench.",
+    "ios_backups_count_few": "{n} kopie w Na moim iPhonie › Bench.",
+    "ios_backups_count_many": "{n} kopii w Na moim iPhonie › Bench."
   }
 }

@@ -33,6 +33,7 @@ struct SettingsView: View {
             ProfilesSection()
             RemindersSection()
             HealthSection()
+            BackupsSection()
 
             Section {
                 Text(t("ios_data_note")).font(.footnote).foregroundStyle(.secondary)
@@ -379,5 +380,78 @@ private struct HealthSection: View {
         } catch {
             result = t("ios_health_failed")
         }
+    }
+}
+
+// MARK: - Automatic backups
+
+private struct BackupsSection: View {
+    @Environment(AppStore.self) private var store
+    @State private var files: [BackupFile] = []
+    @State private var note: String?
+    @State private var restoring: BackupFile?
+
+    var body: some View {
+        let settings = store.data.settings
+        Section {
+            RichText(t("ios_backups_desc")).font(.footnote).foregroundStyle(.secondary)
+            Picker(t("settings_take_one"), selection: Binding(get: { settings.backupEnabled ? settings.backupIntervalHours : 0 }, set: { v in
+                store.mutate { d in
+                    d.settings.backupEnabled = v > 0
+                    if v > 0 { d.settings.backupIntervalHours = v }
+                }
+            })) {
+                Text(t("reminders_never")).tag(0.0)
+                Text(t("settings_every_6h")).tag(6.0)
+                Text(t("plan_daily")).tag(24.0)
+                Text(t("plan_weekly")).tag(168.0)
+            }
+            NumberRow(label: t("keep"), value: Binding(get: { settings.backupKeep }, set: { v in store.mutate { $0.settings.backupKeep = max(1, v.rounded(.down)) } }),
+                      suffix: t("settings_copies"), range: 1...50)
+            LabeledContent(t("settings_last_backup"), value: settings.lastBackupAt.map { relativeTime($0) } ?? t("reminders_never"))
+            Button { backUp() } label: { Label(t("settings_back_up_now"), systemImage: "externaldrive.badge.plus") }
+            if let note { Text(note).font(.footnote.weight(.medium)) }
+            ForEach(files, id: \.name) { f in
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("\(formatDate(f.at)) \(formatTime(f.at))").font(.subheadline)
+                        if let size = f.size { Text("\(max(1, Int((Double(size) / 1024).rounded()))) KB").font(.caption).foregroundStyle(.secondary) }
+                    }
+                    Spacer()
+                    Button(t("settings_restore")) { restoring = f }.buttonStyle(.bordered).controlSize(.small)
+                }
+            }
+        } header: { Text(t("settings_backups")) } footer: {
+            Text(files.isEmpty ? t("settings_no_backups") : t("ios_backups_count", ["n": .number(Double(files.count))]) + " " + t("settings_keep_hint"))
+        }
+        .onAppear { files = BackupFolder.list() }
+        .confirmationDialog(t("settings_restore"), isPresented: Binding(get: { restoring != nil }, set: { if !$0 { restoring = nil } }), titleVisibility: .visible, presenting: restoring) { f in
+            Button(t("settings_replace_all"), role: .destructive) { restore(f) }
+            Button(t("settings_keep_what_i_have"), role: .cancel) {}
+        } message: { f in Text(t("settings_restore_confirm", ["date": .string(formatDate(f.at))])) }
+    }
+
+    private func backUp() {
+        let outcome = BackupFolder.run(store)
+        if let name = outcome.name, outcome.ok {
+            note = outcome.pruned > 0 ? t("settings_backup_saved", ["name": .string(name), "n": .number(Double(outcome.pruned))]) : t("settings_backup_written", ["name": .string(name)])
+        } else {
+            note = t("settings_backup_write_failed")
+        }
+        files = BackupFolder.list()
+    }
+
+    private func restore(_ f: BackupFile) {
+        guard let raw = BackupFolder.read(f.name) else { note = t("settings_backup_read_failed"); return }
+        guard let preview = try? AppData.load(raw) else { note = t("settings_backup_unreadable"); return }
+        do {
+            try store.importBackup(raw)
+            note = t("settings_restored_from", ["name": .string(f.name), "doses": .string(t("count_doses", ["n": .number(Double(preview.logs.count))])),
+                                                "protocols": .string(t("count_protocols", ["n": .number(Double(preview.protocols.count))])),
+                                                "vials": .string(t("count_vials", ["n": .number(Double(preview.vials.count))]))])
+        } catch {
+            note = t("settings_backup_not_bench")
+        }
+        restoring = nil
     }
 }

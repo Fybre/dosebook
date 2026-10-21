@@ -12,17 +12,12 @@ struct BackupDocument: FileDocument {
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { FileWrapper(regularFileWithContents: data) }
 }
 
-func backupFileName(_ at: Millis = nowMillis()) -> String {
-    let c = LocalTime.calendar.dateComponents([.year, .month, .day], from: Date(millis: at))
-    return String(format: "bench-backup-%04d-%02d-%02d", c.year!, c.month!, c.day!)
-}
-
 private struct BackupExporter: ViewModifier {
     @Environment(AppStore.self) private var store
     @Binding var isPresented: Bool
     func body(content: Content) -> some View {
         content.fileExporter(isPresented: $isPresented, document: BackupDocument(data: (try? store.exportBackup()) ?? Data()),
-                             contentType: .json, defaultFilename: backupFileName()) { result in
+                             contentType: .json, defaultFilename: String(exportFileName().dropLast(5))) { result in
             if case .success = result { store.markBackedUp() }
         }
     }

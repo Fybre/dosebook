@@ -46,7 +46,9 @@ targets:
            UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSHealthShareUsageDescription: "Bench reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back."
         ITSAppUsesNonExemptEncryption: false
-        LSSupportsOpeningDocumentsInPlace: false
+        # Documents/Bench, where automatic backups go, shows in Files under On My iPhone.
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
         UTImportedTypeDeclarations: []
     settings:
       base:
