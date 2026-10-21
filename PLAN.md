@@ -4,8 +4,7 @@ A native SwiftUI port of [ArunNGun/Bench](https://github.com/ArunNGun/Bench) (MI
 peptide, growth hormone and anabolic protocols. It syncs through iCloud, and a macOS app that
 reads the same data is planned for later.
 
-Status as of 2026-10-21: the planning and source reading are done. **No code has been written yet.**
-This directory holds only this file.
+Status as of 2026-10-21: Phases 1–2 done, Phase 3 done, Phase 4 (calc) well under way. See section 6.
 
 ---
 
@@ -213,7 +212,35 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
 
 ## 6. Where the last session stopped
 
-- Had read in full: `types.ts`, `migrate.ts`, `format.ts`, `calc/reconstitution.ts`, `calc/barrel.ts`,
-  `calc/units.ts`, the README, `CLAUDE.md` and `document/01`, `02`, and the first part of `05`.
-- Next step: Phase 1 (scaffold), then Phase 2 (library export). Then read and port the calc modules one by
-  one, starting with `schedule.ts`, `inventory.ts`, `pk.ts` and `store.ts`.
+**Done (all committed, `./tools/test.sh` green in four time zones):**
+- `git init`, `.gitignore`, `BenchCore` Swift package (`swift-tools-version 6.0`, iOS 18 / macOS 15).
+- `tools/export-library.mjs` → `BenchCore/Sources/BenchCore/Resources/{peptides,labs}.json`
+  (50 compounds, not 49; 16 markers). `Library` loads them.
+- Model (`Model/`): all of `types.ts`. Design decisions taken while porting:
+  - String unions are `StringEnum` **structs** (raw string + static constants), so an unknown value
+    round-trips instead of failing an import. `switch` still matches the constants.
+  - Every row type is `Extensible`/`Row`: unknown JSON keys are kept in `extra` and written back
+    out (via the `Lenient<T>` coding wrapper), per row, not just at top level. This matters more here
+    than in the web app, because each row also travels through CloudKit on its own.
+  - `AppData` decodes leniently: a row that cannot be read as its type is kept in `unreadable[key]`
+    and re-exported, never dropped. Top-level unknown keys go to `AppData.extra`.
+  - `Measurement` is `BodyMeasurement` in Swift (Foundation clash); JSON is unchanged.
+  - `JSMath.swift`: `jsRound` (Math.round), `jsToFixed` (exact toFixed incl. ties away from zero),
+    `jsNumberString`, `stableSorted` (JS sort is stable), `OrderedMap` (JS Map insertion order).
+  - `LocalTime.calendar` (`@TaskLocal`, default `.autoupdatingCurrent`) is the only calendar the
+    schedule maths uses.
+- `Migrate.swift` (all of migrate.ts, idempotent; v1 `drawnMl` arrives via `extra`).
+- Calc ported **with their tests**: schedule, inventory, reconstitution, cost, units, barrel, spray,
+  tablet, phase, diluent, converter, numberField, sites, blend, pk, project, stack, pct, progress,
+  outcomes, labs, checkins, feeling, profiles. (`Tone` enum stands in for ui.tsx's Tone.)
+
+**Build/test notes:**
+- Use the Xcode toolchain (`DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`), or
+  `import Testing` fails.
+- Build outside `~/Documents` (`--scratch-path $TMPDIR/bench2-build`): iCloud-synced Documents
+  adds extended attributes and codesign of the test bundle fails. `tools/test.sh` does both.
+
+**Next:** remaining calc (custom, infer, reminders, ics, rescue, backupnag, firstBackup, document,
+dosecsv, palette, healthsync, plus `groundtruth.test.ts`), `format.ts`, `recover.ts`,
+`changelog.ts`; then Phase 1's app shell (project.yml + XcodeGen) and Phase 5 persistence
+(`store.ts`).

@@ -764,7 +764,7 @@ public struct CheckIn: Row {
     public func rating(_ id: SymptomId) -> Double? { ratings[id.rawValue] }
 }
 
-public struct Measurement: Row {
+public struct BodyMeasurement: Row {
     public var id: String
     public var profileId: String
     public var at: Millis

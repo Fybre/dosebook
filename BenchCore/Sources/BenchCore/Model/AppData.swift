@@ -4,7 +4,7 @@ import Foundation
 public struct AppData: Equatable, Sendable {
     public var version: Int = DATA_VERSION
     public var profiles: [Profile] = [DEFAULT_PROFILE]
-    public var measurements: [Measurement] = []
+    public var measurements: [BodyMeasurement] = []
     public var labs: [LabResult] = []
     public var activeProfileId: String = DEFAULT_PROFILE_ID
     public var protocols: [DoseProtocol] = []
@@ -59,7 +59,7 @@ extension AppData: Codable {
         version = raw["version"]?.numberValue.map { Int($0) } ?? 0
         profiles = rows("profiles", Profile.self)
         if fillDefaults && profiles.isEmpty { profiles = [DEFAULT_PROFILE] }
-        measurements = rows("measurements", Measurement.self)
+        measurements = rows("measurements", BodyMeasurement.self)
         labs = rows("labs", LabResult.self)
         activeProfileId = raw["activeProfileId"]?.stringValue ?? ""
         protocols = rows("protocols", DoseProtocol.self)

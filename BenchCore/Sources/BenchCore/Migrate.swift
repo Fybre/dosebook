@@ -82,7 +82,7 @@ protocol Owned {
 extension DoseProtocol: Owned { var ownerId: String? { get { profileId } set { profileId = newValue ?? "" } } }
 extension DoseLog: Owned { var ownerId: String? { get { profileId } set { profileId = newValue ?? "" } } }
 extension Vial: Owned { var ownerId: String? { get { profileId } set { profileId = newValue ?? "" } } }
-extension Measurement: Owned { var ownerId: String? { get { profileId } set { profileId = newValue ?? "" } } }
+extension BodyMeasurement: Owned { var ownerId: String? { get { profileId } set { profileId = newValue ?? "" } } }
 extension LabResult: Owned { var ownerId: String? { get { profileId } set { profileId = newValue ?? "" } } }
 extension CheckIn: Owned { var ownerId: String? { get { profileId } set { profileId = newValue ?? "" } } }
 extension Order: Owned { var ownerId: String? { get { profileId } set { profileId = newValue ?? "" } } }
