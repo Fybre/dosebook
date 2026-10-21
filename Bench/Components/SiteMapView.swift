@@ -56,13 +56,13 @@ struct SiteMapView: View {
                     Circle().strokeBorder(Color.accentColor.opacity(0.6), style: StrokeStyle(lineWidth: 1, dash: [3, 3])).frame(width: 26, height: 26)
                 }
                 Circle()
-                    .fill(isSelected && !multi ? Color.primary : (fill > 0.05 ? Color.orange.opacity(fill * 0.88) : Color(.systemBackground)))
+                    .fill(isSelected && !multi ? Color.primary : (fill > 0.05 ? Color.orange.opacity(fill * 0.88) : restedFill))
                 Circle().strokeBorder(isSelected ? (multi ? Color.accentColor : Color.primary) : (isSuggested ? Color.accentColor : (fill > 0.05 ? Color.orange : Color(.separator))),
                                       lineWidth: isSelected || isSuggested ? 2.2 : 1.4)
                 if isSelected && !multi { Image(systemName: "checkmark").font(.system(size: 8, weight: .heavy)).foregroundStyle(Color(.systemBackground)) }
                 if isSelected && multi { Circle().fill(Color.accentColor).frame(width: 8, height: 8) }
                 if !isSelected, let n = u?.recentCount, n > 0 {
-                    Text("\(n)").font(.system(size: 8, design: .monospaced)).foregroundStyle(fill > 0.5 ? Color(.systemBackground) : .secondary)
+                    Text("\(n)").font(.system(size: 8, design: .monospaced)).foregroundStyle(fill > 0.5 ? Color(.systemBackground) : .primary)
                 }
             }
             .frame(width: 16, height: 16)
@@ -124,3 +124,6 @@ struct BodyShape: Shape {
         return path
     }
 }
+
+/// A rested spot: white on the light body, a soft grey on the dark one rather than a black hole.
+private let restedFill = Color(UIColor { $0.userInterfaceStyle == .dark ? .systemGray4 : .systemBackground })

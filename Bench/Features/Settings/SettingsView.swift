@@ -30,6 +30,17 @@ struct SettingsView: View {
                 }
             } header: { Text(t("ios_sync_title")) }
 
+            Section(t("ios_appearance")) {
+                Picker(t("theme_label"), selection: setting(\.theme)) {
+                    Label(t("ios_theme_system_short"), systemImage: "circle.lefthalf.filled").tag(ThemeSetting.system)
+                    Label(t("ios_theme_light_short"), systemImage: "sun.max").tag(ThemeSetting.light)
+                    Label(t("ios_theme_dark_short"), systemImage: "moon").tag(ThemeSetting.dark)
+                }
+                .pickerStyle(.segmented)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+            }
+
             ProfilesSection()
             RemindersSection()
             HealthSection()
@@ -72,11 +83,6 @@ struct SettingsView: View {
                 Picker(t("settings_water_position"), selection: Binding(get: { settings.waterAtBottom == true }, set: { v in store.mutate { $0.settings.waterAtBottom = v } })) {
                     Text(t("settings_water_top")).tag(false)
                     Text(t("settings_water_bottom")).tag(true)
-                }
-                Picker(t("theme_label"), selection: setting(\.theme)) {
-                    Text(t("ios_theme_system")).tag(ThemeSetting.system)
-                    Text(t("theme_light")).tag(ThemeSetting.light)
-                    Text(t("theme_dark")).tag(ThemeSetting.dark)
                 }
                 Picker(t("ios_language"), selection: $langRaw) {
                     ForEach(Lang.allCases, id: \.rawValue) { Text($0.label).tag($0.rawValue) }

@@ -62,7 +62,11 @@
     "ios_back_to_top": "Back to top",
     "ios_calendar_nothing": "Nothing logged on this day.",
     "ios_prev_month": "Previous month",
-    "ios_next_month": "Next month"
+    "ios_next_month": "Next month",
+    "ios_appearance": "Appearance",
+    "ios_theme_system_short": "System",
+    "ios_theme_light_short": "Light",
+    "ios_theme_dark_short": "Dark"
   },
   "de": {
     "more": "Mehr",
@@ -127,7 +131,11 @@
     "ios_back_to_top": "Nach oben",
     "ios_calendar_nothing": "An diesem Tag nichts erfasst.",
     "ios_prev_month": "Vorheriger Monat",
-    "ios_next_month": "Nächster Monat"
+    "ios_next_month": "Nächster Monat",
+    "ios_appearance": "Darstellung",
+    "ios_theme_system_short": "System",
+    "ios_theme_light_short": "Hell",
+    "ios_theme_dark_short": "Dunkel"
   },
   "sl": {
     "more": "Več",
@@ -194,7 +202,11 @@
     "ios_back_to_top": "Na vrh",
     "ios_calendar_nothing": "Ta dan ni nič zabeleženo.",
     "ios_prev_month": "Prejšnji mesec",
-    "ios_next_month": "Naslednji mesec"
+    "ios_next_month": "Naslednji mesec",
+    "ios_appearance": "Videz",
+    "ios_theme_system_short": "Sistem",
+    "ios_theme_light_short": "Svetlo",
+    "ios_theme_dark_short": "Temno"
   },
   "pl": {
     "more": "Więcej",
@@ -261,6 +273,10 @@
     "ios_back_to_top": "Na górę",
     "ios_calendar_nothing": "Tego dnia nic nie zapisano.",
     "ios_prev_month": "Poprzedni miesiąc",
-    "ios_next_month": "Następny miesiąc"
+    "ios_next_month": "Następny miesiąc",
+    "ios_appearance": "Wygląd",
+    "ios_theme_system_short": "System",
+    "ios_theme_light_short": "Jasny",
+    "ios_theme_dark_short": "Ciemny"
   }
 }

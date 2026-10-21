@@ -17,7 +17,9 @@ struct BenchApp: App {
             RootView()
                 .environment(store)
                 .tint(.accentColor)
-                .preferredColorScheme(store.data.settings.theme.colorScheme)
+                // Applied to the windows rather than with preferredColorScheme, which
+                // does not reliably hand control back to the system.
+                .onChange(of: store.data.settings.theme, initial: true) { _, theme in theme.apply() }
                 .onReceive(NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)) { _ in
                     store.reload()
                 }
@@ -44,6 +46,7 @@ enum Bootstrap {
             let store = AppStore(records: try! RecordStore(location: .memory), defaults: UserDefaults(suiteName: "bench-demo")!, rescueURL: nil)
             DemoData.seed(store)
             if args.contains("-demoLarge") { DemoData.seedLarge(store) }
+            if let i = args.firstIndex(of: "-theme"), i + 1 < args.count { store.mutate { $0.settings.theme = ThemeSetting(rawValue: args[i + 1]) } }
             return store
         }
         #endif
@@ -59,11 +62,18 @@ enum Bootstrap {
 }
 
 extension ThemeSetting {
-    var colorScheme: ColorScheme? {
+    var interfaceStyle: UIUserInterfaceStyle {
         switch self {
         case .dark: .dark
         case .light: .light
-        default: nil
+        default: .unspecified
+        }
+    }
+
+    /// Every window, so sheets and popovers follow too.
+    @MainActor func apply() {
+        for case let scene as UIWindowScene in UIApplication.shared.connectedScenes {
+            for window in scene.windows { window.overrideUserInterfaceStyle = interfaceStyle }
         }
     }
 }
