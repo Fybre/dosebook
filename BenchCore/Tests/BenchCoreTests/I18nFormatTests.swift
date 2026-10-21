@@ -133,3 +133,24 @@ import Testing
         #expect(defaultCurrency(Locale(identifier: "en_001")) == "AUD")
     }
 }
+
+@Suite struct AppStringsTests {
+    /// Every `t("key")` in the app resolves, so a key renamed or dropped upstream
+    /// shows up here rather than as raw text on a screen.
+    @Test func everyKeyTheAppUsesExists() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let app = root.appendingPathComponent("Bench")
+        let pattern = try NSRegularExpression(pattern: #"\bt\("([a-z0-9_]+)""#)
+        var missing: [String] = [], seen = 0
+        for case let url as URL in FileManager.default.enumerator(at: app, includingPropertiesForKeys: nil)! where url.pathExtension == "swift" {
+            let text = try String(contentsOf: url, encoding: .utf8)
+            for m in pattern.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+                let key = String(text[Range(m.range(at: 1), in: text)!])
+                seen += 1
+                if !I18n.hasKey(key) { missing.append("\(url.lastPathComponent): \(key)") }
+            }
+        }
+        #expect(seen > 500, "only \(seen) keys found; is the app folder where the test expects?")
+        #expect(missing.isEmpty, "\(missing)")
+    }
+}

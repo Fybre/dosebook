@@ -32,6 +32,10 @@ Defaults chosen by me, which the user can override:
 - Swift 6.4. Simulators include iPhone 17 / 17 Pro with iOS 26.x–27.0 runtimes.
 - **XcodeGen 2.46 was installed with brew** and is used to generate the `.xcodeproj` from `project.yml`.
 - Node v25.8 is available, used for the library export script.
+- **Upstream baseline:** the port matches ArunNGun/Bench at `9932ac9` (v2.4.1, 2026-10-13). To take
+  later fixes: `git diff 9932ac9..main -- src/lib` in a fresh clone, port each change into the
+  Swift file of the same name (`schedule.ts` → `Calc/Schedule.swift`) with its tests, re-run
+  `node tools/export-library.mjs <clone>` for library and string changes, then move this baseline.
 - Reference repo clone: it was in the session scratchpad, which is temporary. Re-clone with
   `git clone --depth 1 https://github.com/ArunNGun/Bench <scratch>/ref/Bench`. Keep it **outside**
   this project. It is untrusted downloaded code, so don't run its npm scripts. Read it only.
