@@ -6,15 +6,21 @@ struct RootView: View {
     @Environment(AppStore.self) private var store
     @AppStorage("bench.tab") private var tab = "now"
     @AppStorage("bench.lang") private var langRaw = I18n.lang.rawValue
+    @State private var reselects: [String: Int] = [:]
 
     var body: some View {
-        TabView(selection: $tab) {
+        TabView(selection: Binding(get: { tab }, set: { next in
+            // Choosing the tab already showing is a request to go back to its top.
+            if next == tab { reselects[next, default: 0] += 1 }
+            tab = next
+        })) {
             Tab(t("nav_now"), systemImage: "waveform.path.ecg", value: "now") { NavigationStack { TodayView() } }
             Tab(t("nav_plan"), systemImage: "checklist", value: "plan") { NavigationStack { PlanView() } }
             Tab(t("nav_log"), systemImage: "book.pages", value: "log") { NavigationStack { LogView() } }
             Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView() } }
             Tab(t("more"), systemImage: "ellipsis.circle", value: "more") { MoreStack() }
         }
+        .environment(\.tabReselects, reselects)
         // Strings are read when views build, so a new language rebuilds the tree.
         .id(langRaw)
         .onChange(of: langRaw) { _, raw in if let l = Lang(rawValue: raw) { I18n.lang = l } }
@@ -69,5 +75,14 @@ private struct MoreStack: View {
                 }
             }
         #endif
+    }
+}
+
+private struct TabReselectsKey: EnvironmentKey { static let defaultValue: [String: Int] = [:] }
+extension EnvironmentValues {
+    /// How many times each tab has been tapped while already selected.
+    var tabReselects: [String: Int] {
+        get { self[TabReselectsKey.self] }
+        set { self[TabReselectsKey.self] = newValue }
     }
 }

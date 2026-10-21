@@ -98,6 +98,7 @@ public struct DiaryDay<T> {
     public var day: Millis
     public var entries: [T]
     public var checkIn: CheckIn?
+    public init(day: Millis, entries: [T], checkIn: CheckIn?) { self.day = day; self.entries = entries; self.checkIn = checkIn }
 }
 
 /// A day at a time: what was taken and how the day went, newest first. Days

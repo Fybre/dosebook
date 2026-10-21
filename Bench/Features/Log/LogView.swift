@@ -5,12 +5,18 @@ import BenchStore
 /// Every dose, a day at a time, with how each day went beside the doses taken on it.
 struct LogView: View {
     @Environment(AppStore.self) private var store
+    @Environment(\.tabReselects) private var reselects
+    @AppStorage("bench.logMode") private var mode = Mode.list
     @State private var filter = ""
     @State private var editing: LogEdit?
     @State private var ratingDay: RatingDay?
     @State private var pickingDay = false
     @State private var now = nowMillis()
+    @State private var month = startOfLocalMonth(nowMillis())
+    @State private var selectedDay: Millis? = startOfLocalDay(nowMillis())
+    @State private var farDown = false
 
+    enum Mode: String { case list, calendar }
     struct LogEdit: Identifiable { var id: String; var logId: String? }
     struct RatingDay: Identifiable { var id: Millis }
 
@@ -21,61 +27,80 @@ struct LogView: View {
         let shown = filter.isEmpty ? logs : logs.filter { $0.peptideId == filter }
         let palette = assignColors(colorSubjects(mine.protocols.filter(\.active), resolve: { data.peptide($0) }, nowMs: now))
         // A check-in belongs to a day and not to a compound, so a filtered list leaves them out.
-        let days = diaryDays(shown, at: \.at, filter.isEmpty ? mine.checkIns : [])
+        let checkIns = filter.isEmpty ? mine.checkIns : []
+        let days = diaryDays(shown, at: \.at, checkIns)
         ScrollViewReader { proxy in
         List {
-            if !logs.isEmpty { Section { stats(mine) } }
-
-            if logs.contains(where: { $0.site != nil && routeHasSite($0.route) }) {
-                Section(t("log_site_rotation")) {
-                    SiteMapView(logs: shown, nowMs: now).frame(maxWidth: .infinity)
-                    let overused = overusedSites(shown, now)
-                    if let first = overused.first {
-                        Text("\(t("log_overused_line", ["sites": .string(overused.map { siteLabel($0.site) }.joined(separator: ", ")), "n": .number(Double(first.recentCount))])) \(t("log_overused_why"))")
-                            .font(.footnote).foregroundStyle(Tone.tangerine.color)
-                    }
+            Section {
+                Picker(t("ios_log_view"), selection: $mode) {
+                    Label(t("ios_log_list"), systemImage: "list.bullet").tag(Mode.list)
+                    Label(t("ios_log_calendar"), systemImage: "calendar").tag(Mode.calendar)
                 }
+                .pickerStyle(.segmented)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
             }
+            .id("top")
 
             let peptideIds = logs.map(\.peptideId).reduce(into: [String]()) { if !$0.contains($1) { $0.append($1) } }
-            if peptideIds.count > 1 {
+            if mode == .calendar {
+                if peptideIds.count > 1 { filterSection(data, peptideIds) }
                 Section {
-                    Picker(t("log_filter_by_peptide"), selection: $filter) {
-                        Text(t("log_all_peptides")).tag("")
-                        ForEach(peptideIds, id: \.self) { Text(data.peptide($0)?.name ?? $0).tag($0) }
-                    }
+                    LogCalendarView(logs: shown, checkIns: checkIns, palette: palette, weekStartsOn: data.settings.weekStartsOn,
+                                    now: now, month: $month, selected: $selectedDay)
                 }
-            }
-
-            if days.isEmpty {
-                ContentUnavailableView {
-                    Label(t("log_no_logs"), systemImage: "list.bullet.rectangle")
-                } description: {
-                    Text(t("log_empty_desc"))
-                } actions: {
-                    Button(t("log_first_dose_cta")) { editing = LogEdit(id: "new", logId: nil) }.buttonStyle(.borderedProminent)
+                if let day = selectedDay {
+                    let entry = days.first { $0.day == day } ?? DiaryDay(day: day, entries: [], checkIn: nil)
+                    daySection(entry, data: data, palette: palette)
                 }
             } else {
-                Color.clear.frame(height: 0).listRowBackground(Color.clear).id("diary")
-                ForEach(days, id: \.day) { day in
-                    Section(day.day == startOfLocalDay(now) ? t("checkin_today") : "\(formatWeekday(day.day)), \(formatDate(day.day, nowMs: now))") {
-                        ForEach(day.entries) { l in
-                            Button { editing = LogEdit(id: l.id, logId: l.id) } label: { LogRow(log: l, name: data.peptide(l.peptideId)?.name ?? l.peptideId, tone: doseColor(palette, protocolId: l.protocolId, peptideId: l.peptideId)) }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel(t("log_edit_dose", ["when": .string(formatDateTime(l.at, nowMs: now))]))
-                        }
-                        if let c = day.checkIn {
-                            Button { ratingDay = RatingDay(id: day.day) } label: { DayRatingRow(checkIn: c) }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel(t("log_edit_day", ["date": .string(formatDate(day.day, nowMs: now))]))
-                        } else {
-                            Button(t("log_rate_this_day")) { ratingDay = RatingDay(id: day.day) }
-                                .font(.footnote).foregroundStyle(.secondary)
+                if !logs.isEmpty { Section { stats(mine) } }
+
+                if logs.contains(where: { $0.site != nil && routeHasSite($0.route) }) {
+                    Section(t("log_site_rotation")) {
+                        SiteMapView(logs: shown, nowMs: now).frame(maxWidth: .infinity)
+                        let overused = overusedSites(shown, now)
+                        if let first = overused.first {
+                            Text("\(t("log_overused_line", ["sites": .string(overused.map { siteLabel($0.site) }.joined(separator: ", ")), "n": .number(Double(first.recentCount))])) \(t("log_overused_why"))")
+                                .font(.footnote).foregroundStyle(Tone.tangerine.color)
                         }
                     }
+                }
+
+                if peptideIds.count > 1 { filterSection(data, peptideIds) }
+
+                if days.isEmpty {
+                    ContentUnavailableView {
+                        Label(t("log_no_logs"), systemImage: "list.bullet.rectangle")
+                    } description: {
+                        Text(t("log_empty_desc"))
+                    } actions: {
+                        Button(t("log_first_dose_cta")) { editing = LogEdit(id: "new", logId: nil) }.buttonStyle(.borderedProminent)
+                    }
+                } else {
+                    Color.clear.frame(height: 0).listRowBackground(Color.clear).id("diary")
+                    ForEach(days, id: \.day) { day in daySection(day, data: data, palette: palette).id("day-\(Int(day.day))") }
                 }
             }
         }
+        .onScrollGeometryChange(for: Bool.self) { $0.contentOffset.y > 1500 } action: { _, far in
+            withAnimation(.easeOut(duration: 0.2)) { farDown = far }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            if farDown && mode == .list {
+                Button { withAnimation { proxy.scrollTo("top", anchor: .top) } } label: {
+                    Image(systemName: "arrow.up").font(.headline).padding(14)
+                }
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.circle)
+                .shadow(radius: 4, y: 2)
+                .padding(.trailing, 20).padding(.bottom, 16)
+                .accessibilityLabel(t("ios_back_to_top"))
+                .transition(.scale.combined(with: .opacity))
+            }
+        }
+        // Tapping the Log tab while already on it goes back to the top.
+        .onChange(of: reselects["log"] ?? 0) { _, _ in withAnimation { proxy.scrollTo("top", anchor: .top) } }
         .debugAnchor(proxy)
         }
         .navigationTitle(t("log_title"))
@@ -98,6 +123,37 @@ struct LogView: View {
                 }
             }
             .presentationDetents([.medium, .large])
+        }
+    }
+
+    private func filterSection(_ data: AppData, _ peptideIds: [String]) -> some View {
+        Section {
+            Picker(t("log_filter_by_peptide"), selection: $filter) {
+                Text(t("log_all_peptides")).tag("")
+                ForEach(peptideIds, id: \.self) { Text(data.peptide($0)?.name ?? $0).tag($0) }
+            }
+        }
+    }
+
+    /// One day: its doses, then how it went. Shared by the list and the calendar.
+    private func daySection(_ day: DiaryDay<DoseLog>, data: AppData, palette: Palette) -> some View {
+        Section(day.day == startOfLocalDay(now) ? t("checkin_today") : "\(formatWeekday(day.day)), \(formatDate(day.day, nowMs: now))") {
+            if day.entries.isEmpty && day.checkIn == nil && mode == .calendar {
+                Text(t("ios_calendar_nothing")).font(.footnote).foregroundStyle(.secondary)
+            }
+            ForEach(day.entries) { l in
+                Button { editing = LogEdit(id: l.id, logId: l.id) } label: { LogRow(log: l, name: data.peptide(l.peptideId)?.name ?? l.peptideId, tone: doseColor(palette, protocolId: l.protocolId, peptideId: l.peptideId)) }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(t("log_edit_dose", ["when": .string(formatDateTime(l.at, nowMs: now))]))
+            }
+            if let c = day.checkIn {
+                Button { ratingDay = RatingDay(id: day.day) } label: { DayRatingRow(checkIn: c) }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(t("log_edit_day", ["date": .string(formatDate(day.day, nowMs: now))]))
+            } else if ratableDay(day.day, nowMs: now) != nil {
+                Button(t("log_rate_this_day")) { ratingDay = RatingDay(id: day.day) }
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
         }
     }
 

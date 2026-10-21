@@ -55,7 +55,14 @@
     "ios_ccf_split_hint": "You log what you draw from the vial, and it is split between the parts by how much of each the vial holds. Each part is drawn on its own half-life.",
     "ios_ccf_each_hint": "The dose you log is the amount of each part, as with CagriSema. Amounts per vial are optional in this mode.",
     "ios_ccf_vial_sum": "Leave the vial size empty and it is the sum of the parts: {mg} mg.",
-    "ios_blend_curve_note": "One {dose} dose of the blend, split into its parts. Each line is that part on its own half-life, as a share of its own peak."
+    "ios_blend_curve_note": "One {dose} dose of the blend, split into its parts. Each line is that part on its own half-life, as a share of its own peak.",
+    "ios_log_view": "View",
+    "ios_log_list": "List",
+    "ios_log_calendar": "Calendar",
+    "ios_back_to_top": "Back to top",
+    "ios_calendar_nothing": "Nothing logged on this day.",
+    "ios_prev_month": "Previous month",
+    "ios_next_month": "Next month"
   },
   "de": {
     "more": "Mehr",
@@ -113,7 +120,14 @@
     "ios_ccf_split_hint": "Du erfasst, was du aus der Ampulle aufziehst, und es wird nach dem Anteil jedes Teils in der Ampulle aufgeteilt. Jeder Teil wird mit seiner eigenen Halbwertszeit gezeichnet.",
     "ios_ccf_each_hint": "Die erfasste Dosis ist die Menge jedes Teils, wie bei CagriSema. Mengen pro Ampulle sind hier optional.",
     "ios_ccf_vial_sum": "Lässt du die Ampullengröße leer, ist sie die Summe der Teile: {mg} mg.",
-    "ios_blend_curve_note": "Eine Dosis von {dose} der Mischung, aufgeteilt in ihre Teile. Jede Linie ist ein Teil mit seiner eigenen Halbwertszeit, als Anteil seines eigenen Höchstwerts."
+    "ios_blend_curve_note": "Eine Dosis von {dose} der Mischung, aufgeteilt in ihre Teile. Jede Linie ist ein Teil mit seiner eigenen Halbwertszeit, als Anteil seines eigenen Höchstwerts.",
+    "ios_log_view": "Ansicht",
+    "ios_log_list": "Liste",
+    "ios_log_calendar": "Kalender",
+    "ios_back_to_top": "Nach oben",
+    "ios_calendar_nothing": "An diesem Tag nichts erfasst.",
+    "ios_prev_month": "Vorheriger Monat",
+    "ios_next_month": "Nächster Monat"
   },
   "sl": {
     "more": "Več",
@@ -173,7 +187,14 @@
     "ios_ccf_split_hint": "Zabeležiš, kar izvlečeš iz viale, in to se razdeli med dele glede na to, koliko vsakega viala vsebuje. Vsak del je narisan s svojo razpolovno dobo.",
     "ios_ccf_each_hint": "Zabeleženi odmerek je količina vsakega dela, kot pri CagriSema. Količine na vialo so v tem načinu neobvezne.",
     "ios_ccf_vial_sum": "Če velikost viale pustiš prazno, je vsota delov: {mg} mg.",
-    "ios_blend_curve_note": "En odmerek mešanice {dose}, razdeljen na dele. Vsaka črta je del s svojo razpolovno dobo, kot delež lastnega vrha."
+    "ios_blend_curve_note": "En odmerek mešanice {dose}, razdeljen na dele. Vsaka črta je del s svojo razpolovno dobo, kot delež lastnega vrha.",
+    "ios_log_view": "Pogled",
+    "ios_log_list": "Seznam",
+    "ios_log_calendar": "Koledar",
+    "ios_back_to_top": "Na vrh",
+    "ios_calendar_nothing": "Ta dan ni nič zabeleženo.",
+    "ios_prev_month": "Prejšnji mesec",
+    "ios_next_month": "Naslednji mesec"
   },
   "pl": {
     "more": "Więcej",
@@ -233,6 +254,13 @@
     "ios_ccf_split_hint": "Zapisujesz to, co pobierasz z fiolki, a dawka jest dzielona między części według tego, ile każdej zawiera fiolka. Każda część jest rysowana z własnym okresem półtrwania.",
     "ios_ccf_each_hint": "Zapisana dawka to ilość każdej części, jak przy CagriSema. Ilości na fiolkę są w tym trybie opcjonalne.",
     "ios_ccf_vial_sum": "Zostaw rozmiar fiolki pusty, a będzie sumą części: {mg} mg.",
-    "ios_blend_curve_note": "Jedna dawka mieszanki {dose}, podzielona na części. Każda linia to część z własnym okresem półtrwania, jako odsetek własnego szczytu."
+    "ios_blend_curve_note": "Jedna dawka mieszanki {dose}, podzielona na części. Każda linia to część z własnym okresem półtrwania, jako odsetek własnego szczytu.",
+    "ios_log_view": "Widok",
+    "ios_log_list": "Lista",
+    "ios_log_calendar": "Kalendarz",
+    "ios_back_to_top": "Na górę",
+    "ios_calendar_nothing": "Tego dnia nic nie zapisano.",
+    "ios_prev_month": "Poprzedni miesiąc",
+    "ios_next_month": "Następny miesiąc"
   }
 }
