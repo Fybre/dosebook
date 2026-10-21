@@ -6,5 +6,5 @@ export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Develope
 cd "$(dirname "$0")/../BenchCore"
 for tz in America/New_York Europe/London Asia/Kolkata Australia/Sydney; do
   echo "== TZ=$tz"
-  TZ=$tz swift test --scratch-path "${TMPDIR:-/tmp}/bench2-build" "$@" 2>&1 | grep -E "recorded an issue|Test run with" | tail -40
+  TZ=$tz swift test --scratch-path "${TMPDIR:-/tmp}/bench2-build" "$@" 2>&1 | sed "s/\x1b\[[0-9;]*m//g" | grep -E "[.]swift:[0-9]+:[0-9]+: error|recorded an issue|Test run with" | tail -40
 done
