@@ -32,6 +32,7 @@ struct SettingsView: View {
 
             ProfilesSection()
             RemindersSection()
+            HealthSection()
 
             Section {
                 Text(t("ios_data_note")).font(.footnote).foregroundStyle(.secondary)
@@ -312,6 +313,71 @@ private struct RemindersSection: View {
             result = t("ios_calendar_ready", ["doses": .string(t("count_doses", ["n": .number(Double(count))]))])
         } catch {
             result = t("reminders_nothing_to_export")
+        }
+    }
+}
+
+// MARK: - Apple Health
+
+private struct HealthSection: View {
+    @Environment(AppStore.self) private var store
+    @Environment(\.openURL) private var openURL
+    @State private var state: HealthKitAdapter.Availability?
+    @State private var busy = false
+    @State private var result: String?
+
+    var body: some View {
+        Section {
+            RichText(t("ios_health_desc")).font(.footnote).foregroundStyle(.secondary)
+            switch state {
+            case nil: Text(t("settings_checking")).font(.footnote).foregroundStyle(.secondary)
+            case .unavailable?: CalloutText(t("ios_health_unavailable")).font(.footnote).callout(.tangerine)
+            case .notAsked?:
+                CalloutText(t("ios_health_not_asked")).font(.footnote).callout(.tangerine)
+                Button { Task { await connect() } } label: { Label(busy ? t("settings_waiting") : t("ios_health_allow"), systemImage: "heart.text.square") }
+                    .disabled(busy)
+            case .asked?:
+                CalloutText(t("ios_health_asked")).font(.footnote).callout(.sky)
+                Button { Task { await sync() } } label: { Label(busy ? t("settings_syncing") : t("settings_sync_now"), systemImage: "arrow.triangle.2.circlepath") }
+                    .disabled(busy)
+                Text(t("settings_read_only")).font(.caption).foregroundStyle(.secondary)
+            }
+            if state != nil && state != .unavailable, let url = URL(string: "x-apple-health://") {
+                Button { openURL(url) } label: { Label(t("ios_health_title"), systemImage: "arrow.up.forward.app") }
+            }
+            if let result { Text(result).font(.footnote.weight(.medium)) }
+        } header: { Text(t("ios_health_title")) }
+        .task { state = await HealthKitAdapter.availability() }
+    }
+
+    private func connect() async {
+        busy = true
+        defer { busy = false }
+        _ = await HealthKitAdapter.requestPermissions()
+        state = await HealthKitAdapter.availability()
+        if state == .asked { await sync() }
+    }
+
+    /// Weight since the newest stored reading, or the last year; then the month's vitals.
+    private func sync() async {
+        busy = true
+        result = nil
+        defer { busy = false }
+        let measurements = store.data.mine.measurements
+        let newest = measurements.map(\.at).max() ?? 0
+        let since = newest > 0 ? newest : nowMillis() - 365 * DAY_MS
+        do {
+            let plan = planPull(measurements, try await HealthKitAdapter.readWeight(since: since))
+            store.mutate { d in
+                for s in plan.toAdd {
+                    d.addMeasurement(BodyMeasurement(id: "", profileId: "", at: s.at, weightKg: s.weightKg, source: .healthConnect, externalId: s.externalId))
+                }
+                for l in plan.toLink { d.updateMeasurement(l.id) { $0.externalId = l.externalId } }
+            }
+            await HealthKitAdapter.pullVitals(into: store)
+            result = describeSync(summarise(plan))
+        } catch {
+            result = t("ios_health_failed")
         }
     }
 }

@@ -190,12 +190,14 @@ struct WeightEntry: View {
     @Environment(\.dismiss) private var dismiss
     @State private var value: Double?
     @State private var at = Date()
+    /// The newest reading from Apple Health, offered as the starting value.
+    @State private var prefilled: HealthSample?
 
     var body: some View {
         let unit = store.data.settings.weightUnit
         Form {
-            OptionalNumberRow(label: t("weight_title"), value: $value, suffix: unit.rawValue)
-            DatePicker(t("weight_when"), selection: $at)
+            OptionalNumberRow(label: t("weight_title"), value: Binding(get: { value }, set: { value = $0; prefilled = nil }), suffix: unit.rawValue)
+            DatePicker(t("weight_when"), selection: Binding(get: { at }, set: { at = $0; prefilled = nil }))
         }
         .navigationTitle(t("weight_title")).navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -203,10 +205,24 @@ struct WeightEntry: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button(t("save")) {
                     guard let v = value, v > 0 else { return }
-                    store.mutate { $0.addMeasurement(BodyMeasurement(id: "", profileId: "", at: at.millis, weightKg: fromDisplayWeight(v, unit), source: .manual)) }
+                    if let p = prefilled {
+                        // Untouched: the platform's exact value and record id, not the rounded one shown.
+                        store.mutate { $0.addMeasurement(BodyMeasurement(id: "", profileId: "", at: p.at, weightKg: p.weightKg, source: .healthConnect, externalId: p.externalId)) }
+                    } else {
+                        store.mutate { $0.addMeasurement(BodyMeasurement(id: "", profileId: "", at: at.millis, weightKg: fromDisplayWeight(v, unit), source: .manual)) }
+                    }
                     dismiss()
                 }.disabled((value ?? 0) <= 0)
             }
+        }
+        .task {
+            guard await HealthKitAdapter.availability() == .asked,
+                  let sample = newestSample((try? await HealthKitAdapter.readWeight(since: nowMillis() - 30 * DAY_MS)) ?? []),
+                  value == nil,
+                  !store.data.mine.measurements.contains(where: { $0.externalId == sample.externalId }) else { return }
+            value = jsRound(toDisplayWeight(sample.weightKg, unit) * 10) / 10
+            at = Date(millis: sample.at)
+            prefilled = sample
         }
     }
 }
@@ -296,6 +312,8 @@ struct CheckInCard: View {
         }
         .card()
         .sheet(isPresented: $editing) { NavigationStack { CheckInSheet(dayMs: now) } }
+        // Sleep and resting heart rate from Apple Health, onto each day's vitals.
+        .task(id: startOfLocalDay(now)) { await HealthKitAdapter.pullVitals(into: store) }
     }
 }
 
