@@ -177,3 +177,27 @@ public func document(from envelopes: [Envelope], activeProfileId: String?) -> Ap
     obj["version"] = .number(Double(DATA_VERSION))
     return migrateAppData(.object(obj))
 }
+
+private func aligned<T: Row>(_ next: [T], to prev: [T]) -> [T] {
+    var position: [String: Int] = [:]
+    for (i, r) in prev.enumerated() where position[r.id] == nil { position[r.id] = i }
+    let known = next.filter { position[$0.id] != nil }.sorted { position[$0.id]! < position[$1.id]! }
+    return known + next.filter { position[$0.id] == nil }
+}
+
+/// Keep rows in the order this device already shows them, with new rows after.
+///
+/// Storage has no order, so a reload rebuilds collections in id order. Without
+/// this, a sync arriving from another device would reshuffle protocols, and
+/// with them the colours every screen hands out by position.
+public func preservingOrder(_ next: AppData, from prev: AppData) -> AppData {
+    var d = next
+    d.profiles = aligned(next.profiles, to: prev.profiles)
+    d.protocols = aligned(next.protocols, to: prev.protocols)
+    d.vials = aligned(next.vials, to: prev.vials)
+    d.customPeptides = aligned(next.customPeptides, to: prev.customPeptides)
+    d.orders = aligned(next.orders, to: prev.orders)
+    d.diluents = aligned(next.diluents, to: prev.diluents)
+    // Logs, measurements, labs, check-ins and notes are put in date order by migration.
+    return d
+}

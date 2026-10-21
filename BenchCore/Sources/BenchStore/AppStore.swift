@@ -64,7 +64,7 @@ public final class AppStore {
     /// Re-read after a change arrived from another device.
     public func reload() {
         do {
-            let next = document(from: try records.loadEnvelopes(), activeProfileId: data.activeProfileId)
+            let next = preservingOrder(document(from: try records.loadEnvelopes(), activeProfileId: data.activeProfileId), from: data)
             guard next != data else { return }
             keepRescue(previous: data, next: next)
             data = next

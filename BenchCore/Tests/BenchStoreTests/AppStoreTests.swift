@@ -72,3 +72,29 @@ private func makeStore() throws -> (AppStore, RecordStore, URL) {
         #expect(store.data.logs.count == 1)
     }
 }
+
+@MainActor @Suite struct ReloadOrderTests {
+    @Test func reloadKeepsProtocolOrder() throws {
+        let (store, records, _) = try makeStoreForOrder()
+        for name in ["zeta", "alpha", "mid"] {
+            store.mutate { $0.addProtocol(DoseProtocol(id: "", profileId: "", peptideId: "bpc-157", name: name, startedAt: 0, doseMcg: 1, route: .subcutaneous, schedule: Schedule(kind: .daily))) }
+        }
+        // Force distinct, out-of-order ids as another device's import would have.
+        var d = store.data
+        let ids = ["zz", "aa", "mm"]
+        for i in d.protocols.indices { d.protocols[i].id = ids[i] }
+        try records.apply(envelopeDiff(from: store.data, to: d))
+        store.reload()
+        let first = store.data.protocols.map(\.name)
+        var other = store.data
+        other.addLog(DoseLog(id: "", profileId: "", peptideId: "kpv", at: 5, doseMcg: 1, route: .subcutaneous))
+        try records.apply(envelopeDiff(from: store.data, to: other))
+        store.reload()
+        #expect(store.data.protocols.map(\.name) == first)
+    }
+
+    private func makeStoreForOrder() throws -> (AppStore, RecordStore, Void) {
+        let records = try RecordStore(location: .memory)
+        return (AppStore(records: records, defaults: UserDefaults(suiteName: "o-\(UUID().uuidString)")!, rescueURL: nil), records, ())
+    }
+}

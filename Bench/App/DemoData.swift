@@ -49,3 +49,21 @@ enum DemoData {
     }
 }
 #endif
+
+import SwiftUI
+
+extension View {
+    /// Debug builds: launch with `-anchor <id>` to scroll a screen to a section for screenshots.
+    func debugAnchor(_ proxy: ScrollViewProxy) -> some View {
+        #if DEBUG
+        onAppear {
+            let args = ProcessInfo.processInfo.arguments
+            if let i = args.firstIndex(of: "-anchor"), i + 1 < args.count {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { proxy.scrollTo(args[i + 1], anchor: .top) }
+            }
+        }
+        #else
+        self
+        #endif
+    }
+}
