@@ -46,6 +46,12 @@ enum Bootstrap {
             let store = AppStore(records: try! RecordStore(location: .memory), defaults: UserDefaults(suiteName: "bench-demo")!, rescueURL: nil)
             DemoData.seed(store)
             if args.contains("-demoLarge") { DemoData.seedLarge(store) }
+            if args.contains("-demoSameCompound") {
+                // A second protocol for a compound already running, as in upstream issue #9.
+                store.mutate { _ = $0.addProtocol(DoseProtocol(id: "", profileId: "", peptideId: "bpc-157", name: "BPC-157 evening top-up",
+                                                               startedAt: startOfLocalDay(nowMillis() - 3 * DAY_MS), doseMcg: 500, route: .subcutaneous,
+                                                               schedule: Schedule(kind: .daily, timeOfDay: "21:00"))) }
+            }
             if let i = args.firstIndex(of: "-theme"), i + 1 < args.count { store.mutate { $0.settings.theme = ThemeSetting(rawValue: args[i + 1]) } }
             return store
         }

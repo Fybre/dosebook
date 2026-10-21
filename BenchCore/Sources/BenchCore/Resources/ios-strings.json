@@ -73,7 +73,8 @@
     "ios_day_due": "Due later",
     "ios_day_unplanned": "Also logged",
     "ios_day_rest": "Nothing was scheduled this day.",
-    "ios_day_summary": "{taken} of {owed} logged"
+    "ios_day_summary": "{taken} of {owed} logged",
+    "ios_plan_weeks_on_hint": "Weeks on alone runs the plan for that long and then stops. Add weeks off to repeat on and off. Leave both at 0 to run continuously."
   },
   "de": {
     "more": "Mehr",
@@ -149,7 +150,8 @@
     "ios_day_due": "Später fällig",
     "ios_day_unplanned": "Außerdem erfasst",
     "ios_day_rest": "An diesem Tag war nichts geplant.",
-    "ios_day_summary": "{taken} von {owed} erfasst"
+    "ios_day_summary": "{taken} von {owed} erfasst",
+    "ios_plan_weeks_on_hint": "Nur „Wochen an“ lässt den Plan so lange laufen und dann enden. Mit „Wochen aus“ wiederholt er sich im Wechsel. Lass beide auf 0, um ohne Ende zu laufen."
   },
   "sl": {
     "more": "Več",
@@ -227,7 +229,8 @@
     "ios_day_due": "Na vrsti kasneje",
     "ios_day_unplanned": "Zabeleženo tudi",
     "ios_day_rest": "Ta dan ni bilo nič načrtovano.",
-    "ios_day_summary": "{taken} od {owed} zabeleženih"
+    "ios_day_summary": "{taken} od {owed} zabeleženih",
+    "ios_plan_weeks_on_hint": "Samo tedni vklopa pomenijo, da načrt teče toliko časa in se nato ustavi. Dodaj tedne premora za izmenično ponavljanje. Pusti oboje na 0 za neprekinjen načrt."
   },
   "pl": {
     "more": "Więcej",
@@ -305,6 +308,7 @@
     "ios_day_due": "Później",
     "ios_day_unplanned": "Zapisano również",
     "ios_day_rest": "Tego dnia nic nie zaplanowano.",
-    "ios_day_summary": "{taken} z {owed} zapisanych"
+    "ios_day_summary": "{taken} z {owed} zapisanych",
+    "ios_plan_weeks_on_hint": "Same tygodnie stosowania oznaczają, że plan trwa tyle czasu i się kończy. Dodaj tygodnie przerwy, aby powtarzać cykl. Zostaw oba na 0, aby plan trwał bez końca."
   }
 }

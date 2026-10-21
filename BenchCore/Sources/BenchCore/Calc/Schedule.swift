@@ -105,12 +105,15 @@ public func dosesPerDoseDay(_ schedule: Schedule) -> Int {
 }
 
 /// Whether a cycling protocol is in an "on" week. No cycle means always on.
+/// Weeks on with no weeks off is a course: it runs that long and then stops,
+/// rather than starting over (upstream issue #11, which the original still has).
 public func isOnCycle(_ schedule: Schedule, _ startedAt: Millis, _ dayMs: Millis) -> Bool {
     let on = schedule.cycleWeeksOn ?? 0
     let off = schedule.cycleWeeksOff ?? 0
-    if on <= 0 || off <= 0 { return true }
+    if on <= 0 { return true }
     let days = daysBetween(startedAt, dayMs)
     if days < 0 { return false }
+    if off <= 0 { return days < on * 7 }
     let period = (on + off) * 7
     return days.truncatingRemainder(dividingBy: period) < on * 7
 }

@@ -93,6 +93,19 @@ import Testing
         #expect(isOnCycle(s, start, addLocalDays(start, 42)))
     }
 
+    /// Upstream issue #11: weeks on alone is a course that ends, not a cycle that restarts.
+    @Test func weeksOnAloneIsACourse() {
+        let weekly = Schedule(kind: .intervalDays, intervalDays: 7, timeOfDay: "09:00", cycleWeeksOn: 4)
+        let doses = protocolDoseTimesBetween(makeProtocol(startedAt: start, schedule: weekly), start, addLocalDays(start, 120))
+        #expect(doses.count == 4)
+        #expect(doses.last.map { startOfLocalDay($0) } == addLocalDays(start, 21))
+        let daily = Schedule(kind: .daily, cycleWeeksOn: 2, cycleWeeksOff: 0)
+        #expect(isOnCycle(daily, start, addLocalDays(start, 13)))
+        #expect(!isOnCycle(daily, start, addLocalDays(start, 14)))
+        #expect(!isOnCycle(daily, start, addLocalDays(start, 300)))
+        #expect(!isOnCycle(daily, start, addLocalDays(start, -1)))
+    }
+
     @Test func suppressesOffWeek() {
         let s = Schedule(kind: .daily, cycleWeeksOn: 1, cycleWeeksOff: 1)
         #expect(isDoseDay(s, start, addLocalDays(start, 3)))

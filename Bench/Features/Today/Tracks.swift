@@ -62,7 +62,15 @@ enum TodayModel {
 
     static func series(_ tracks: [Track], palette: Palette) -> [PkSeries] {
         var out: [PkSeries] = []
+        // One compound in the body is one curve, however many protocols run it.
+        // Each track's doses are already every dose of its compound, so a second
+        // protocol for the same one would only draw the same total again
+        // (upstream issue #9, which the original still has).
+        var drawn = Set<String>()
         for track in tracks {
+            if track.blendParts.isEmpty {
+                guard drawn.insert(track.protocol_.peptideId).inserted else { continue }
+            }
             let parts = modellableComponents(track.blendParts)
             if !parts.isEmpty {
                 for part in parts {

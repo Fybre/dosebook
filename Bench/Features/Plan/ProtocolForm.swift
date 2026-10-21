@@ -159,7 +159,7 @@ struct ProtocolForm: View {
                     TimesOfDayEditor(times: $times, dailyMcg: lockedDose == nil ? doseMcg : nil)
                     NumberRow(label: t("plan_weeks_on"), value: $cycleOn, range: 0...52)
                     NumberRow(label: t("plan_weeks_off"), value: $cycleOff, range: 0...52)
-                    Text(t("plan_weeks_on_hint")).font(.caption).foregroundStyle(.secondary)
+                    Text(t("ios_plan_weeks_on_hint")).font(.caption).foregroundStyle(.secondary)
                 }
             } header: { Text(t("plan_how_often")) } footer: { if planMode == .phases { Text(t("plan_how_often_hint")) } }
 

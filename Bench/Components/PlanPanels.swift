@@ -17,7 +17,9 @@ func describeSchedule(_ s: Schedule) -> String {
         base = days.isEmpty ? t("plan_no_days") : days
     default: base = t("plan_as_needed")
     }
-    if let on = s.cycleWeeksOn, let off = s.cycleWeeksOff, on > 0, off > 0 {
+    if let on = s.cycleWeeksOn, on > 0, (s.cycleWeeksOff ?? 0) <= 0 {
+        base += ", " + t("plan_band_weeks", ["n": .number(on)])
+    } else if let on = s.cycleWeeksOn, let off = s.cycleWeeksOff, on > 0, off > 0 {
         base += ", " + t("plan_cycle", ["on": .number(on), "off": .number(off)])
     }
     if s.kind != .asNeeded, !(s.timesOfDay ?? []).isEmpty || s.timeOfDay != nil {
