@@ -39,6 +39,7 @@ struct PlanView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle(t("plan_title"))
+        .peptideDestination()
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { editing = .new } label: { Label(t("plan_new_protocol"), systemImage: "plus") }

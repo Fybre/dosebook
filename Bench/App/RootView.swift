@@ -48,7 +48,7 @@ struct MoreView: View {
 
 /// The More tab's stack, holding the path so a debug launch can push a screen.
 private struct MoreStack: View {
-    @State private var path: [MoreView.Screen] = []
+    @State private var path = NavigationPath()
     var body: some View {
         NavigationStack(path: $path) { MoreView() }
         #if DEBUG
@@ -56,7 +56,8 @@ private struct MoreStack: View {
                 // `-more <screen>` opens one of these directly, for screenshots.
                 let args = ProcessInfo.processInfo.arguments
                 if let i = args.firstIndex(of: "-more"), i + 1 < args.count, let s = MoreView.Screen(rawValue: args[i + 1]), path.isEmpty {
-                    path = [s]
+                    path.append(s)
+                    if i + 2 < args.count, !args[i + 2].hasPrefix("-") { path.append(args[i + 2]) }
                 }
             }
         #endif

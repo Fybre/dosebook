@@ -9,11 +9,15 @@ struct PkChartView: View {
     var now: Millis
     var weights: [BodyMeasurement] = []
     var weightUnit: WeightUnit = .kg
-    var describeVial: (String) -> String?
+    var describeVial: (String) -> String? = { _ in nil }
+    /// Defaults to the last fortnight and the coming week.
+    var range: ClosedRange<Millis>? = nil
+    /// Chart and readout only, for a single compound's demonstration curve.
+    var compact = false
     @State private var picked: Date?
 
-    private var from: Millis { now - 14 * DAY_MS }
-    private var to: Millis { now + 7 * DAY_MS }
+    private var from: Millis { range?.lowerBound ?? now - 14 * DAY_MS }
+    private var to: Millis { range?.upperBound ?? now + 7 * DAY_MS }
 
     var body: some View {
         // Enough points that a short half-life is not aliased into uneven spikes: at least
@@ -23,8 +27,10 @@ struct PkChartView: View {
         let samples = series.map { s in (s, levelSeries(from, to, steps, s.doses, s.params, s.referenceMcg)) }
         let at = picked.map(\.millis) ?? now
         VStack(alignment: .leading, spacing: 10) {
-            CardHeader(title: t("now_circulating"))
-            FlowLegend(series: series)
+            if !compact {
+                CardHeader(title: t("now_circulating"))
+                FlowLegend(series: series)
+            }
             Chart {
                 ForEach(samples, id: \.0.id) { s, points in
                     ForEach(points, id: \.t) { p in
@@ -46,7 +52,7 @@ struct PkChartView: View {
             .chartXSelection(value: $picked)
             .frame(height: 200)
             readout(at)
-            Text(t("now_curve_note")).font(.caption2).foregroundStyle(.secondary)
+            if !compact { Text(t("now_curve_note")).font(.caption2).foregroundStyle(.secondary) }
         }
     }
 
