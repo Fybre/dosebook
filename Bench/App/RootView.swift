@@ -3,7 +3,9 @@ import BenchCore
 import BenchStore
 
 struct RootView: View {
+    @Environment(AppStore.self) private var store
     @AppStorage("bench.tab") private var tab = "now"
+    @AppStorage("bench.lang") private var langRaw = I18n.lang.rawValue
 
     var body: some View {
         TabView(selection: $tab) {
@@ -13,6 +15,11 @@ struct RootView: View {
             Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView() } }
             Tab(t("more"), systemImage: "ellipsis.circle", value: "more") { MoreStack() }
         }
+        // Strings are read when views build, so a new language rebuilds the tree.
+        .id(langRaw)
+        .onChange(of: langRaw) { _, raw in if let l = Lang(rawValue: raw) { I18n.lang = l } }
+        // Reminders follow the plan: re-armed whenever the records change.
+        .task(id: store.data) { await ReminderScheduler.rearm(store.data) }
     }
 }
 

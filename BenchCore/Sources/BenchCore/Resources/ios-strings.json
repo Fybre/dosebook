@@ -13,7 +13,19 @@
     "ios_stock_add_ml": "Add {ml} mL",
     "ios_stock_ordered": "Ordered {date}",
     "ios_stock_a_press": "{dose} a press",
-    "ios_stock_convert": "Convert {amount} to {currency}. Whichever you record is stored as typed and never looked up again."
+    "ios_stock_convert": "Convert {amount} to {currency}. Whichever you record is stored as typed and never looked up again.",
+    "ios_theme_system": "Match the system",
+    "ios_notify_on": "Notifications are allowed. Reminders are scheduled on this phone and fire with the app closed.",
+    "ios_notify_off": "Notifications are turned off for Bench. Turn them on in the Settings app to get reminders.",
+    "ios_notify_ask": "Bench has not asked to show notifications yet.",
+    "ios_reminders_refused": "Notifications were not allowed, so nothing was scheduled.",
+    "ios_open_settings": "Open Settings",
+    "ios_data_note": "Your records live in this app and, when you are signed in to iCloud, in your private iCloud database. There is no Bench account and no Bench server. An export is a copy you hold yourself.",
+    "ios_import_backup": "Import a backup",
+    "ios_import_not_bench": "That file is not a Bench backup.",
+    "ios_imported": "Restored {doses}, {protocols} and {vials}.",
+    "ios_calendar_ready": "{doses} ready. Share the file to Calendar or Files.",
+    "ios_share_file": "Share the calendar file"
   },
   "de": {
     "more": "Mehr",
@@ -29,7 +41,19 @@
     "ios_stock_add_ml": "{ml} mL hinzufügen",
     "ios_stock_ordered": "Bestellt am {date}",
     "ios_stock_a_press": "{dose} pro Sprühstoß",
-    "ios_stock_convert": "{amount} in {currency} umrechnen. Was du einträgst, wird so gespeichert und nie wieder nachgeschlagen."
+    "ios_stock_convert": "{amount} in {currency} umrechnen. Was du einträgst, wird so gespeichert und nie wieder nachgeschlagen.",
+    "ios_theme_system": "Wie das System",
+    "ios_notify_on": "Mitteilungen sind erlaubt. Erinnerungen werden auf diesem Telefon geplant und kommen auch bei geschlossener App.",
+    "ios_notify_off": "Mitteilungen sind für Bench ausgeschaltet. Schalte sie in der Einstellungen-App ein, um Erinnerungen zu bekommen.",
+    "ios_notify_ask": "Bench hat noch nicht gefragt, ob es Mitteilungen zeigen darf.",
+    "ios_reminders_refused": "Mitteilungen wurden nicht erlaubt, daher wurde nichts geplant.",
+    "ios_open_settings": "Einstellungen öffnen",
+    "ios_data_note": "Deine Einträge liegen in dieser App und, wenn du bei iCloud angemeldet bist, in deiner privaten iCloud-Datenbank. Es gibt kein Bench-Konto und keinen Bench-Server. Ein Export ist eine Kopie, die du selbst aufbewahrst.",
+    "ios_import_backup": "Sicherung importieren",
+    "ios_import_not_bench": "Diese Datei ist keine Bench-Sicherung.",
+    "ios_imported": "{doses}, {protocols} und {vials} wiederhergestellt.",
+    "ios_calendar_ready": "{doses} bereit. Teile die Datei mit Kalender oder Dateien.",
+    "ios_share_file": "Kalenderdatei teilen"
   },
   "sl": {
     "more": "Več",
@@ -45,7 +69,19 @@
     "ios_stock_add_ml": "Dodaj {ml} mL",
     "ios_stock_ordered": "Naročeno {date}",
     "ios_stock_a_press": "{dose} na pritisk",
-    "ios_stock_convert": "Pretvori {amount} v {currency}. Kar vpišeš, se shrani tako in se nikoli več ne preverja."
+    "ios_stock_convert": "Pretvori {amount} v {currency}. Kar vpišeš, se shrani tako in se nikoli več ne preverja.",
+    "ios_theme_system": "Kot sistem",
+    "ios_notify_on": "Obvestila so dovoljena. Opomniki so načrtovani na tem telefonu in se sprožijo tudi, ko je aplikacija zaprta.",
+    "ios_notify_off": "Obvestila za Bench so izklopljena. Za opomnike jih vklopi v aplikaciji Nastavitve.",
+    "ios_notify_ask": "Bench še ni vprašal za dovoljenje za obvestila.",
+    "ios_reminders_refused": "Obvestila niso bila dovoljena, zato ni bilo nič načrtovano.",
+    "ios_open_settings": "Odpri Nastavitve",
+    "ios_data_note": "Tvoji zapisi so v tej aplikaciji in, ko si prijavljen v iCloud, v tvoji zasebni bazi iCloud. Računa Bench ni in strežnika Bench ni. Izvoz je kopija, ki jo hraniš sam.",
+    "ios_import_backup": "Uvozi varnostno kopijo",
+    "ios_import_not_bench": "Ta datoteka ni varnostna kopija Bench.",
+    "ios_imported": "Obnovljeno: {doses}, {protocols} in {vials}.",
+    "ios_calendar_ready": "{doses} pripravljeno. Datoteko deli s Koledarjem ali Datotekami.",
+    "ios_share_file": "Deli datoteko koledarja"
   },
   "pl": {
     "more": "Więcej",
@@ -61,6 +97,18 @@
     "ios_stock_add_ml": "Dodaj {ml} mL",
     "ios_stock_ordered": "Zamówiono {date}",
     "ios_stock_a_press": "{dose} na psiknięcie",
-    "ios_stock_convert": "Przelicz {amount} na {currency}. To, co wpiszesz, zostanie zapisane bez zmian i nigdy więcej nie będzie sprawdzane."
+    "ios_stock_convert": "Przelicz {amount} na {currency}. To, co wpiszesz, zostanie zapisane bez zmian i nigdy więcej nie będzie sprawdzane.",
+    "ios_theme_system": "Jak w systemie",
+    "ios_notify_on": "Powiadomienia są dozwolone. Przypomnienia są planowane na tym telefonie i działają przy zamkniętej aplikacji.",
+    "ios_notify_off": "Powiadomienia dla Bench są wyłączone. Włącz je w aplikacji Ustawienia, aby dostawać przypomnienia.",
+    "ios_notify_ask": "Bench jeszcze nie prosił o zgodę na powiadomienia.",
+    "ios_reminders_refused": "Powiadomienia nie zostały dozwolone, więc niczego nie zaplanowano.",
+    "ios_open_settings": "Otwórz Ustawienia",
+    "ios_data_note": "Twoje zapisy są w tej aplikacji, a po zalogowaniu do iCloud także w Twojej prywatnej bazie iCloud. Nie ma konta Bench ani serwera Bench. Eksport to kopia, którą przechowujesz sam.",
+    "ios_import_backup": "Importuj kopię zapasową",
+    "ios_import_not_bench": "Ten plik nie jest kopią zapasową Bench.",
+    "ios_imported": "Przywrócono: {doses}, {protocols} i {vials}.",
+    "ios_calendar_ready": "{doses} gotowe. Udostępnij plik do Kalendarza lub Plików.",
+    "ios_share_file": "Udostępnij plik kalendarza"
   }
 }
