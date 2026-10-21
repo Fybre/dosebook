@@ -1,0 +1,3634 @@
+[
+ {
+  "id": "anastrozole",
+  "name": "Anastrozole",
+  "aka": [
+   "Arimidex"
+  ],
+  "category": "ancillary",
+  "summary": "A non-steroidal aromatase inhibitor, used to hold oestradiol down when an aromatising androgen pushes it up.",
+  "mechanism": "Reversibly binds the aromatase enzyme, blocking the conversion of testosterone to oestradiol. Because the binding is reversible, effect tracks plasma concentration and returns as the drug clears.",
+  "halfLifeHours": 50,
+  "halfLifeNote": "Mean terminal elimination half-life about 50 hours in postmenopausal women, from the Arimidex label. Long enough that every other day dosing still accumulates, and long enough that an overshoot takes the better part of a week to correct.",
+  "tmaxHours": 2,
+  "routes": [
+   "oral"
+  ],
+  "preparation": "solution",
+  "vialSizesMg": [],
+  "mechanismClass": [
+   "aromatase-inhibitor"
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 1000,
+    "highMcg": 1000,
+    "frequency": "once daily",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "1 mg daily, the approved breast cancer dose. Far above what anyone managing oestradiol on an androgen protocol would use, and included only because it is the regulated figure."
+   },
+   {
+    "lowMcg": 125,
+    "highMcg": 500,
+    "frequency": "twice weekly, or every other day",
+    "perWeek": 2,
+    "evidence": "anecdotal",
+    "note": "0.125 to 0.5 mg, titrated against symptoms and bloodwork rather than taken on a schedule. No trial supports this use; the range is what people report and nothing more."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 6,
+    "label": "Absorbing, peak plasma around two hours"
+   },
+   {
+    "fromHours": 6,
+    "toHours": 72,
+    "label": "Aromatase suppressed, oestradiol falling"
+   },
+   {
+    "fromHours": 72,
+    "toHours": 240,
+    "label": "Clearing, oestradiol recovering"
+   }
+  ],
+  "sideEffects": [
+   "Joint pain and stiffness, the most common complaint and usually the first sign oestradiol is too low",
+   "Loss of libido and difficulty with erections, which is what crashed oestradiol does despite adequate testosterone",
+   "Low mood and fatigue",
+   "Falling HDL, on top of whatever the androgen is already doing to lipids",
+   "Bone mineral density loss over prolonged use",
+   "Monitor: oestradiol, ideally by a sensitive assay, since the standard one is unreliable at low male levels"
+  ],
+  "contraindications": [
+   "Taking a second aromatase inhibitor at the same time",
+   "Running it on a compound that does not aromatise, where there is no oestrogen to control and only harm to do",
+   "Existing osteopenia or osteoporosis",
+   "Pregnancy"
+  ],
+  "status": "Prescription-only. Approved for hormone receptor positive breast cancer in postmenopausal women, not for oestrogen management in men. Banned in sport at all times as a hormone and metabolic modulator.",
+  "citations": [
+   {
+    "label": "ARIMIDEX (anastrozole) prescribing information, FDA",
+    "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/020541s036lbl.pdf"
+   },
+   {
+    "label": "Pharmacology and pharmacokinetics of anastrozole, letrozole and exemestane (PubMed 12404296)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/12404296/"
+   }
+  ]
+ },
+ {
+  "id": "aod-9604",
+  "name": "AOD-9604",
+  "aka": [
+   "hGH fragment 176-191"
+  ],
+  "category": "metabolic",
+  "summary": "Growth hormone fragment marketed for fat loss. Failed its phase 2b trial.",
+  "mechanism": "A synthetic fragment of the C-terminal region of human growth hormone. A lipolytic effect independent of the growth hormone receptor is claimed, but no receptor target has ever been identified and no mechanism is established.",
+  "halfLifeHours": null,
+  "halfLifeNote": "No human pharmacokinetic data has ever been published. There are zero registered trials on ClinicalTrials.gov and no PubMed pharmacokinetic results. No curve can honestly be drawn.",
+  "routes": [
+   "subcutaneous",
+   "oral"
+  ],
+  "vialSizesMg": [],
+  "doseRanges": [
+   {
+    "lowMcg": 300,
+    "highMcg": 1000,
+    "frequency": "once daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "Community protocols only. The phase 2b trial is described as using around 1 mg daily but the dose could not be verified from any primary source."
+   }
+  ],
+  "sideEffects": [
+   "No systematic safety data exists."
+  ],
+  "contraindications": [
+   "Development was discontinued. The phase 2b trial did not show significant weight loss against placebo.",
+   "Prohibited by WADA as a growth hormone fragment."
+  ],
+  "status": "Never approved. The FDA declined to place it on the 503A bulk substances list for compounding. Its own trial did not meet its endpoint.",
+  "cautionBanner": "This compound has no published pharmacokinetics, no identified receptor, and a failed phase 2b trial. Any claim that it produces meaningful fat loss is contradicted by its own trial result.",
+  "citations": [
+   {
+    "label": "ClinicalTrials.gov, no registered trials",
+    "url": "https://clinicaltrials.gov/search?term=AOD-9604"
+   }
+  ]
+ },
+ {
+  "id": "boldenone-undecylenate",
+  "name": "Boldenone undecylenate",
+  "aka": [
+   "Equipoise",
+   "EQ"
+  ],
+  "category": "anabolic",
+  "summary": "A long-acting veterinary androgen, originally for horses.",
+  "mechanism": "Structurally testosterone with an extra double bond, which slows aromatisation without stopping it. Mild androgenically relative to its anabolic effect.",
+  "halfLifeHours": null,
+  "halfLifeNote": "No human pharmacokinetic study exists. The undecylenate ester is long, a close relative of the undecanoate on injectable testosterone, which empties over weeks, so a similar order is likely, but likely is not measured.",
+  "routes": [
+   "intramuscular"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   200,
+   250
+  ],
+  "vialSizesMg": [
+   2000,
+   2500
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": true,
+  "doseRanges": [
+   {
+    "lowMcg": 200000,
+    "highMcg": 600000,
+    "frequency": "weekly",
+    "perWeek": 1,
+    "evidence": "anecdotal",
+    "note": "Community convention. No human clinical dosing exists."
+   }
+  ],
+  "sideEffects": [
+   "A pronounced rise in haematocrit, reported more consistently than for most compounds here",
+   "Increased appetite",
+   "Aromatises, so oestradiol-driven effects apply",
+   "Very long detection window in anti-doping tests",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds"
+  ],
+  "contraindications": [
+   "Polycythaemia or any tendency to a high haematocrit",
+   "Prostate or breast cancer",
+   "Trying to conceive",
+   "Pregnancy"
+  ],
+  "status": "Veterinary only. Schedule III in the United States. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Androgen ester, structural and duration data",
+    "url": "https://en.wikipedia.org/wiki/Androgen_ester"
+   }
+  ],
+  "cautionBanner": "No human pharmacokinetic or safety data. Dosing is community convention."
+ },
+ {
+  "id": "bpc-157",
+  "name": "BPC-157",
+  "aka": [
+   "Body Protection Compound 157",
+   "Pentadecapeptide BPC 157"
+  ],
+  "category": "repair",
+  "summary": "Synthetic 15-amino-acid gastric peptide used for soft-tissue and gut repair.",
+  "mechanism": "No single receptor has been identified. Promotes angiogenesis through VEGFR2 and the Akt/eNOS nitric oxide pathway, upregulates the growth hormone receptor in tendon fibroblasts, and shifts macrophages from an inflammatory to a repair phenotype.",
+  "halfLifeHours": 0.42,
+  "halfLifeNote": "Animal data only: 15 minutes intravenously in rats, 5 minutes in dogs, 20 to 30 minutes intramuscularly. No human pharmacokinetic study exists. Effects in animals persist for weeks despite this, so the curve below says little about how long it is working.",
+  "tmaxHours": 0.4,
+  "routes": [
+   "subcutaneous",
+   "oral",
+   "intramuscular",
+   "topical"
+  ],
+  "vialSizesMg": [
+   5,
+   10
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 250,
+    "highMcg": 500,
+    "frequency": "once or twice daily",
+    "perWeek": 10,
+    "evidence": "anecdotal",
+    "note": "The standard community protocol. No human trial has used this dose or this route."
+   },
+   {
+    "lowMcg": 10000,
+    "highMcg": 20000,
+    "frequency": "single intravenous dose",
+    "perWeek": 1,
+    "evidence": "preliminary",
+    "note": "The only published human dosing: an uncontrolled two-person intravenous safety pilot."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 1,
+    "label": "Peak plasma levels, then cleared within about half an hour."
+   },
+   {
+    "fromHours": 1,
+    "toHours": 24,
+    "label": "Undetectable in plasma. Any ongoing effect is downstream signalling, not circulating peptide."
+   }
+  ],
+  "sideEffects": [
+   "No systematic human safety data exists, the published human experience totals fewer than 30 people across three uncontrolled pilots.",
+   "Theoretical concern about promoting unwanted blood vessel growth, though animal work has also shown the opposite.",
+   "Blood pressure effects are plausible through nitric oxide signalling."
+  ],
+  "contraindications": [
+   "Known or suspected cancer, the angiogenesis mechanism cuts both ways and has not been characterised in humans.",
+   "Not compoundable in the United States. An FDA advisory committee voted 8 to 6 in favour of adding it to the 503A list in July 2026, but that vote is non-binding and does not make it legal.",
+   "Prohibited in sport at all times under WADA category S0. No therapeutic use exemption is possible."
+  ],
+  "status": "Not approved anywhere. The first randomised controlled trial in its history began recruiting in February 2026 (NCT07437547, hamstring strain). A 2025 systematic review of 544 papers found 35 preclinical studies and one clinical study.",
+  "cautionBanner": "There are no published randomised controlled trials of BPC-157 for any indication. Every dose in circulation is a community convention.",
+  "citations": [
+   {
+    "label": "He et al. 2022, the only pharmacokinetic study (rat and dog)",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9794587/"
+   },
+   {
+    "label": "2025 systematic review, HSS Journal",
+    "url": "https://journals.sagepub.com/doi/10.1177/15563316251355551"
+   },
+   {
+    "label": "NCT07437547, first RCT, recruiting",
+    "url": "https://clinicaltrials.gov/study/NCT07437547"
+   }
+  ]
+ },
+ {
+  "id": "cagrilintide",
+  "name": "Cagrilintide",
+  "aka": [
+   "AM833",
+   "NNC0174-0833"
+  ],
+  "category": "metabolic",
+  "mechanismClass": [
+   "amylin-analogue"
+  ],
+  "summary": "Long-acting amylin analogue. Investigational.",
+  "mechanism": "Activates all three amylin receptor subtypes and the calcitonin receptor. Amylin signalling promotes satiety and slows gastric emptying through a pathway separate from GLP-1, which is why it is being developed alongside semaglutide rather than instead of it.",
+  "halfLifeHours": 177,
+  "halfLifeNote": "Measured at 159 to 195 hours across the 0.16 to 4.5 mg range, so roughly 7 days.",
+  "tmaxHours": 24,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [],
+  "doseRanges": [
+   {
+    "lowMcg": 300,
+    "highMcg": 4500,
+    "frequency": "once weekly",
+    "perWeek": 1,
+    "evidence": "clinical",
+    "note": "Phase 2 studied 0.3 through 4.5 mg. The dose used inside CagriSema is 2.4 mg."
+   }
+  ],
+  "titrations": [
+   {
+    "id": "cagri-p2",
+    "name": "Phase 2 escalation to 4.5 mg",
+    "source": "NCT03856047 protocol, Table 7-2",
+    "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/47/NCT03856047/Prot_000.pdf",
+    "evidence": "clinical",
+    "note": "Every step is exactly two weeks. The protocol allowed a step to be held an extra week for tolerability, which stretches the climb to 4.5 mg from 6 weeks out to 9.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 600,
+      "weeks": 2
+     },
+     {
+      "step": 2,
+      "doseMcg": 1200,
+      "weeks": 2
+     },
+     {
+      "step": 3,
+      "doseMcg": 2400,
+      "weeks": 2
+     },
+     {
+      "step": 4,
+      "doseMcg": 4500,
+      "weeks": 20
+     }
+    ]
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 12,
+    "label": "Absorbing."
+   },
+   {
+    "fromHours": 12,
+    "toHours": 48,
+    "label": "Peak plasma levels, median around 24 hours."
+   },
+   {
+    "fromHours": 48,
+    "toHours": 168,
+    "label": "Slow decline. About 52% of peak still present at day 7."
+   }
+  ],
+  "sideEffects": [
+   "Nausea, 46.5% at 4.5 mg against 17.8% on placebo in phase 2",
+   "Constipation and decreased appetite, both dose-related",
+   "Injection site erythema, 16.8% at 4.5 mg, and zero on placebo",
+   "Transient activation of the renin-angiotensin-aldosterone system, resolving about 2 weeks after each escalation"
+  ],
+  "contraindications": [
+   "Not an approved medicine. No label, no established monitoring, no verified supply."
+  ],
+  "status": "Investigational. No FDA approval; exists commercially only as a component of CagriSema.",
+  "cautionBanner": "Storage and stability are undocumented, the trial product is an aqueous solution in a pen cartridge, not a lyophilised vial, so there is no published guidance on reconstituting or storing powder.",
+  "citations": [
+   {
+    "label": "Enebo et al., Lancet 2021, PK",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/33894838/"
+   },
+   {
+    "label": "Lau et al., Lancet 2021, phase 2 dose finding",
+    "url": "https://europepmc.org/article/MED/34798060"
+   },
+   {
+    "label": "NCT03856047 protocol",
+    "url": "https://cdn.clinicaltrials.gov/large-docs/47/NCT03856047/Prot_000.pdf"
+   }
+  ]
+ },
+ {
+  "id": "cagrisema",
+  "name": "CagriSema",
+  "aka": [
+   "cagrilintide + semaglutide"
+  ],
+  "category": "metabolic",
+  "mechanismClass": [
+   "glp1-agonist",
+   "amylin-analogue"
+  ],
+  "summary": "Fixed 1:1 combination of cagrilintide and semaglutide. Filed with the FDA, not approved.",
+  "mechanism": "Pairs amylin and GLP-1 signalling in one weekly injection. Delivered through a dual-chamber pen that keeps the two peptides separate until the moment of injection. Neither affects the other's exposure or elimination.",
+  "halfLifeHours": 170,
+  "halfLifeNote": "Two components with different curves: cagrilintide 159 to 195 hours, semaglutide 145 to 165 hours. The single figure here is an approximation of both.",
+  "tmaxHours": 24,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [],
+  "components": [
+   {
+    "peptideId": "cagrilintide",
+    "name": "Cagrilintide",
+    "mgPerVial": 2.4
+   },
+   {
+    "peptideId": "semaglutide",
+    "name": "Semaglutide",
+    "mgPerVial": 2.4
+   }
+  ],
+  "blendDosing": "per-component",
+  "doseRanges": [
+   {
+    "lowMcg": 250,
+    "highMcg": 2400,
+    "frequency": "once weekly",
+    "perWeek": 1,
+    "evidence": "clinical",
+    "note": "Doses refer to each component; the two are always equal."
+   }
+  ],
+  "titrations": [
+   {
+    "id": "cagrisema-redefine",
+    "name": "REDEFINE escalation to 2.4/2.4 mg",
+    "source": "REDEFINE-1 and REDEFINE-2, NEJM 2025",
+    "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2502081",
+    "evidence": "clinical",
+    "note": "Four-week steps reaching the maintenance dose at week 16. Both trials allowed staying on a lower dose rather than dropping out, only about 57 to 62% of participants were on the full dose at week 68.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 250,
+      "weeks": 4
+     },
+     {
+      "step": 2,
+      "doseMcg": 500,
+      "weeks": 4
+     },
+     {
+      "step": 3,
+      "doseMcg": 1000,
+      "weeks": 4
+     },
+     {
+      "step": 4,
+      "doseMcg": 1700,
+      "weeks": 4
+     },
+     {
+      "step": 5,
+      "doseMcg": 2400,
+      "weeks": 52
+     }
+    ]
+   }
+  ],
+  "sideEffects": [
+   "Gastrointestinal effects in 79.6% of participants in REDEFINE-1, against 39.9% on placebo",
+   "Injection site reactions notably higher than either component alone, 12.2% versus 2.6% for semaglutide",
+   "Discontinuation for adverse events 5.9% in obesity, 8.4% in type 2 diabetes",
+   "Gallbladder disorders 4.1%"
+  ],
+  "contraindications": [
+   "Not approved. Filed with the FDA in December 2025; a decision is expected during 2026.",
+   "Inherits the semaglutide class warning on medullary thyroid carcinoma and MEN 2."
+  ],
+  "status": "Investigational. In its only head-to-head trial (REDEFINE-4, February 2026) it failed to show non-inferiority to tirzepatide 15 mg, 23.0% versus 25.5% weight loss at 84 weeks.",
+  "cautionBanner": "A fixed-ratio dual-chamber product cannot be meaningfully reproduced from separate single-peptide vials.",
+  "citations": [
+   {
+    "label": "REDEFINE-1, NEJM 2025",
+    "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2502081"
+   },
+   {
+    "label": "REDEFINE-2, NEJM 2025",
+    "url": "https://www.nejm.org/doi/abs/10.1056/NEJMoa2502082"
+   }
+  ]
+ },
+ {
+  "id": "cjc-1295-dac",
+  "name": "CJC-1295 with DAC",
+  "aka": [
+   "DAC:GRF",
+   "CJC-1295 DAC"
+  ],
+  "category": "growth-hormone",
+  "mechanismClass": [
+   "ghrh-analogue"
+  ],
+  "summary": "The long-acting version, which binds albumin and lasts days rather than minutes.",
+  "mechanism": "The same GHRH analogue carrying a drug affinity complex that binds covalently to serum albumin. That extends exposure from minutes to days, producing a sustained elevation in growth hormone and IGF-1 rather than a pulse.",
+  "halfLifeHours": 144,
+  "halfLifeNote": "Roughly 5.8 to 8.1 days in the phase 1 study. Single doses raised growth hormone 2 to 10 fold for six days or more and IGF-1 1.5 to 3 fold for up to 11 days.",
+  "tmaxHours": 24,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   2,
+   5
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 30,
+    "highMcg": 60,
+    "frequency": "once or twice weekly",
+    "perWeek": 1.5,
+    "evidence": "anecdotal",
+    "note": "Community convention, usually expressed per kilogram. Phase 1 studied single doses of 30 to 60 mcg/kg."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 24,
+    "label": "Building toward peak. Growth hormone begins rising."
+   },
+   {
+    "fromHours": 24,
+    "toHours": 144,
+    "label": "Sustained elevation of growth hormone, 2 to 10 fold above baseline."
+   },
+   {
+    "fromHours": 144,
+    "toHours": 264,
+    "label": "Growth hormone returning to baseline while IGF-1 stays elevated."
+   }
+  ],
+  "sideEffects": [
+   "Water retention, joint pain and carpal tunnel symptoms, all more likely than with the short-acting version",
+   "Sustained rather than pulsatile growth hormone, which is not how the hormone is normally secreted"
+  ],
+  "contraindications": [
+   "Active or suspected malignancy.",
+   "Diabetes or impaired glucose tolerance.",
+   "IGF-1 stays elevated for up to 28 days after repeated dosing, so exposure cannot be withdrawn quickly if something goes wrong."
+  ],
+  "status": "Not approved. The phase 2 programme in HIV lipodystrophy was halted after a participant died of a myocardial infarction. The attending physician attributed it to pre-existing coronary disease and causality was never established, but the programme was not restarted. Prohibited in sport at all times.",
+  "cautionBanner": "Flattening growth hormone into a sustained elevation removes its natural pulsatility. Rodent work shows continuous secretagogue exposure raises hypothalamic somatostatin and suppresses spontaneous pulses, which is the mechanistic argument against this format rather than the short-acting one. Note also that any off-period shorter than about four weeks is not a washout, IGF-1 remains above baseline that long.",
+  "citations": [
+   {
+    "label": "Teichman et al. 2006, JCEM, phase 1",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/16352683/"
+   }
+  ]
+ },
+ {
+  "id": "cjc-1295-no-dac",
+  "name": "CJC-1295 without DAC",
+  "aka": [
+   "Modified GRF 1-29",
+   "Mod GRF 1-29",
+   "Sermorelin analogue"
+  ],
+  "category": "growth-hormone",
+  "mechanismClass": [
+   "ghrh-analogue"
+  ],
+  "summary": "A short-acting GHRH analogue. Often paired with a ghrelin agonist.",
+  "mechanism": "A modified fragment of GHRH, with four amino acid substitutions that resist enzymatic breakdown. Without the drug affinity complex it does not bind albumin, so it produces a single sharp growth hormone pulse rather than sustained elevation.",
+  "halfLifeHours": 0.5,
+  "halfLifeNote": "About 30 minutes. Commonly cited; not verified against a primary human paper here.",
+  "tmaxHours": 0.25,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   2,
+   5
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 100,
+    "highMcg": 100,
+    "frequency": "one to three times daily",
+    "perWeek": 14,
+    "evidence": "anecdotal",
+    "note": "Community convention. The rationale for pulsed rather than continuous dosing is sound: in rodents, continuous exposure raises hypothalamic somatostatin and suppresses natural pulses."
+   }
+  ],
+  "sideEffects": [
+   "Injection site reactions, flushing, water retention, head rush shortly after dosing."
+  ],
+  "contraindications": [
+   "Active or suspected malignancy.",
+   "Diabetes or impaired glucose tolerance."
+  ],
+  "status": "Not approved. Prohibited in sport at all times.",
+  "citations": [
+   {
+    "label": "Teichman et al. 2006, CJC-1295 phase 1",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/16352683/"
+   }
+  ]
+ },
+ {
+  "id": "clomiphene",
+  "name": "Clomiphene citrate",
+  "aka": [
+   "Clomid",
+   "Clomiphene"
+  ],
+  "category": "ancillary",
+  "summary": "The original oestrogen receptor modulator used to restart the axis. A mixture of two isomers with very different behaviour.",
+  "mechanism": "Blocks oestrogen feedback at the hypothalamus and pituitary, raising LH and FSH. What is sold is a roughly 3:2 mixture of enclomiphene, which does the stimulating, and zuclomiphene, which is oestrogenic and clears extremely slowly.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Deliberately left blank, and no curve is drawn. A single half-life would be a fiction here: enclomiphene clears in hours while zuclomiphene has been detected in serum a month after the last dose. Averaging the two would describe neither, and the slow isomer is exactly the part responsible for the accumulation people complain about. Where a component matters on its own, log enclomiphene instead.",
+  "routes": [
+   "oral"
+  ],
+  "preparation": "solution",
+  "vialSizesMg": [],
+  "mechanismClass": [
+   "serm"
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 25000,
+    "highMcg": 50000,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "25 to 50 mg daily in recovery protocols. The approved indication is ovulation induction in women, so no approved male dose exists."
+   }
+  ],
+  "sideEffects": [
+   "Visual disturbance: floaters, blurring, trails after lights. Uncommon, and a reason to stop rather than push through",
+   "Mood disturbance, more pronounced than with enclomiphene and attributed to the zuclomiphene isomer",
+   "Hot flushes",
+   "Nausea",
+   "Monitor: total testosterone, LH, FSH and oestradiol"
+  ],
+  "contraindications": [
+   "Taking a second oestrogen receptor modulator at the same time",
+   "Any visual symptom that appears after starting",
+   "Liver disease"
+  ],
+  "status": "Prescription-only, approved for ovulation induction in women. Male use is off-label. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Serum levels of enclomiphene and zuclomiphene in hypogonadal men on long-term clomiphene citrate, Journal of Urology",
+    "url": "https://www.auajournals.org/doi/10.1016/j.juro.2016.02.1859"
+   }
+  ]
+ },
+ {
+  "id": "drostanolone-propionate",
+  "name": "Drostanolone propionate",
+  "aka": [
+   "Masteron",
+   "Mast P"
+  ],
+  "category": "anabolic",
+  "summary": "A non-aromatising DHT derivative, once used in breast cancer treatment.",
+  "mechanism": "Derived from dihydrotestosterone, so it cannot be converted to oestradiol and has some anti-oestrogenic activity of its own. Strongly androgenic relative to its anabolic effect.",
+  "halfLifeHours": null,
+  "halfLifeNote": "No modern human pharmacokinetic study is available. The propionate ester is short, and injection every day or two follows from that, but the figure itself has not been measured.",
+  "routes": [
+   "intramuscular"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   100
+  ],
+  "vialSizesMg": [
+   1000
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": false,
+  "doseRanges": [
+   {
+    "lowMcg": 50000,
+    "highMcg": 100000,
+    "frequency": "every day or every other day",
+    "perWeek": 3.5,
+    "evidence": "anecdotal",
+    "note": "Community convention. Its historical clinical use in breast cancer was at quite different amounts and is not a guide here."
+   }
+  ],
+  "sideEffects": [
+   "Androgenic effects are prominent: hair loss in those predisposed, acne",
+   "Does not aromatise, so no oestrogenic effects of its own",
+   "Adverse lipid changes",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds"
+  ],
+  "contraindications": [
+   "Male-pattern hair loss you would rather not accelerate",
+   "Prostate or breast cancer in men",
+   "Trying to conceive",
+   "Pregnancy"
+  ],
+  "status": "Withdrawn from human medical use in most countries. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Androgen ester, structural and duration data",
+    "url": "https://en.wikipedia.org/wiki/Androgen_ester"
+   }
+  ],
+  "cautionBanner": "No current human pharmacokinetic data. Dosing is community convention."
+ },
+ {
+  "id": "enclomiphene",
+  "name": "Enclomiphene",
+  "aka": [
+   "Enclomiphene citrate",
+   "trans-clomiphene"
+  ],
+  "category": "ancillary",
+  "summary": "The isomer of clomiphene that does the useful work, without the long-lingering one that causes most of the complaints.",
+  "mechanism": "Blocks oestrogen receptors at the hypothalamus and pituitary, removing negative feedback so LH and FSH rise and the testes are driven to produce testosterone. It raises your own output rather than replacing it, which is the whole point of using it after suppression.",
+  "halfLifeHours": 10,
+  "halfLifeNote": "About 10 hours, from the Wiehle pharmacokinetic study in hypogonadal men. Read the curve with care: testosterone and LH stay elevated for up to a week after stopping, because the drug is triggering the axis rather than acting directly. Plasma level and effect are not the same thing here.",
+  "tmaxHours": 3,
+  "routes": [
+   "oral"
+  ],
+  "preparation": "solution",
+  "vialSizesMg": [],
+  "mechanismClass": [
+   "serm"
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 12500,
+    "highMcg": 25000,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "clinical",
+    "note": "12.5 to 25 mg daily, the doses used in the trials of secondary hypogonadism in men. Not an approved product in the United States."
+   }
+  ],
+  "sideEffects": [
+   "Headache",
+   "Nausea",
+   "Hot flushes",
+   "Visual disturbance, less commonly reported than with clomiphene but the same class effect",
+   "Monitor: total testosterone, LH and FSH",
+   "Monitor: oestradiol, which rises alongside testosterone"
+  ],
+  "contraindications": [
+   "Taking a second oestrogen receptor modulator at the same time",
+   "Primary testicular failure, where there is nothing at the testis to stimulate"
+  ],
+  "status": "Not approved in the United States; studied through phase III and available through compounding pharmacies. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Wiehle et al, testosterone restoration using enclomiphene citrate: pharmacodynamic and pharmacokinetic study, BJU International",
+    "url": "https://bjui-journals.onlinelibrary.wiley.com/doi/full/10.1111/bju.12363"
+   }
+  ]
+ },
+ {
+  "id": "epitalon",
+  "name": "Epitalon",
+  "aka": [
+   "Epithalon",
+   "Ala-Glu-Asp-Gly"
+  ],
+  "category": "longevity",
+  "summary": "A four-amino-acid peptide studied in Russia for telomerase activation and ageing.",
+  "mechanism": "A synthetic tetrapeptide based on epithalamin, a pineal extract. Reported to activate telomerase and normalise melatonin rhythm. The supporting work is almost entirely from a single Russian research group.",
+  "halfLifeHours": null,
+  "halfLifeNote": "No pharmacokinetic data was located in any species.",
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   10,
+   20,
+   50
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 5000,
+    "highMcg": 10000,
+    "frequency": "once daily for a 10 to 20 day course",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "Community convention, usually run as short courses once or twice a year rather than continuously."
+   }
+  ],
+  "sideEffects": [
+   "No systematic safety data outside the originating research group."
+  ],
+  "contraindications": [
+   "No established contraindications."
+  ],
+  "status": "Not approved outside Russia. An FDA advisory committee voted 7 to 5 in favour of the 503A compounding list in July 2026. That vote is non-binding.",
+  "cautionBanner": "Two things worth knowing. There are zero registered clinical trials of this compound, the only two published human studies used 5 micrograms per eye and 0.5 mg sublingually, so the community injection dose of 5 to 10 mg is roughly twenty times higher than any published human dose, by a different route. And the entire selling proposition, telomerase activation, is also a hallmark of cellular immortalisation; the oncological implication of chronic systemic telomerase induction has never been assessed in people.",
+  "citations": [
+   {
+    "label": "Federal Register, July 2026 PCAC meeting notice",
+    "url": "https://www.federalregister.gov/documents/2026/04/16/2026-07361/"
+   }
+  ]
+ },
+ {
+  "id": "exemestane",
+  "name": "Exemestane",
+  "aka": [
+   "Aromasin"
+  ],
+  "category": "ancillary",
+  "summary": "A steroidal aromatase inhibitor that inactivates the enzyme permanently rather than blocking it reversibly.",
+  "mechanism": "A substrate analogue that binds aromatase irreversibly, so the enzyme has to be resynthesised before conversion resumes. That is why its effect outlasts its plasma half-life, and why plasma concentration is a poor guide to how much suppression is still in effect.",
+  "halfLifeHours": 27,
+  "halfLifeNote": "About 27 hours in plasma at the 25 mg dose. The curve the app draws is the plasma curve and understates the duration of effect: the enzyme is inactivated irreversibly, so suppression persists past the point the drug has gone.",
+  "tmaxHours": 2,
+  "routes": [
+   "oral"
+  ],
+  "preparation": "solution",
+  "vialSizesMg": [],
+  "mechanismClass": [
+   "aromatase-inhibitor"
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 25000,
+    "highMcg": 25000,
+    "frequency": "once daily after food",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "25 mg daily, the approved breast cancer dose. Absorption improves substantially with food."
+   },
+   {
+    "lowMcg": 6250,
+    "highMcg": 12500,
+    "frequency": "twice weekly",
+    "perWeek": 2,
+    "evidence": "anecdotal",
+    "note": "6.25 to 12.5 mg, a quarter to a half tablet. Preferred by some over anastrozole for a smaller effect on lipids, though the comparison is not established in men."
+   }
+  ],
+  "sideEffects": [
+   "Joint pain, as with any aromatase inhibitor pushed too far",
+   "Hot flushes and sweating",
+   "Fatigue and low mood",
+   "Mildly androgenic in its own right, being a steroidal molecule",
+   "Monitor: oestradiol by sensitive assay"
+  ],
+  "contraindications": [
+   "Taking a second aromatase inhibitor at the same time",
+   "Running it on a compound that does not aromatise",
+   "Pregnancy"
+  ],
+  "status": "Prescription-only. Approved for breast cancer, not for oestrogen management in men. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Pharmacology and pharmacokinetics of the newer generation aromatase inhibitors (PubMed 12404296)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/12404296/"
+   }
+  ]
+ },
+ {
+  "id": "ghk-cu",
+  "name": "GHK-Cu",
+  "aka": [
+   "copper tripeptide-1",
+   "Gly-His-Lys copper"
+  ],
+  "category": "cosmetic",
+  "summary": "A copper-carrying tripeptide found naturally in plasma. Used topically for skin.",
+  "mechanism": "Binds copper with a stability constant slightly above albumin's, which lets it accept copper from albumin and deliver it into tissue. Modulates several thousand human genes, stimulates collagen and dermatan sulfate synthesis at nanomolar concentrations, and rebalances the MMP/TIMP system.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Unknown. The 25 to 35 minute figure repeated across vendor sites has no primary source. No human pharmacokinetic study was found.",
+  "routes": [
+   "topical",
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   50,
+   100
+  ],
+  "reconstitutedDays": 21,
+  "doseRanges": [
+   {
+    "lowMcg": 500,
+    "highMcg": 10000,
+    "frequency": "applied twice daily",
+    "perWeek": 14,
+    "evidence": "clinical",
+    "note": "Topical, at cosmetic use levels of 0.05 to 1%. Four controlled human studies over 12 weeks support this route. The papers do not state the cream concentrations used, so 'clinically proven at 1 to 2%' is not traceable to them."
+   },
+   {
+    "lowMcg": 1000,
+    "highMcg": 3000,
+    "frequency": "once daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "Injected. There are zero published human trials of injectable GHK-Cu by any route. Note this is 50 to 100 times below the systemic dose Pickart himself estimated from pig data."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 168,
+    "label": "Topical effects build over weeks, not hours. Trials measured change at 4 and 12 weeks."
+   }
+  ],
+  "sideEffects": [
+   "Topically, the Cosmetic Ingredient Review concluded it is safe as used, with negative irritation, sensitisation and genotoxicity data.",
+   "Injected, the dose-limiting effect in animals was lowered blood pressure.",
+   "Copper load is the real concern by injection: a 100 mg vial carries roughly 18 mg of elemental copper against a tolerable daily upper intake near 10 mg."
+  ],
+  "contraindications": [
+   "Wilson's disease or any disorder of copper handling.",
+   "Advanced liver disease, where biliary copper excretion is impaired.",
+   "Do not combine with chelators such as EDTA or citrate, with vitamin C or other strong reducing agents, or with acidic diluents, all of these break the copper complex."
+  ],
+  "status": "A permitted cosmetic ingredient in the EU and US. Not an approved drug. Not listed by WADA.",
+  "cautionBanner": "The blue colour is a genuine integrity check, not a dye. It comes from the copper's coordination geometry, so a solution that has gone colourless, green or brown has dissociated and should not be used. Keep it out of the light.",
+  "citations": [
+   {
+    "label": "Pickart & Margolina 2018, GHK-Cu review",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4508379/"
+   },
+   {
+    "label": "Cosmetic Ingredient Review safety assessment",
+    "url": "https://www.cir-safety.org/sites/default/files/tripep062014final.pdf"
+   }
+  ]
+ },
+ {
+  "id": "ghrp-6",
+  "name": "GHRP-6",
+  "aka": [
+   "SKF-110679",
+   "CIGB-500"
+  ],
+  "category": "growth-hormone",
+  "mechanismClass": [
+   "ghrelin-agonist"
+  ],
+  "summary": "A hexapeptide ghrelin receptor agonist. Strongly appetite-stimulating.",
+  "mechanism": "Agonist at the ghrelin receptor GHS-R1a on pituitary somatotrophs and on appetite neurons in the arcuate nucleus. It works largely through the body's own GHRH, blocking GHRH cuts the growth hormone response by about 82%, and by opposing somatostatin tone. It also binds CD36, which is the basis of a separate cytoprotective effect unrelated to growth hormone.",
+  "halfLifeHours": 2.5,
+  "halfLifeNote": "2.5 hours elimination, 7.6 minutes distribution, measured intravenously in nine healthy men. Note this was measured at 100 to 400 mcg/kg, which is 100 to 400 times the dose that saturates growth hormone release, so extrapolating down to a 100 mcg dose is unvalidated. No human subcutaneous pharmacokinetic study exists.",
+  "tmaxHours": 0.3,
+  "routes": [
+   "subcutaneous",
+   "intravenous",
+   "intranasal",
+   "oral"
+  ],
+  "vialSizesMg": [
+   5
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 70,
+    "highMcg": 100,
+    "frequency": "once, intravenously",
+    "perWeek": 1,
+    "evidence": "clinical",
+    "note": "About 1 mcg/kg intravenously saturates the growth hormone response, peak GH of 68.7 mcg/L against 7.6 at a tenth of the dose."
+   },
+   {
+    "lowMcg": 100,
+    "highMcg": 300,
+    "frequency": "two or three times daily, at least 3 hours apart",
+    "perWeek": 17,
+    "evidence": "anecdotal",
+    "note": "The community subcutaneous convention. It is extrapolated from a 1990 intravenous study; no human subcutaneous dose-ranging study has ever been done."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 0.5,
+    "label": "Growth hormone pulse peaks 15 to 30 minutes in. Appetite stimulation begins."
+   },
+   {
+    "fromHours": 0.5,
+    "toHours": 2,
+    "label": "Pulse largely resolved. Cortisol and prolactin also rise at growth-hormone-saturating doses."
+   },
+   {
+    "fromHours": 2,
+    "toHours": 8,
+    "label": "Peptide cleared. Appetite effects can persist several hours in animal studies."
+   }
+  ],
+  "sideEffects": [
+   "Strong appetite stimulation, the defining feature of this peptide",
+   "Prolactin and cortisol both roughly double at the dose that maximises growth hormone",
+   "Increased stage 2 sleep when dosed overnight, along with a nocturnal cortisol rise",
+   "Water retention, joint and muscle pain, injection site reactions",
+   "Transient bradycardia at every dose level in 28-day dog toxicology"
+  ],
+  "contraindications": [
+   "Active or suspected malignancy.",
+   "Cushing's disease or any ACTH-dependent hypercortisolism.",
+   "Prolactinoma or existing hyperprolactinaemia.",
+   "Diabetes or impaired glucose tolerance, growth hormone is counter-regulatory.",
+   "Untreated thyroid dysfunction."
+  ],
+  "status": "Not approved anywhere. Zero registered trials on ClinicalTrials.gov. A Cuban programme reached phase 3 for acute ischaemic stroke and missed its primary endpoint. Prohibited in sport at all times.",
+  "cautionBanner": "Two things the vendor literature gets wrong. First, cortisol and prolactin do not only rise 'at high doses', they roughly double at exactly the 1 mcg/kg dose that maximises growth hormone, so the effects cannot be separated by dosing lower. Second, the widely cited '28% increase in food intake in men' comes from a ghrelin study, not a GHRP-6 study.",
+  "citations": [
+   {
+    "label": "Bowers et al., JCEM 1990, the canonical dose-response",
+    "url": "https://academic.oup.com/jcem/article-abstract/70/4/975/2652594"
+   },
+   {
+    "label": "Cabrales et al. 2013, human pharmacokinetics",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/23099431/"
+   },
+   {
+    "label": "Pandya et al. 1998, GHRH dependence",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/9543138/"
+   }
+  ]
+ },
+ {
+  "id": "hcg",
+  "name": "hCG",
+  "aka": [
+   "Human chorionic gonadotropin",
+   "Pregnyl",
+   "Novarel",
+   "Ovidrel"
+  ],
+  "category": "ancillary",
+  "summary": "Acts like LH at the testis, keeping it working while the body's own signal is suppressed.",
+  "mechanism": "Binds the LH receptor on Leydig cells and drives testosterone production directly, bypassing the pituitary. That is why it maintains testicular volume and function during suppression, and why it does nothing to restore the pituitary signal itself.",
+  "halfLifeHours": 33,
+  "halfLifeNote": "Biphasic: a fast phase of roughly 5 to 9 hours, then a slower terminal phase around 24 to 37 hours. 33 hours is taken from the terminal phase, which is what governs dosing interval. The one-compartment model the app uses cannot show both phases, so the first few hours after a dose are understated.",
+  "tmaxHours": 6,
+  "routes": [
+   "subcutaneous",
+   "intramuscular"
+  ],
+  "preparation": "powder",
+  "iuPerMg": 1000,
+  "vialSizesMg": [
+   5,
+   10
+  ],
+  "reconstitutedDays": 30,
+  "mechanismClass": [
+   "gonadotropin"
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 500,
+    "highMcg": 1000,
+    "frequency": "twice or three times weekly",
+    "perWeek": 3,
+    "evidence": "anecdotal",
+    "note": "500 to 1000 IU per injection, to maintain testicular function during suppression. Community practice; there is no approved dose for this use."
+   },
+   {
+    "lowMcg": 1000,
+    "highMcg": 4000,
+    "frequency": "twice or three times weekly",
+    "perWeek": 3,
+    "evidence": "clinical",
+    "note": "1000 to 4000 IU, the range used clinically for hypogonadotropic hypogonadism and fertility restoration."
+   }
+  ],
+  "sideEffects": [
+   "Raised oestradiol, since driving testicular output raises the substrate for aromatase",
+   "Leydig cell desensitisation if held above replacement level for long enough, which is the opposite of the intended effect",
+   "Injection site reaction",
+   "Gynecomastia, downstream of the oestradiol rise",
+   "Monitor: oestradiol and total testosterone"
+  ],
+  "contraindications": [
+   "Known hormone-dependent tumour",
+   "Sustained high-dose use, which desensitises the receptor it depends on",
+   "Precocious puberty"
+  ],
+  "status": "Prescription-only. Approved for hypogonadotropic hypogonadism and ovulation induction. Banned in sport at all times for men.",
+  "citations": [
+   {
+    "label": "Disappearance of exogenously administered hCG, Fertility and Sterility",
+    "url": "https://www.fertstert.org/article/S0015-0282(16)60906-8/pdf"
+   }
+  ]
+ },
+ {
+  "id": "hgh-frag-176-191",
+  "name": "HGH Fragment 176-191",
+  "aka": [
+   "hGH 176-191"
+  ],
+  "category": "metabolic",
+  "summary": "The literal C-terminal fragment of growth hormone. Distinct from AOD-9604.",
+  "mechanism": "A 16-residue fragment of human growth hormone beginning with phenylalanine, cyclised through a disulfide bond. A lipolytic effect independent of the growth hormone receptor is claimed but no receptor target has been identified.",
+  "halfLifeHours": null,
+  "halfLifeNote": "No pharmacokinetic data exists for this peptide in any species.",
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   2,
+   5
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 250,
+    "highMcg": 500,
+    "frequency": "once or twice daily",
+    "perWeek": 10,
+    "evidence": "anecdotal",
+    "note": "Community convention with no supporting study of any kind."
+   }
+  ],
+  "sideEffects": [
+   "No safety data exists."
+  ],
+  "contraindications": [
+   "Prohibited in sport at all times, WADA names hGH 176-191 explicitly."
+  ],
+  "status": "Not approved. No human data of any kind.",
+  "cautionBanner": "This is not the same molecule as AOD-9604, despite constant cross-labelling. AOD-9604 has a tyrosine at the first position where this peptide has phenylalanine. All human data belongs to AOD-9604; native 176-191 has none. WADA lists the two separately, and a vial labelled one way may contain the other.",
+  "citations": [
+   {
+    "label": "UniProt P01241, human somatotropin sequence",
+    "url": "https://rest.uniprot.org/uniprotkb/P01241.txt"
+   }
+  ]
+ },
+ {
+  "id": "ipamorelin",
+  "name": "Ipamorelin",
+  "aka": [
+   "NNC 26-0161"
+  ],
+  "category": "growth-hormone",
+  "mechanismClass": [
+   "ghrelin-agonist"
+  ],
+  "summary": "A selective ghrelin receptor agonist, chosen for not raising cortisol or prolactin.",
+  "mechanism": "A pentapeptide agonist at GHS-R1a. Its selling point over GHRP-6 and GHRP-2 is selectivity: in the original characterisation it released growth hormone without the accompanying ACTH, cortisol and prolactin rise.",
+  "halfLifeHours": 2,
+  "halfLifeNote": "2 hours terminal, measured in humans. Clearance 0.078 L/h/kg, volume at steady state 0.22 L/kg. The growth hormone pulse it triggers peaks around 40 minutes, well before the peptide has cleared.",
+  "tmaxHours": 0.5,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   2,
+   5,
+   10
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 100,
+    "highMcg": 300,
+    "frequency": "one to three times daily",
+    "perWeek": 14,
+    "evidence": "anecdotal",
+    "note": "Community convention, often paired with a GHRH analogue. No approved dosing exists."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 0.5,
+    "label": "Growth hormone pulse rises and peaks."
+   },
+   {
+    "fromHours": 0.5,
+    "toHours": 3,
+    "label": "Pulse subsides. Peptide clearing."
+   }
+  ],
+  "sideEffects": [
+   "Headache, flushing, lightheadedness",
+   "Water retention and joint discomfort at higher doses",
+   "Less appetite stimulation than GHRP-6, though not none"
+  ],
+  "contraindications": [
+   "Active or suspected malignancy.",
+   "Diabetes or impaired glucose tolerance."
+  ],
+  "status": "Not approved. Its one substantial human trial, 0.03 mg/kg intravenously twice daily for 7 days in postoperative ileus, 117 patients, failed, and development stopped. Prohibited in sport at all times. Placed in FDA compounding Category 2 in September 2023.",
+  "cautionBanner": "The well-known selectivity claim, that it releases growth hormone without raising cortisol or prolactin, comes from a study in conscious swine. No dedicated human selectivity study was found. The longest human exposure on record is 7 days, by a different route and at roughly 10 to 20 times community doses.",
+  "citations": [
+   {
+    "label": "Raun et al. 1998, original characterisation (swine)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/9849822/"
+   },
+   {
+    "label": "Gobburu et al. 1999, human pharmacokinetics",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/10496658/"
+   }
+  ]
+ },
+ {
+  "id": "klow",
+  "name": "KLOW blend",
+  "aka": [
+   "KLOW 80",
+   "GHK-Cu + BPC-157 + TB-500 + KPV"
+  ],
+  "category": "blend",
+  "summary": "A four-peptide repair blend, sold as 80 mg in a 5:1:1:1 ratio.",
+  "mechanism": "Combines a copper-carrying skin peptide, two soft-tissue repair peptides and an anti-inflammatory tripeptide. Each component has its own preclinical rationale; the combination has never been studied.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Not meaningful for a blend whose components have half-lives ranging from minutes to unknown. Track the components separately if you want a curve.",
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   80
+  ],
+  "reconstitutedDays": 21,
+  "components": [
+   {
+    "peptideId": "ghk-cu",
+    "name": "GHK-Cu",
+    "mgPerVial": 50
+   },
+   {
+    "peptideId": "bpc-157",
+    "name": "BPC-157",
+    "mgPerVial": 10
+   },
+   {
+    "peptideId": "tb-500",
+    "name": "TB-500",
+    "mgPerVial": 10
+   },
+   {
+    "peptideId": "kpv",
+    "name": "KPV",
+    "mgPerVial": 10
+   }
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 1000,
+    "highMcg": 3000,
+    "frequency": "once daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "Total blend mass per dose, rotating injection sites. Every figure here comes from vendor and enthusiast sites."
+   }
+  ],
+  "sideEffects": [
+   "No safety data on the combination exists.",
+   "Copper load from the GHK-Cu component is the main practical concern."
+  ],
+  "contraindications": [
+   "Everything that applies to each component, in particular the copper cautions on GHK-Cu and the cancer cautions on BPC-157 and TB-500."
+  ],
+  "status": "Not approved. No published trial has evaluated this four-peptide combination.",
+  "cautionBanner": "The fixed 5:1:1:1 ratio means you cannot titrate the components independently. A dose that delivers a conventional 250 to 500 mcg of BPC-157 simultaneously delivers 1.25 to 2.5 mg of GHK-Cu, which is at or above the whole community range for GHK-Cu on its own. Dosing this blend to hit a BPC-157 target means dosing copper hard.",
+  "citations": [
+   {
+    "label": "Composition verified across three vendors at 50/10/10/10 mg",
+    "url": "https://www.peptidedosingprotocols.com/stacks/klow-stack"
+   }
+  ]
+ },
+ {
+  "id": "kpv",
+  "name": "KPV",
+  "aka": [
+   "Lys-Pro-Val",
+   "alpha-MSH 11-13"
+  ],
+  "category": "repair",
+  "summary": "The three-amino-acid tail of alpha-MSH. Anti-inflammatory, and it works in the gut.",
+  "mechanism": "Taken up through PepT1, a di- and tripeptide transporter that is normally scarce in the colon but is upregulated in inflamed epithelium, so it concentrates in diseased tissue. Once inside it inhibits NF-kB and MAP kinase signalling. The action is transporter-mediated, not melanocortin-receptor mediated.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Unknown. No pharmacokinetic study exists in any species.",
+  "routes": [
+   "oral",
+   "subcutaneous",
+   "topical"
+  ],
+  "vialSizesMg": [
+   5,
+   10
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 250,
+    "highMcg": 500,
+    "frequency": "once or twice daily",
+    "perWeek": 10,
+    "evidence": "anecdotal",
+    "note": "No human study of KPV exists by any route. The only published efficacy dose is 205 mcg per day given orally to mice."
+   }
+  ],
+  "sideEffects": [
+   "No human safety data exists, because no human study exists."
+  ],
+  "contraindications": [
+   "Active infection or concurrent immunosuppressants, inhibiting NF-kB implies immunosuppression, though this has not been documented in people."
+  ],
+  "status": "Not approved. An FDA advisory committee voted 8 to 6 in favour of the 503A compounding list in July 2026 for wound healing and inflammatory conditions. Not listed by WADA.",
+  "cautionBanner": "Oral is the mechanistically correct route, because PepT1 is a gut transporter. Injecting KPV bypasses the gut lumen entirely. Topical creams are contradicted by the only permeation study, which found passive skin flux below the limit of detection.",
+  "citations": [
+   {
+    "label": "Dalmasso et al. 2008, Gastroenterology, PepT1 mechanism",
+    "url": "https://www.gastrojournal.org/article/S0016-5085(07)01852-5/fulltext"
+   },
+   {
+    "label": "Pawar & Kolli 2017, transdermal permeation in human skin",
+    "url": "https://jpharmsci.org/article/S0022-3549(17)30174-0/abstract"
+   }
+  ]
+ },
+ {
+  "id": "liraglutide",
+  "name": "Liraglutide",
+  "aka": [
+   "Victoza",
+   "Saxenda"
+  ],
+  "category": "metabolic",
+  "mechanismClass": [
+   "glp1-agonist"
+  ],
+  "summary": "GLP-1 receptor agonist, dosed daily rather than weekly. FDA approved.",
+  "mechanism": "97% homologous to human GLP-1. Protraction comes from self-association at the injection site plus plasma protein binding, a different mechanism from semaglutide's albumin binding, and it produces a much shorter half-life.",
+  "halfLifeHours": 13,
+  "halfLifeNote": "13 hours after subcutaneous dosing. Short enough that each daily dose rises and falls almost completely.",
+  "tmaxHours": 10,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [],
+  "doseRanges": [
+   {
+    "lowMcg": 600,
+    "highMcg": 3000,
+    "frequency": "once daily",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "Saxenda tops out at 3 mg daily; Victoza at 1.8 mg."
+   }
+  ],
+  "titrations": [
+   {
+    "id": "lira-saxenda",
+    "name": "Saxenda escalation to 3 mg",
+    "source": "Saxenda prescribing information, Table 1",
+    "sourceUrl": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=5a9ef4ea-c76a-4d34-a604-27c5b505f5a4",
+    "evidence": "approved",
+    "note": "If more than 3 days have passed since the last dose, the label says to restart at 0.6 mg and escalate again.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 600,
+      "weeks": 1
+     },
+     {
+      "step": 2,
+      "doseMcg": 1200,
+      "weeks": 1
+     },
+     {
+      "step": 3,
+      "doseMcg": 1800,
+      "weeks": 1
+     },
+     {
+      "step": 4,
+      "doseMcg": 2400,
+      "weeks": 1
+     },
+     {
+      "step": 5,
+      "doseMcg": 3000,
+      "weeks": 12
+     }
+    ]
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 8,
+    "label": "Absorbing from the depot."
+   },
+   {
+    "fromHours": 8,
+    "toHours": 14,
+    "label": "Peak plasma levels, 8 to 12 hours in."
+   },
+   {
+    "fromHours": 14,
+    "toHours": 24,
+    "label": "Falling steeply. Roughly a quarter of peak remains by hour 24."
+   },
+   {
+    "fromHours": 24,
+    "toHours": 48,
+    "label": "Essentially cleared. There is almost no accumulation between daily doses."
+   }
+  ],
+  "sideEffects": [
+   "Nausea, vomiting, diarrhoea, constipation",
+   "Injection site reactions",
+   "Gallbladder disease",
+   "Pancreatitis, uncommon"
+  ],
+  "contraindications": [
+   "Boxed warning: thyroid C-cell tumours in rodents. Contraindicated with a personal or family history of medullary thyroid carcinoma or MEN 2.",
+   "Caution with insulin or sulfonylureas."
+  ],
+  "status": "FDA approved as Victoza (type 2 diabetes) and Saxenda (weight management).",
+  "citations": [
+   {
+    "label": "Victoza prescribing information",
+    "url": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=5a9ef4ea-c76a-4d34-a604-27c5b505f5a4"
+   }
+  ]
+ },
+ {
+  "id": "ll-37",
+  "name": "LL-37",
+  "aka": [
+   "human cathelicidin",
+   "hCAP18 fragment"
+  ],
+  "category": "immune",
+  "summary": "The body's own 37-amino-acid antimicrobial peptide.",
+  "mechanism": "Cationic and amphipathic, it disrupts microbial membranes directly. It is also an immune signalling molecule, driving chemotaxis and TLR2 signalling.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Unknown. No pharmacokinetic data for administered LL-37 was found.",
+  "routes": [
+   "subcutaneous",
+   "topical"
+  ],
+  "vialSizesMg": [
+   5,
+   10
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 250,
+    "highMcg": 250,
+    "frequency": "weekly, injected into the lesion",
+    "perWeek": 1,
+    "evidence": "preliminary",
+    "note": "The melanoma trial that used this dose enrolled four patients. That is the entire interventional injection experience."
+   }
+  ],
+  "sideEffects": [
+   "Essentially uncharacterised in humans."
+  ],
+  "contraindications": [
+   "Rosacea, psoriasis, lupus or other inflammatory skin disease. This is the strongest contraindication of any compound in this library: intradermal LL-37 injection is the standard method for inducing rosacea-like lesions in mice, and LL-37 acts as an autoantigen in lupus."
+  ],
+  "status": "Not approved. Not compoundable. Not listed by WADA.",
+  "cautionBanner": "Injecting LL-37 means administering the exact molecule used to induce rosacea in animal models. Both registered interventional trials chose local delivery, most likely because systemic cationic antimicrobial peptides risk haemolysis.",
+  "citations": [
+   {
+    "label": "NCT02225366, intratumoral melanoma trial, n=4",
+    "url": "https://clinicaltrials.gov/study/NCT02225366"
+   },
+   {
+    "label": "LL-37 in rosacea pathogenesis",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42244277/"
+   }
+  ]
+ },
+ {
+  "id": "mazdutide",
+  "name": "Mazdutide",
+  "aka": [
+   "IBI362",
+   "LY3305677"
+  ],
+  "category": "metabolic",
+  "mechanismClass": [
+   "glp1-agonist",
+   "glucagon-agonist"
+  ],
+  "summary": "GLP-1 and glucagon receptor dual agonist, an oxyntomodulin analogue. Approved in China only.",
+  "mechanism": "An oxyntomodulin analogue engineered for weekly dosing. Like survodutide it combines GLP-1 appetite suppression with glucagon-driven energy expenditure.",
+  "halfLifeHours": 192,
+  "halfLifeNote": "About 8 days. Individual phase 1 cohorts reported anywhere from 147 to over 1000 hours; the very long upper bounds are almost certainly artefacts of sampling only across a 168-hour window.",
+  "tmaxHours": 72,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   2,
+   4,
+   6
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 2000,
+    "highMcg": 6000,
+    "frequency": "once weekly",
+    "perWeek": 1,
+    "evidence": "approved",
+    "note": "Approved in China with a maximum of 6 mg weekly, and a minimum of 5 days between doses. A 9 mg application was accepted for review in November 2025 but is not yet approved."
+   },
+   {
+    "lowMcg": 9000,
+    "highMcg": 16000,
+    "frequency": "once weekly",
+    "perWeek": 1,
+    "evidence": "clinical",
+    "note": "Studied but not approved. 9 mg reached 16.7% weight loss over 60 weeks in GLORY-2; a phase 1 escalation went to 16 mg."
+   }
+  ],
+  "titrations": [
+   {
+    "id": "mazdu-glory1-6mg",
+    "name": "GLORY-1 escalation to 6 mg",
+    "source": "NCT05607680, phase 3",
+    "sourceUrl": "https://clinicaltrials.gov/study/NCT05607680",
+    "evidence": "clinical",
+    "note": "The most completely specified titration of any unapproved compound here, the registry states each step explicitly.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 2000,
+      "weeks": 4
+     },
+     {
+      "step": 2,
+      "doseMcg": 4000,
+      "weeks": 4
+     },
+     {
+      "step": 3,
+      "doseMcg": 6000,
+      "weeks": 40
+     }
+    ]
+   },
+   {
+    "id": "mazdu-glory1-4mg",
+    "name": "GLORY-1 escalation to 4 mg",
+    "source": "NCT05607680, phase 3",
+    "sourceUrl": "https://clinicaltrials.gov/study/NCT05607680",
+    "evidence": "clinical",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 2000,
+      "weeks": 4
+     },
+     {
+      "step": 2,
+      "doseMcg": 4000,
+      "weeks": 44
+     }
+    ]
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 48,
+    "label": "Absorbing slowly. Little felt in the first day or two."
+   },
+   {
+    "fromHours": 48,
+    "toHours": 96,
+    "label": "Peak plasma levels around 72 hours. Gastrointestinal effects cluster here, 3 to 4 days after the injection."
+   },
+   {
+    "fromHours": 96,
+    "toHours": 168,
+    "label": "Declining toward the next dose. Roughly 60% of peak remains at day 7."
+   }
+  ],
+  "sideEffects": [
+   "Vomiting in 53%, nausea in 47% and diarrhoea in 39% at the 9 mg dose, against a few percent on placebo",
+   "Much better tolerated at the approved 4 and 6 mg doses, where discontinuation for adverse events was under 2%",
+   "Decreased appetite, abdominal distension"
+  ],
+  "contraindications": [
+   "Not FDA approved. Glucagon receptor agonism carries the same considerations as survodutide."
+  ],
+  "status": "Approved in China by the NMPA in June 2025 as Xinermei, at up to 6 mg weekly. Not approved by the FDA.",
+  "reconstitutedDays": 30,
+  "citations": [
+   {
+    "label": "NCT05607680, GLORY-1 phase 3",
+    "url": "https://clinicaltrials.gov/study/NCT05607680"
+   },
+   {
+    "label": "GLORY-1, NEJM 2025",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/40421736/"
+   },
+   {
+    "label": "Mazdutide: First Approval, Drugs 2025",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41028652/"
+   }
+  ]
+ },
+ {
+  "id": "methandienone",
+  "name": "Methandienone",
+  "aka": [
+   "Dianabol",
+   "Dbol",
+   "Methandrostenolone"
+  ],
+  "category": "anabolic",
+  "summary": "The original oral anabolic, and still the archetype.",
+  "mechanism": "A 17-alpha-alkylated testosterone derivative that aromatises readily, so oestrogenic effects are prominent alongside the androgenic ones.",
+  "halfLifeHours": 5,
+  "halfLifeNote": "Around 4.5 to 6 hours, which is why it is conventionally split across the day. The figure is consistent across sources but rests on old pharmacology rather than a modern study.",
+  "tmaxHours": 1.5,
+  "routes": [
+   "oral"
+  ],
+  "preparation": "solution",
+  "vialSizesMg": [],
+  "c17AlphaAlkylated": true,
+  "suppressesNaturalProduction": true,
+  "aromatises": true,
+  "doseRanges": [
+   {
+    "lowMcg": 20000,
+    "highMcg": 50000,
+    "frequency": "daily, in divided doses",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "Community convention. No current clinical dosing exists; the compound is not licensed for human use anywhere."
+   }
+  ],
+  "sideEffects": [
+   "Rapid water retention and a matching rise in blood pressure",
+   "Aromatises strongly, gynecomastia is a common reason people stop",
+   "Liver strain, as with any 17-alpha-alkylated oral",
+   "A steep fall in HDL",
+   "Suppression",
+   "Monitor: ALT and AST",
+   "Monitor: blood pressure, which can rise quickly",
+   "Monitor: lipids and oestradiol"
+  ],
+  "contraindications": [
+   "Existing liver disease",
+   "Hypertension",
+   "Prostate or breast cancer",
+   "Pregnancy",
+   "Taking another 17-alpha-alkylated oral at the same time"
+  ],
+  "status": "Not licensed for human use in most countries. Schedule III in the United States. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Metandienone pharmacology",
+    "url": "https://en.wikipedia.org/wiki/Metandienone"
+   }
+  ],
+  "cautionBanner": "Not licensed for human use anywhere. Dosing is entirely community convention, and blood pressure can rise sharply within the first fortnight."
+ },
+ {
+  "id": "mots-c",
+  "name": "MOTS-c",
+  "aka": [
+   "mitochondrial ORF of the twelve S rRNA type-c"
+  ],
+  "category": "longevity",
+  "summary": "A 16-amino-acid peptide encoded in mitochondrial DNA.",
+  "mechanism": "A mitochondrial-derived peptide that activates AMPK and influences the folate, methionine cycle, shifting cells toward glucose utilisation. Studied for insulin sensitivity and exercise capacity.",
+  "halfLifeHours": null,
+  "halfLifeNote": "No human pharmacokinetic data was located.",
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   5,
+   10
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 5000,
+    "highMcg": 10000,
+    "frequency": "two or three times weekly",
+    "perWeek": 2.5,
+    "evidence": "anecdotal",
+    "note": "Community convention. No human trial dosing exists."
+   }
+  ],
+  "sideEffects": [
+   "No human safety data exists."
+  ],
+  "contraindications": [
+   "No established contraindications, because no human study has been done."
+  ],
+  "status": "Not approved. An FDA advisory committee voted 7 to 5 in favour of adding it to the 503A compounding list in July 2026, nominated for obesity and osteoporosis. That vote is non-binding.",
+  "citations": [
+   {
+    "label": "Lee et al. 2015, Cell Metabolism, original characterisation",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/25738459/"
+   }
+  ]
+ },
+ {
+  "id": "nandrolone-decanoate",
+  "name": "Nandrolone decanoate",
+  "aka": [
+   "Deca-Durabolin",
+   "Deca",
+   "19-nortestosterone decanoate"
+  ],
+  "category": "anabolic",
+  "summary": "A long-acting nandrolone ester, used clinically for anaemia and wasting.",
+  "mechanism": "Nandrolone differs from testosterone by a single missing carbon, which makes it a weaker androgen at the skin and prostate while remaining strongly anabolic in muscle. It does not aromatise to oestradiol but is progestogenic, which is a different route to the same gynecomastia risk.",
+  "halfLifeHours": 144,
+  "halfLifeNote": "6 days, being the half-life of release from the intramuscular depot. Once freed, nandrolone itself is cleared with a half-life of about 4.3 hours, so the depot is entirely what governs the curve.",
+  "tmaxHours": 72,
+  "routes": [
+   "intramuscular"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   100,
+   200,
+   250
+  ],
+  "vialSizesMg": [
+   1000,
+   2000,
+   2500
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": true,
+  "doseRanges": [
+   {
+    "lowMcg": 50000,
+    "highMcg": 100000,
+    "frequency": "every 1 to 4 weeks",
+    "perWeek": 1,
+    "evidence": "approved",
+    "note": "Clinical dosing for anaemia of renal insufficiency and for wasting."
+   },
+   {
+    "lowMcg": 200000,
+    "highMcg": 400000,
+    "frequency": "weekly",
+    "perWeek": 1,
+    "evidence": "anecdotal",
+    "note": "Common non-medical range. No trial supports it, and progestogenic effects and sexual dysfunction both scale with the dose."
+   }
+  ],
+  "sideEffects": [
+   "Sexual dysfunction, common and able to persist, the effect the compound is best known for",
+   "Progestogen-driven gynecomastia, by a different mechanism than oestrogen",
+   "Marked and prolonged suppression; recovery is slower than from testosterone",
+   "Raised haematocrit and blood pressure",
+   "Detectable in anti-doping tests for many months",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds",
+   "Monitor: prolactin, given the progestogenic activity"
+  ],
+  "contraindications": [
+   "Prostate or breast cancer",
+   "Trying to conceive",
+   "Pregnancy",
+   "Any competitive athlete subject to testing, the detection window is exceptionally long"
+  ],
+  "status": "Prescription-only, Schedule III in the United States. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Pharmacokinetic parameters of nandrolone after IM nandrolone decanoate (Eur J Endocrinol)",
+    "url": "https://academic.oup.com/ejendo/article/110/3_Supplement_a/S19/6802058"
+   },
+   {
+    "label": "Pharmacokinetic evaluation of three IM doses of nandrolone decanoate (JCEM)",
+    "url": "https://academic.oup.com/jcem/article-abstract/90/5/2624/2836761"
+   }
+  ]
+ },
+ {
+  "id": "nandrolone-phenylpropionate",
+  "name": "Nandrolone phenylpropionate",
+  "aka": [
+   "NPP",
+   "Durabolin"
+  ],
+  "category": "anabolic",
+  "summary": "The short-ester nandrolone, injected every few days instead of weekly.",
+  "mechanism": "The same nandrolone as the decanoate, on a much shorter ester. Levels rise and fall faster, which makes an unwanted effect easier to back out of.",
+  "halfLifeHours": null,
+  "halfLifeNote": "No published human pharmacokinetic study measures this directly. Duration of action is given as around 10 days, but a duration is not a half-life and the two are not interchangeable, so no curve is drawn. Expect depot release considerably faster than the decanoate, on the strength of the shorter ester alone.",
+  "routes": [
+   "intramuscular"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   100
+  ],
+  "vialSizesMg": [
+   1000
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": true,
+  "doseRanges": [
+   {
+    "lowMcg": 100000,
+    "highMcg": 300000,
+    "frequency": "weekly total, split every second or third day",
+    "perWeek": 3,
+    "evidence": "anecdotal",
+    "note": "No clinical dosing exists for this ester at these amounts."
+   }
+  ],
+  "sideEffects": [
+   "As nandrolone decanoate: sexual dysfunction, progestogenic gynecomastia, strong suppression",
+   "More frequent injections than the decanoate",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds",
+   "Monitor: prolactin"
+  ],
+  "contraindications": [
+   "Prostate or breast cancer",
+   "Trying to conceive",
+   "Pregnancy",
+   "Competitive athletes subject to testing"
+  ],
+  "status": "Prescription-only, Schedule III in the United States. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Androgen ester, parenteral durations of action",
+    "url": "https://en.wikipedia.org/wiki/Androgen_ester"
+   }
+  ],
+  "cautionBanner": "Dosing here is community convention, not clinical practice. Nothing at these amounts has been studied."
+ },
+ {
+  "id": "oxandrolone",
+  "name": "Oxandrolone",
+  "aka": [
+   "Anavar",
+   "Oxandrin"
+  ],
+  "category": "anabolic",
+  "summary": "An oral with genuine clinical history, burns recovery and weight restoration, and the best-documented pharmacokinetics of any oral here.",
+  "mechanism": "A DHT derivative, 17-alpha-alkylated so it survives first-pass metabolism in the liver. Does not aromatise.",
+  "halfLifeHours": 9.4,
+  "halfLifeNote": "9.4 hours in adults, from the approved label. Longer than most orals, which is why once or twice daily is enough.",
+  "tmaxHours": 1,
+  "routes": [
+   "oral"
+  ],
+  "preparation": "solution",
+  "vialSizesMg": [],
+  "c17AlphaAlkylated": true,
+  "suppressesNaturalProduction": true,
+  "aromatises": false,
+  "doseRanges": [
+   {
+    "lowMcg": 2500,
+    "highMcg": 20000,
+    "frequency": "daily, in two divided doses",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "2.5 to 20 mg daily for weight gain after weight loss, trauma or prolonged corticosteroid use."
+   },
+   {
+    "lowMcg": 20000,
+    "highMcg": 80000,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "Common non-medical range, above the approved maximum. Liver strain and the fall in HDL both scale with the dose."
+   }
+  ],
+  "sideEffects": [
+   "A pronounced fall in HDL cholesterol, more so than the injectables, as with all 17-alpha-alkylated orals",
+   "Liver strain; the label carries a warning for peliosis hepatis and liver tumours",
+   "Suppression, which happens on orals just as it does on injectables",
+   "Monitor: ALT and AST",
+   "Monitor: lipids, especially HDL",
+   "Monitor: haematocrit and blood pressure"
+  ],
+  "contraindications": [
+   "Existing liver disease",
+   "Prostate or breast cancer",
+   "Pregnancy",
+   "Taking another 17-alpha-alkylated oral at the same time"
+  ],
+  "status": "Prescription-only, Schedule III in the United States. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Somatropin and anabolic agent dosing reference (Drugs.com)",
+    "url": "https://www.drugs.com/dosage/oxandrolone.html"
+   }
+  ]
+ },
+ {
+  "id": "pda",
+  "name": "Pentadeca Arginate",
+  "aka": [
+   "PDA",
+   "BPC-157 arginate"
+  ],
+  "category": "repair",
+  "summary": "BPC-157 supplied as an arginine salt. The same peptide, not a new molecule.",
+  "mechanism": "Identical peptide sequence to BPC-157. Every mechanistic claim made for it is transplanted from BPC-157 rodent work; no study has ever been performed on the arginate salt.",
+  "halfLifeHours": 0.42,
+  "halfLifeNote": "Taken from BPC-157 animal data. No study of this salt form exists.",
+  "tmaxHours": 0.4,
+  "routes": [
+   "subcutaneous",
+   "oral"
+  ],
+  "vialSizesMg": [
+   5,
+   10,
+   20
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 250,
+    "highMcg": 750,
+    "frequency": "once or twice daily",
+    "perWeek": 10,
+    "evidence": "anecdotal",
+    "note": "Community protocols only. No registered human trial of PDA exists."
+   }
+  ],
+  "sideEffects": [
+   "No human safety data or toxicology exists for this salt form."
+  ],
+  "contraindications": [
+   "The same considerations as BPC-157."
+  ],
+  "status": "Not approved. Note that the July 2026 FDA advisory vote covered BPC-157 free base and BPC-157 acetate. The arginate salt was not what was voted on.",
+  "cautionBanner": "Searching PubMed for 'pentadeca arginate' or 'BPC-157 arginate' returns zero results. The marketing claims of 90% oral bioavailability and 1000-fold greater acid stability have no published study behind them. Separately: 'Pentadeca' and 'Pentosan' are unrelated, Pentosan Polysulfate (Elmiron) is an FDA-approved sulfated polysaccharide for interstitial cystitis, not a peptide.",
+  "citations": [
+   {
+    "label": "PubMed, zero results for the compound name",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/?term=%22pentadeca+arginate%22"
+   }
+  ]
+ },
+ {
+  "id": "pt-141",
+  "name": "PT-141",
+  "aka": [
+   "Bremelanotide",
+   "Vyleesi"
+  ],
+  "category": "sexual",
+  "summary": "A melanocortin receptor agonist for low sexual desire. FDA approved.",
+  "mechanism": "An analogue of alpha-MSH acting at melanocortin receptors in the central nervous system, principally MC4R. It works through brain pathways governing sexual desire rather than through blood flow, which is what distinguishes it from PDE5 inhibitors.",
+  "halfLifeHours": 2.7,
+  "halfLifeNote": "About 2.7 hours after subcutaneous injection.",
+  "tmaxHours": 1,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   1.75,
+   10
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 1750,
+    "highMcg": 1750,
+    "frequency": "as needed, at least 45 minutes before activity",
+    "perWeek": 2,
+    "evidence": "approved",
+    "note": "1.75 mg subcutaneously in the abdomen or thigh. No more than one dose in 24 hours and no more than eight doses per month."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 1,
+    "label": "Absorbing. The label advises dosing at least 45 minutes ahead."
+   },
+   {
+    "fromHours": 1,
+    "toHours": 3,
+    "label": "Peak levels. Nausea, if it happens, is most likely here."
+   },
+   {
+    "fromHours": 3,
+    "toHours": 16,
+    "label": "Clearing. Blood pressure rises transiently and heart rate falls in this window."
+   }
+  ],
+  "sideEffects": [
+   "Nausea, often on the first dose, it affected about 40% in trials and led 8% to stop",
+   "Flushing and injection site reactions",
+   "Headache",
+   "Transient rise in blood pressure with a fall in heart rate, peaking in the first hours",
+   "Darkening of the skin or gums with repeated use, more likely in people with darker skin"
+  ],
+  "contraindications": [
+   "Uncontrolled high blood pressure or known cardiovascular disease.",
+   "Not for premenopausal women who are pregnant."
+  ],
+  "status": "FDA approved as Vyleesi for hypoactive sexual desire disorder in premenopausal women.",
+  "citations": [
+   {
+    "label": "Vyleesi prescribing information",
+    "url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=VYLEESI"
+   }
+  ]
+ },
+ {
+  "id": "retatrutide",
+  "name": "Retatrutide",
+  "aka": [
+   "LY3437943",
+   "Reta"
+  ],
+  "category": "metabolic",
+  "mechanismClass": [
+   "glp1-agonist",
+   "gip-agonist",
+   "glucagon-agonist"
+  ],
+  "summary": "Triple agonist at the GIP, GLP-1 and glucagon receptors. Investigational.",
+  "mechanism": "A single acylated peptide that activates three receptors at once. GLP-1 and GIP agonism suppress appetite and slow gastric emptying; adding glucagon receptor agonism raises energy expenditure, which is what separates it from the dual agonists.",
+  "halfLifeHours": 144,
+  "halfLifeNote": "Roughly 6 days, from the phase 1b multiple-ascending-dose study.",
+  "tmaxHours": 30,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [],
+  "doseRanges": [
+   {
+    "lowMcg": 1000,
+    "highMcg": 12000,
+    "frequency": "once weekly",
+    "perWeek": 1,
+    "evidence": "clinical",
+    "note": "Range of maintenance doses studied in the phase 2 obesity trial."
+   }
+  ],
+  "titrations": [
+   {
+    "id": "reta-p2-12mg",
+    "name": "Phase 2 escalation to 12 mg",
+    "source": "NCT04881760 (phase 2 obesity), 2 mg starting arm",
+    "sourceUrl": "https://clinicaltrials.gov/study/NCT04881760",
+    "evidence": "clinical",
+    "note": "The dose sequence is verified from the trial registry. The four-week step length is the interval widely reported for this trial but could not be confirmed from the registry or the paper, so treat the timing as approximate.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 2000,
+      "weeks": 4
+     },
+     {
+      "step": 2,
+      "doseMcg": 4000,
+      "weeks": 4
+     },
+     {
+      "step": 3,
+      "doseMcg": 8000,
+      "weeks": 4
+     },
+     {
+      "step": 4,
+      "doseMcg": 12000,
+      "weeks": 36,
+      "note": "Maintenance through week 48."
+     }
+    ]
+   },
+   {
+    "id": "reta-p2-8mg",
+    "name": "Phase 2 escalation to 8 mg",
+    "source": "NCT04881760, 2 mg starting arm",
+    "sourceUrl": "https://clinicaltrials.gov/study/NCT04881760",
+    "evidence": "clinical",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 2000,
+      "weeks": 4
+     },
+     {
+      "step": 2,
+      "doseMcg": 4000,
+      "weeks": 4
+     },
+     {
+      "step": 3,
+      "doseMcg": 8000,
+      "weeks": 40
+     }
+    ]
+   },
+   {
+    "id": "reta-p1b",
+    "name": "Phase 1b rapid escalation",
+    "source": "NCT04143802, cohort 5",
+    "sourceUrl": "https://clinicaltrials.gov/study/NCT04143802",
+    "evidence": "clinical",
+    "note": "Step lengths here are verified from the paper: two weeks, two weeks, then four and four.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 3000,
+      "weeks": 2
+     },
+     {
+      "step": 2,
+      "doseMcg": 6000,
+      "weeks": 2
+     },
+     {
+      "step": 3,
+      "doseMcg": 9000,
+      "weeks": 4
+     },
+     {
+      "step": 4,
+      "doseMcg": 12000,
+      "weeks": 4
+     }
+    ]
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 12,
+    "label": "Absorbing from the injection site. Little felt yet."
+   },
+   {
+    "fromHours": 12,
+    "toHours": 48,
+    "label": "Peak plasma levels. Appetite suppression and any nausea are usually strongest here."
+   },
+   {
+    "fromHours": 48,
+    "toHours": 144,
+    "label": "Past peak, still around half of the peak level. Steady appetite effect."
+   },
+   {
+    "fromHours": 144,
+    "toHours": 336,
+    "label": "Falling toward trough. Appetite often returns late in the week."
+   }
+  ],
+  "sideEffects": [
+   "Nausea, vomiting, diarrhoea and constipation, all dose-related",
+   "Eructation, which showed up specifically at the highest doses",
+   "Heart rate rose 2 to 13 bpm at 24 hours post-dose in the three highest dose groups",
+   "Decreased appetite to the point of inadequate intake"
+  ],
+  "contraindications": [
+   "Not an approved medicine anywhere. There is no label, no established safety monitoring and no verified source of supply.",
+   "Trial exclusion criteria included personal or family history of medullary thyroid carcinoma and MEN 2, following the class warning on other incretin drugs."
+  ],
+  "status": "Investigational. Not approved by the FDA or any other regulator. Phase 3 (TRIUMPH) doses are blinded and not public.",
+  "cautionBanner": "No approved label exists. Storage, stability after reconstitution and vial strength are undocumented for this compound, nothing sold as research material has verified identity, purity or sterility.",
+  "citations": [
+   {
+    "label": "Urva et al., Lancet 2022, phase 1b PK and safety",
+    "url": "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(22)02033-5/abstract"
+   },
+   {
+    "label": "NCT04881760, phase 2 obesity trial arms",
+    "url": "https://clinicaltrials.gov/study/NCT04881760"
+   },
+   {
+    "label": "Jastreboff et al., NEJM 2023, phase 2 results",
+    "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2301972"
+   }
+  ]
+ },
+ {
+  "id": "selank",
+  "name": "Selank",
+  "aka": [
+   "TP-7",
+   "Selanx"
+  ],
+  "category": "cognitive",
+  "summary": "An anxiolytic peptide developed in Russia, and the usual companion to Semax.",
+  "mechanism": "A synthetic analogue of the immunomodulatory peptide tuftsin, stabilised with the same proline-glycine-proline tail that Semax carries. Reported to act on GABAergic and serotonergic signalling and to raise BDNF, without the sedation or dependence associated with benzodiazepines.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Not established in humans. The parent peptide is degraded in plasma within minutes, and intranasal absorption rather than clearance is likely to govern how long anything is present, but no study has measured it, so no curve is drawn.",
+  "routes": [
+   "intranasal",
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   5,
+   10
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 250,
+    "highMcg": 900,
+    "frequency": "daily, usually split between nostrils",
+    "perWeek": 7,
+    "evidence": "preliminary",
+    "note": "The range used in Russian clinical work on generalised anxiety disorder. Those studies are small, largely unreplicated outside Russia, and mostly unavailable in English."
+   }
+  ],
+  "sideEffects": [
+   "Nasal irritation with the intranasal form",
+   "Fatigue or flatness in some users",
+   "The safety record rests on small studies from a single country"
+  ],
+  "contraindications": [
+   "Pregnancy",
+   "No meaningful interaction data exists, so caution alongside psychiatric medication"
+  ],
+  "status": "Registered as a medicine in Russia; not approved anywhere in the EU or the United States, where it is sold as a research chemical.",
+  "citations": [
+   {
+    "label": "Selank, pharmacology and clinical studies overview",
+    "url": "https://en.wikipedia.org/wiki/Selank"
+   }
+  ],
+  "cautionBanner": "The evidence is a small Russian literature that has not been replicated elsewhere. Dose ranges come from those studies rather than from anything independent."
+ },
+ {
+  "id": "semaglutide",
+  "name": "Semaglutide",
+  "aka": [
+   "Ozempic",
+   "Wegovy",
+   "Rybelsus"
+  ],
+  "category": "metabolic",
+  "mechanismClass": [
+   "glp1-agonist"
+  ],
+  "summary": "GLP-1 receptor agonist. FDA approved.",
+  "mechanism": "94% homologous to human GLP-1, modified at position 26 with a C18 diacid so that it binds albumin and resists DPP-4. Slows gastric emptying, increases glucose-dependent insulin release and acts centrally to reduce appetite.",
+  "halfLifeHours": 161,
+  "halfLifeNote": "About one week. Measured at 145 to 165 hours for the 2.4 mg dose.",
+  "tmaxHours": 72,
+  "routes": [
+   "subcutaneous",
+   "oral"
+  ],
+  "vialSizesMg": [],
+  "doseRanges": [
+   {
+    "lowMcg": 250,
+    "highMcg": 7200,
+    "frequency": "once weekly",
+    "perWeek": 1,
+    "evidence": "approved",
+    "note": "Wegovy maintenance is 2.4 mg, extendable to 7.2 mg. Ozempic maintenance is 0.5, 1 or 2 mg."
+   }
+  ],
+  "titrations": [
+   {
+    "id": "sema-wegovy",
+    "name": "Wegovy escalation to 2.4 mg",
+    "source": "Wegovy prescribing information, Table 1",
+    "sourceUrl": "https://www.novo-pi.com/wegovy.pdf",
+    "evidence": "approved",
+    "note": "If a step is not tolerated, the label suggests delaying escalation by 4 weeks rather than pushing on. Missing two consecutive doses means restarting escalation at a lower dose.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 250,
+      "weeks": 4
+     },
+     {
+      "step": 2,
+      "doseMcg": 500,
+      "weeks": 4
+     },
+     {
+      "step": 3,
+      "doseMcg": 1000,
+      "weeks": 4
+     },
+     {
+      "step": 4,
+      "doseMcg": 1700,
+      "weeks": 4
+     },
+     {
+      "step": 5,
+      "doseMcg": 2400,
+      "weeks": 16,
+      "note": "Maintenance from week 17."
+     }
+    ]
+   },
+   {
+    "id": "sema-ozempic",
+    "name": "Ozempic escalation to 2 mg",
+    "source": "Ozempic prescribing information, section 2",
+    "sourceUrl": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=adec4fd2-6858-4c99-91d4-531f5f2a2d79",
+    "evidence": "approved",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 250,
+      "weeks": 4,
+      "note": "Starting dose, not for glycaemic control."
+     },
+     {
+      "step": 2,
+      "doseMcg": 500,
+      "weeks": 4
+     },
+     {
+      "step": 3,
+      "doseMcg": 1000,
+      "weeks": 4
+     },
+     {
+      "step": 4,
+      "doseMcg": 2000,
+      "weeks": 12
+     }
+    ]
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 24,
+    "label": "Absorbing slowly. Gastric emptying begins to slow."
+   },
+   {
+    "fromHours": 24,
+    "toHours": 96,
+    "label": "Peak plasma levels, 1 to 3 days after the dose."
+   },
+   {
+    "fromHours": 96,
+    "toHours": 168,
+    "label": "Descending. About 47% of peak remains at day 7."
+   },
+   {
+    "fromHours": 168,
+    "toHours": 336,
+    "label": "Between doses at steady state the swing is small, accumulation is roughly 1.9-fold."
+   }
+  ],
+  "sideEffects": [
+   "Nausea, vomiting, diarrhoea, constipation, abdominal pain",
+   "Gallbladder disease",
+   "Injection site reactions",
+   "Pancreatitis, uncommon",
+   "Diabetic retinopathy complications in people with existing retinopathy"
+  ],
+  "contraindications": [
+   "Boxed warning: thyroid C-cell tumours in rodents. Contraindicated with a personal or family history of medullary thyroid carcinoma or MEN 2.",
+   "Stop at least 2 months before a planned pregnancy, because of the long half-life.",
+   "Caution with insulin or sulfonylureas."
+  ],
+  "status": "FDA approved. Compounded semaglutide is outside that approval, and the FDA has warned specifically about salt forms (semaglutide sodium or acetate) that are not the approved active ingredient.",
+  "citations": [
+   {
+    "label": "Wegovy prescribing information",
+    "url": "https://www.novo-pi.com/wegovy.pdf"
+   },
+   {
+    "label": "Ozempic prescribing information",
+    "url": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=adec4fd2-6858-4c99-91d4-531f5f2a2d79"
+   },
+   {
+    "label": "Petri et al., population PK, one-compartment model",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6064581/"
+   }
+  ]
+ },
+ {
+  "id": "semax",
+  "name": "Semax",
+  "aka": [
+   "Met-Glu-His-Phe-Pro-Gly-Pro"
+  ],
+  "category": "cognitive",
+  "summary": "A heptapeptide ACTH fragment analogue, used in Russia as a nootropic and stroke drug.",
+  "mechanism": "Derived from ACTH(4-10) with a Pro-Gly-Pro tail that resists degradation. Raises BDNF and NGF expression and modulates monoamine systems, with no corticotropic activity of its own.",
+  "halfLifeHours": null,
+  "halfLifeNote": "No reliable human pharmacokinetic figure was located. Intranasal absorption is rapid; duration of central effect is reported as far longer than plasma presence.",
+  "routes": [
+   "intranasal",
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   5,
+   10
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 200,
+    "highMcg": 1000,
+    "frequency": "once or twice daily",
+    "perWeek": 10,
+    "evidence": "anecdotal",
+    "note": "Community convention for the intranasal route. Registered in Russia with its own dosing, which was not verified here."
+   }
+  ],
+  "sideEffects": [
+   "Nasal irritation with prolonged intranasal use. Little systematic safety data outside Russia."
+  ],
+  "contraindications": [
+   "A history of seizures or convulsions.",
+   "Conditions accompanied by anxiety, the registered leaflet lists this explicitly, and it is the caution most often left off vendor pages.",
+   "Pregnancy and breastfeeding.",
+   "Acute psychotic states."
+  ],
+  "status": "Registered as a medicine in Russia; not approved in the US or EU. An FDA advisory committee voted 8 to 5 in favour of the 503A compounding list in July 2026. That vote is non-binding.",
+  "citations": [
+   {
+    "label": "Federal Register, July 2026 PCAC meeting notice",
+    "url": "https://www.federalregister.gov/documents/2026/04/16/2026-07361/"
+   }
+  ]
+ },
+ {
+  "id": "somatropin",
+  "name": "Somatropin (HGH)",
+  "aka": [
+   "Human growth hormone",
+   "HGH",
+   "Norditropin",
+   "Genotropin",
+   "Humatrope",
+   "Omnitrope"
+  ],
+  "category": "growth-hormone",
+  "summary": "Growth hormone itself, rather than something that asks your pituitary to make more of it.",
+  "mechanism": "Recombinant human growth hormone, identical in sequence to the pituitary hormone. It acts directly at the GH receptor and more importantly for most of its effects, drives the liver to produce IGF-1. Unlike a secretagogue it does not depend on your own pituitary having anything left to give, and equally it does not respect the feedback loop that would normally limit the response.",
+  "halfLifeHours": 2.6,
+  "halfLifeNote": "2.6 hours after subcutaneous injection, peaking at about 4 hours. Short, but misleading on its own: the effects run through IGF-1, which has a half-life measured in hours to days, so what the body does lasts far longer than the hormone is present. The curve is drawn with a 3.5 hour peak rather than the published 4, because absorption from the subcutaneous depot is slower than clearance and a one-compartment model cannot place a peak later than that, the shape is right, the peak is half an hour early.",
+  "tmaxHours": 3.5,
+  "routes": [
+   "subcutaneous",
+   "intramuscular"
+  ],
+  "preparation": "solution",
+  "iuPerMg": 3,
+  "vialSizesMg": [
+   5,
+   10,
+   15
+  ],
+  "concentrationsMgPerMl": [
+   3.3,
+   6.7,
+   10
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 100,
+    "highMcg": 300,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "0.1-0.3 mg daily, or roughly 0.3-0.9 IU, as the starting dose for adult-onset growth hormone deficiency. Titrated monthly against IGF-1 rather than by feel."
+   },
+   {
+    "lowMcg": 300,
+    "highMcg": 1000,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "Maintenance for diagnosed deficiency, not exceeding 1 mg (3 IU) daily. Women on oral oestrogen generally need more; requirement falls with age."
+   },
+   {
+    "lowMcg": 667,
+    "highMcg": 1333,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "The 2-4 IU daily range used non-medically. Above the licensed maximum, and the glucose and fluid-retention effects scale with it."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 4,
+    "label": "Rising towards peak; the pulse is deliberately brief."
+   },
+   {
+    "fromHours": 4,
+    "toHours": 12,
+    "label": "Falling, while IGF-1 production in the liver picks up."
+   },
+   {
+    "fromHours": 12,
+    "toHours": 48,
+    "label": "Hormone long gone; IGF-1 is doing the work."
+   }
+  ],
+  "sideEffects": [
+   "Fluid retention, which is the commonest early effect and is dose-dependent",
+   "Carpal tunnel syndrome and paraesthesia",
+   "Joint and muscle aches",
+   "Insulin resistance and rising fasting glucose",
+   "Hypothyroidism, which can be unmasked rather than caused",
+   "Benign intracranial hypertension, rarely",
+   "Monitor: IGF-1, which is the only meaningful measure of whether the dose is right",
+   "Monitor: fasting glucose and HbA1c",
+   "Monitor: thyroid function"
+  ],
+  "contraindications": [
+   "Any active malignancy",
+   "Acute critical illness following surgery, trauma or respiratory failure",
+   "Proliferative diabetic retinopathy",
+   "Children with closed epiphyses, for growth purposes"
+  ],
+  "status": "Prescription-only everywhere, and specifically scheduled in several countries including the United States, where distribution for non-medical use is a federal offence. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Norditropin SmPC, 1 mg = 3 IU, adult dosing, pharmacokinetics",
+    "url": "https://www.medicines.org.uk/emc/product/11757/smpc"
+   },
+   {
+    "label": "Somatropin dosage reference (Drugs.com)",
+    "url": "https://www.drugs.com/dosage/somatropin.html"
+   }
+  ]
+ },
+ {
+  "id": "ss-31",
+  "name": "SS-31",
+  "aka": [
+   "Elamipretide",
+   "Bendavia",
+   "MTP-131",
+   "Forzinity"
+  ],
+  "category": "longevity",
+  "summary": "A four-amino-acid peptide that binds cardiolipin in the inner mitochondrial membrane. Approved in the United States in September 2025, for one rare disease.",
+  "mechanism": "D-Arg-dimethylTyr-Lys-Phe-NH2. It concentrates in the inner mitochondrial membrane and binds cardiolipin, the lipid that organises the electron transport chain into supercomplexes. Binding cardiolipin changes how cytochrome c interacts with it, which the approved label describes as improving mitochondrial morphology and function. It is not an antioxidant supplement and not a hormone.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Not stated anywhere citable for people. This is the unusual case of an approved drug whose label reports absorption, distribution and excretion but no half-life: peak at 0.5 to 1 hour after subcutaneous injection, 92% bioavailable, and essentially the whole dose recovered in urine as parent or the M1 and M2 metabolites by 48 hours, with minimal accumulation on daily dosing. Those facts bound it below a day without giving a figure. The 4 hours recorded here was measured in dogs given it intravenously, so the curve drawn from it shows a shape and not a level.",
+  "halfLifeEstimate": {
+   "hours": 4,
+   "evidence": "preclinical",
+   "species": "dogs",
+   "route": "intravenous",
+   "source": "ADDF Cognitive Vitality review, SS-31",
+   "url": "https://www.alzdiscovery.org/uploads/cognitive_vitality_media/SS-31-Cognitive-Vitality-For-Researchers.pdf"
+  },
+  "routes": [
+   "subcutaneous",
+   "intravenous"
+  ],
+  "vialSizesMg": [
+   10,
+   50
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 40000,
+    "highMcg": 40000,
+    "frequency": "once daily",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "40 mg subcutaneously once daily, in the abdomen or outer thigh, rotating sites. Halved to 20 mg in adults with an eGFR under 30 mL/min who are not on dialysis. This is the Barth syndrome dose in patients weighing at least 30 kg, and it is the same 40 mg daily dose used in the mitochondrial myopathy and heart failure trials."
+   }
+  ],
+  "sideEffects": [
+   "Injection site reactions, which are close to universal: every patient in the approved crossover trial had injection site erythema, and induration, pruritus and pain each affected two thirds or more.",
+   "Raised eosinophils, appearing when dosing runs past 30 days and peaking around day 90, then returning to baseline on continued treatment or after stopping. Not associated with any symptom or other laboratory change.",
+   "Hypersensitivity, including reactions needing emergency treatment. Rash, papular lesions, eczematous dermatitis and cough, from minutes to months after starting."
+  ],
+  "contraindications": [
+   "Serious hypersensitivity to elamipretide. Anyone who has had one should not be rechallenged.",
+   "Neonates. The approved solution is preserved with benzyl alcohol, 20 mg/mL, which has caused fatal gasping syndrome in low birth weight and preterm infants.",
+   "Severe renal impairment without a dose reduction. Exposure to the M1 and M2 metabolites rose by 280% and 640% at a creatinine clearance under 30 mL/min.",
+   "Known or suspected cancer, cautiously. In one mouse model of liver cancer, mitochondria-targeted antioxidants including this one increased tumour number and size while conventional antioxidants reduced them. Mouse data, one model, and never assessed in people."
+  ],
+  "status": "Approved by the FDA in September 2025 as Forzinity, to improve muscle strength in Barth syndrome at 30 kg and above. That is an accelerated approval resting on knee extensor strength, an intermediate endpoint, in twelve patients. Its phase 3 trial in primary mitochondrial myopathy, MMPOWER-3, enrolled 218 people and missed its primary endpoints, as did phase 2 trials in heart failure and the original Barth trial.",
+  "cautionBanner": "One narrow approval, and no evidence for the reason most people buy it. Nothing has been shown in humans for mitochondrial ageing, energy, fitness or cognition; the trials that tested harder endpoints in larger populations failed. Note also that the approved product is a ready-made preserved solution at 80 mg/mL, while material sold as research-grade SS-31 is lyophilised powder you reconstitute yourself, so the vial sizes here follow the powder.",
+  "citations": [
+   {
+    "label": "FDA prescribing information, Forzinity (elamipretide), September 2025",
+    "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/215244s000lbl.pdf"
+   },
+   {
+    "label": "DailyMed, Forzinity label",
+    "url": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=146bf34c-76f2-48db-ac07-fb29cce2cd75"
+   },
+   {
+    "label": "Karaa et al. 2023, Neurology, MMPOWER-3 phase 3 in primary mitochondrial myopathy",
+    "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10382259/"
+   },
+   {
+    "label": "ADDF Cognitive Vitality review, SS-31, for the canine 4 hour figure",
+    "url": "https://www.alzdiscovery.org/uploads/cognitive_vitality_media/SS-31-Cognitive-Vitality-For-Researchers.pdf"
+   }
+  ]
+ },
+ {
+  "id": "stanozolol",
+  "name": "Stanozolol",
+  "aka": [
+   "Winstrol",
+   "Winny"
+  ],
+  "category": "anabolic",
+  "summary": "An oral DHT derivative, historically used for hereditary angioedema.",
+  "mechanism": "A DHT derivative carrying a pyrazole ring, 17-alpha-alkylated for oral use. Does not aromatise and binds SHBG strongly, which raises the free fraction of anything else being run alongside it.",
+  "halfLifeHours": 9,
+  "halfLifeNote": "About 9 hours for the oral form. The injectable aqueous suspension behaves quite differently and is not covered by this figure.",
+  "tmaxHours": 1,
+  "routes": [
+   "oral"
+  ],
+  "preparation": "solution",
+  "vialSizesMg": [],
+  "c17AlphaAlkylated": true,
+  "suppressesNaturalProduction": true,
+  "aromatises": false,
+  "doseRanges": [
+   {
+    "lowMcg": 2000,
+    "highMcg": 6000,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "The dosing used for hereditary angioedema prophylaxis, which is what it was licensed for."
+   },
+   {
+    "lowMcg": 20000,
+    "highMcg": 50000,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "Common non-medical range, roughly ten times the clinical dose."
+   }
+  ],
+  "sideEffects": [
+   "Among the harshest of these compounds on lipids, a severe fall in HDL",
+   "Liver strain, as with any 17-alpha-alkylated oral",
+   "Joint discomfort and dryness, reported very consistently",
+   "Suppression",
+   "Monitor: ALT and AST",
+   "Monitor: lipids",
+   "Monitor: blood pressure"
+  ],
+  "contraindications": [
+   "Existing liver disease",
+   "Prostate or breast cancer",
+   "Pregnancy",
+   "Taking another 17-alpha-alkylated oral at the same time"
+  ],
+  "status": "Withdrawn from human use in the United States; still licensed in some countries. Schedule III. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Androgen ester and anabolic steroid pharmacology overview",
+    "url": "https://en.wikipedia.org/wiki/Stanozolol"
+   }
+  ],
+  "cautionBanner": "Non-medical dosing is around ten times the licensed dose, and the effect on lipids is the most severe of any compound in this category."
+ },
+ {
+  "id": "survodutide",
+  "name": "Survodutide",
+  "aka": [
+   "BI 456906"
+  ],
+  "category": "metabolic",
+  "mechanismClass": [
+   "glp1-agonist",
+   "glucagon-agonist"
+  ],
+  "summary": "Glucagon and GLP-1 receptor dual agonist. Investigational.",
+  "mechanism": "Fully activates the GLP-1 receptor but only partially activates the glucagon receptor at therapeutic exposures. The glucagon arm raises energy expenditure and drives the liver-fat effect that the MASH programme is built on.",
+  "halfLifeHours": 100,
+  "halfLifeNote": "Roughly 4 days, from a secondary review. Note the manufacturer's own trial protocol states 10 to 15 hours, which is inconsistent with weekly dosing and a 28-day residual effect period, and appears to be an error. Treat this curve as provisional.",
+  "tmaxHours": 30,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [],
+  "doseRanges": [
+   {
+    "lowMcg": 300,
+    "highMcg": 6000,
+    "frequency": "once weekly",
+    "perWeek": 1,
+    "evidence": "clinical"
+   }
+  ],
+  "titrations": [
+   {
+    "id": "survo-p2-mash",
+    "name": "Phase 2 MASH escalation to 6 mg",
+    "source": "NCT04771273 protocol, Table 4.1.4:1",
+    "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/73/NCT04771273/Prot_000.pdf",
+    "evidence": "clinical",
+    "note": "Two weeks per step throughout. Phase 3 deliberately slowed this down after gastrointestinal effects clustered in the escalation phase.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 300,
+      "weeks": 2
+     },
+     {
+      "step": 2,
+      "doseMcg": 600,
+      "weeks": 2
+     },
+     {
+      "step": 3,
+      "doseMcg": 900,
+      "weeks": 2
+     },
+     {
+      "step": 4,
+      "doseMcg": 1200,
+      "weeks": 2
+     },
+     {
+      "step": 5,
+      "doseMcg": 1800,
+      "weeks": 2
+     },
+     {
+      "step": 6,
+      "doseMcg": 2400,
+      "weeks": 2
+     },
+     {
+      "step": 7,
+      "doseMcg": 3000,
+      "weeks": 2
+     },
+     {
+      "step": 8,
+      "doseMcg": 3600,
+      "weeks": 2
+     },
+     {
+      "step": 9,
+      "doseMcg": 4200,
+      "weeks": 2
+     },
+     {
+      "step": 10,
+      "doseMcg": 4800,
+      "weeks": 2
+     },
+     {
+      "step": 11,
+      "doseMcg": 5400,
+      "weeks": 2
+     },
+     {
+      "step": 12,
+      "doseMcg": 6000,
+      "weeks": 24
+     }
+    ]
+   }
+  ],
+  "sideEffects": [
+   "Nausea in about two thirds of participants at maintenance doses",
+   "Vomiting up to 48%, diarrhoea up to 56%",
+   "Discontinuation for adverse events 16 to 27%, concentrated in the escalation phase rather than maintenance",
+   "Cholelithiasis reported at the higher doses"
+  ],
+  "contraindications": [
+   "Not an approved medicine. No label and no verified supply."
+  ],
+  "status": "Investigational. Holds FDA Breakthrough Therapy designation for non-cirrhotic MASH. Phase 3 SYNCHRONIZE trials are complete; not yet filed.",
+  "cautionBanner": "The published half-life is contradictory across sources. Curves for this compound are less reliable than for the approved drugs.",
+  "citations": [
+   {
+    "label": "NCT04771273 protocol, titration and PK",
+    "url": "https://cdn.clinicaltrials.gov/large-docs/73/NCT04771273/Prot_000.pdf"
+   },
+   {
+    "label": "Sanyal et al., NEJM 2024, phase 2 MASH",
+    "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2401755"
+   },
+   {
+    "label": "SYNCHRONIZE-1, NEJM 2026",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42253238/"
+   }
+  ]
+ },
+ {
+  "id": "tamoxifen",
+  "name": "Tamoxifen",
+  "aka": [
+   "Nolvadex"
+  ],
+  "category": "ancillary",
+  "summary": "An oestrogen receptor modulator: blocks the receptor in breast tissue while leaving circulating oestradiol alone.",
+  "mechanism": "Competes with oestradiol at the receptor, antagonist in breast tissue and agonist in bone and liver. At the pituitary it blocks oestrogen's negative feedback, which raises LH and FSH and drives the testes to produce again. That second effect is why it appears in recovery protocols.",
+  "halfLifeHours": 144,
+  "halfLifeNote": "5 to 7 days for the parent drug; 144 hours is the midpoint. The active metabolite N-desmethyltamoxifen is longer still at around 14 days, so steady state takes weeks and the tail after stopping is long.",
+  "tmaxHours": 5,
+  "routes": [
+   "oral"
+  ],
+  "preparation": "solution",
+  "vialSizesMg": [],
+  "mechanismClass": [
+   "serm"
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 20000,
+    "highMcg": 40000,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "20 to 40 mg daily, the approved range for breast cancer treatment and risk reduction."
+   },
+   {
+    "lowMcg": 10000,
+    "highMcg": 20000,
+    "frequency": "daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "10 to 20 mg daily, either for gynecomastia or as part of a recovery protocol after suppression. Neither use is an approved indication."
+   }
+  ],
+  "sideEffects": [
+   "Hot flushes",
+   "Nausea",
+   "Visual disturbance, uncommon but a reason to stop and seek advice",
+   "Raised risk of venous thromboembolism",
+   "Mood changes",
+   "Monitor: total and free testosterone, LH and FSH, if the purpose is recovery"
+  ],
+  "contraindications": [
+   "History of deep vein thrombosis or pulmonary embolism",
+   "Taking a second oestrogen receptor modulator at the same time",
+   "Pregnancy"
+  ],
+  "status": "Prescription-only. Approved for breast cancer, not for post-cycle recovery. Banned in sport at all times as a hormone and metabolic modulator.",
+  "citations": [
+   {
+    "label": "Serum elimination half-life of tamoxifen and its metabolites (PubMed 1458563)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/1458563/"
+   }
+  ]
+ },
+ {
+  "id": "tb-500",
+  "name": "TB-500",
+  "aka": [
+   "Ac-LKKTETQ",
+   "thymosin beta-4 fragment 17-23"
+  ],
+  "category": "repair",
+  "summary": "A seven-amino-acid fragment of thymosin beta-4. Not the same molecule as thymosin beta-4 itself.",
+  "mechanism": "Carries the actin-binding LKKTETQ motif from thymosin beta-4, which sequesters G-actin and regulates cell motility and cytoskeletal remodelling during tissue repair.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Unknown. No pharmacokinetic study of this fragment exists in any species. The widely repeated claim of a multi-day half-life has no source and is contradicted by full-length thymosin beta-4, which clears from human plasma in 0.5 to 2 hours.",
+  "routes": [
+   "subcutaneous",
+   "intramuscular"
+  ],
+  "vialSizesMg": [
+   2,
+   5,
+   10
+  ],
+  "reconstitutedDays": 28,
+  "doseRanges": [
+   {
+    "lowMcg": 2000,
+    "highMcg": 2500,
+    "frequency": "twice weekly loading, then weekly",
+    "perWeek": 2,
+    "evidence": "anecdotal",
+    "note": "Community loading protocol for 4 to 6 weeks, then maintenance. No clinical trial has ever used the subcutaneous route."
+   }
+  ],
+  "sideEffects": [
+   "No human safety data for this fragment exists.",
+   "Full-length thymosin beta-4 showed no dose-limiting toxicity across intravenous doses from 42 to 1260 mg."
+  ],
+  "contraindications": [
+   "Known or suspected cancer. Thymosin beta-4 overexpression in melanoma produced a 2.3-fold increase in cell migration and a 4.4-fold increase in tumour vessel count, and it is overexpressed in colon, pancreatic, renal and lung tumours.",
+   "Prohibited in sport at all times. WADA names it explicitly under S2.3: 'Thymosin-β4 and its derivatives, e.g. TB-500'."
+  ],
+  "status": "Not approved. An FDA advisory committee voted 8 to 6 in favour of the 503A compounding list in July 2026; that vote is non-binding.",
+  "cautionBanner": "Two chemically different molecules are sold as 'TB-500': this 7-residue fragment and full-length 43-residue thymosin beta-4, which is roughly 5.6 times heavier. All published clinical data belongs to the full-length peptide. There is no way to tell which is in a vial without mass spectrometry.",
+  "citations": [
+   {
+    "label": "Esposito et al. 2012, characterisation of purchased TB-500 as the 7-mer",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/22962027/"
+   },
+   {
+    "label": "Thymosin beta-4 human phase 1 PK",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8419156/"
+   },
+   {
+    "label": "JNCI 2003, thymosin beta-4 and tumour angiogenesis",
+    "url": "https://academic.oup.com/jnci/article/95/22/1674/2606660"
+   }
+  ]
+ },
+ {
+  "id": "tesamorelin",
+  "name": "Tesamorelin",
+  "aka": [
+   "Egrifta",
+   "TH9507"
+  ],
+  "category": "growth-hormone",
+  "mechanismClass": [
+   "ghrh-analogue"
+  ],
+  "summary": "A stabilised GHRH analogue. The only FDA-approved compound in this category.",
+  "mechanism": "A synthetic analogue of growth hormone releasing hormone that binds pituitary GHRH receptors and stimulates the body's own pulsatile growth hormone release, rather than supplying growth hormone directly.",
+  "halfLifeHours": 0.4,
+  "halfLifeNote": "Roughly 26 to 38 minutes after subcutaneous dosing in people with HIV lipodystrophy.",
+  "tmaxHours": 0.25,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   1,
+   2
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 2000,
+    "highMcg": 2000,
+    "frequency": "once daily",
+    "perWeek": 7,
+    "evidence": "approved",
+    "note": "2 mg subcutaneously into the abdomen once daily, rotating the site. Approved for excess abdominal fat in HIV-associated lipodystrophy."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 0.5,
+    "label": "Peak plasma levels within about 15 minutes, triggering a growth hormone pulse."
+   },
+   {
+    "fromHours": 0.5,
+    "toHours": 3,
+    "label": "Peptide cleared. The growth hormone pulse it triggered outlasts it."
+   },
+   {
+    "fromHours": 3,
+    "toHours": 24,
+    "label": "Downstream IGF-1 effects, which build over weeks of daily dosing."
+   }
+  ],
+  "sideEffects": [
+   "Injection site reactions, joint pain, muscle pain, swelling in the limbs",
+   "Raised IGF-1, which is the intended pharmacology and also the monitoring parameter",
+   "Glucose intolerance, growth hormone is counter-regulatory to insulin"
+  ],
+  "contraindications": [
+   "Active malignancy.",
+   "Disruption of the hypothalamic-pituitary axis from surgery, radiation or tumour.",
+   "Pregnancy.",
+   "Known hypersensitivity to tesamorelin or mannitol."
+  ],
+  "status": "FDA approved as Egrifta. Prohibited in sport at all times under WADA category S2.",
+  "citations": [
+   {
+    "label": "Egrifta prescribing information",
+    "url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=EGRIFTA"
+   }
+  ]
+ },
+ {
+  "id": "testosterone-cypionate",
+  "name": "Testosterone cypionate",
+  "aka": [
+   "Test C",
+   "Depo-Testosterone"
+  ],
+  "category": "anabolic",
+  "summary": "Near-identical in behaviour to enanthate; the ester common in the United States.",
+  "mechanism": "An eight-carbon cyclopentylpropionate ester of testosterone. Slightly heavier than enanthate, and released from the depot at a very similar rate.",
+  "halfLifeHours": 108,
+  "halfLifeNote": "Given as comparable to enanthate, around 4.5 days, in direct comparisons. A figure of about 8 days is widely repeated online; it traces to a single older estimate and is not what head-to-head measurements show.",
+  "tmaxHours": 48,
+  "routes": [
+   "intramuscular",
+   "subcutaneous"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   100,
+   200,
+   250
+  ],
+  "vialSizesMg": [
+   2000,
+   2500
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": true,
+  "doseRanges": [
+   {
+    "lowMcg": 50000,
+    "highMcg": 100000,
+    "frequency": "weekly, often split into two injections",
+    "perWeek": 1,
+    "evidence": "approved",
+    "note": "Replacement dosing. The label also describes 50 to 400 mg every two to four weeks, a schedule that produces a much larger swing between peak and trough."
+   }
+  ],
+  "sideEffects": [
+   "As testosterone enanthate, raised haematocrit, acne, oestradiol effects, testicular atrophy, hair loss in those predisposed",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds"
+  ],
+  "contraindications": [
+   "Prostate or breast cancer",
+   "Trying to conceive",
+   "Untreated severe sleep apnoea",
+   "Polycythaemia",
+   "Pregnancy"
+  ],
+  "status": "Prescription-only, Schedule III in the United States. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Depo-Testosterone clinical pharmacology (Pfizer)",
+    "url": "https://www.pfizermedical.com/depo-testosterone/clinical-pharmacology"
+   },
+   {
+    "label": "Pharmacokinetics of testosterone",
+    "url": "https://en.wikipedia.org/wiki/Pharmacokinetics_of_testosterone"
+   }
+  ]
+ },
+ {
+  "id": "testosterone-enanthate",
+  "name": "Testosterone enanthate",
+  "aka": [
+   "Test E",
+   "Delatestryl",
+   "Xyosted"
+  ],
+  "category": "anabolic",
+  "summary": "The reference long-acting testosterone ester, and the backbone of most replacement regimens.",
+  "mechanism": "A testosterone molecule with a seven-carbon ester attached, which makes it oil-soluble enough to sit in a muscle depot and release slowly. The ester is cleaved off in circulation, leaving plain testosterone to act on the androgen receptor.",
+  "halfLifeHours": 108,
+  "halfLifeNote": "4.5 days, measured after intramuscular injection in oil. This is the depot-release rate, not the clearance of testosterone itself, which is a matter of minutes to hours. The injection site is what governs the curve.",
+  "tmaxHours": 48,
+  "routes": [
+   "intramuscular",
+   "subcutaneous"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   200,
+   250
+  ],
+  "vialSizesMg": [
+   2000,
+   2500
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": true,
+  "doseRanges": [
+   {
+    "lowMcg": 50000,
+    "highMcg": 100000,
+    "frequency": "weekly, often split into two injections",
+    "perWeek": 1,
+    "evidence": "approved",
+    "note": "Replacement dosing for diagnosed hypogonadism. Splitting the weekly amount across two injections flattens the peak-to-trough swing."
+   },
+   {
+    "lowMcg": 100000,
+    "highMcg": 150000,
+    "frequency": "weekly",
+    "perWeek": 1,
+    "evidence": "clinical",
+    "note": "Studied in supraphysiological-dose trials. Above replacement, the dose-response for muscle continues but so does the rise in haematocrit and the fall in HDL."
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 24,
+    "label": "Ester still largely in the depot; little has reached circulation."
+   },
+   {
+    "fromHours": 24,
+    "toHours": 72,
+    "label": "Levels climbing towards peak."
+   },
+   {
+    "fromHours": 72,
+    "toHours": 168,
+    "label": "The plateau most of the week is spent in."
+   }
+  ],
+  "sideEffects": [
+   "Raised haematocrit, which is the most common reason to reduce a dose",
+   "Acne and oily skin",
+   "Oestradiol-driven effects: water retention, gynecomastia",
+   "Testicular atrophy and reduced fertility",
+   "Accelerated male-pattern hair loss in those predisposed",
+   "Mood and sleep changes",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds"
+  ],
+  "contraindications": [
+   "Prostate or breast cancer",
+   "Trying to conceive, suppression of spermatogenesis is the expected effect",
+   "Untreated severe sleep apnoea",
+   "Polycythaemia",
+   "Pregnancy"
+  ],
+  "status": "Prescription-only in most countries and a controlled substance in many, including Schedule III in the United States. Banned in sport by WADA at all times.",
+  "citations": [
+   {
+    "label": "Pharmacokinetics of testosterone, ester half-lives after IM injection",
+    "url": "https://en.wikipedia.org/wiki/Pharmacokinetics_of_testosterone"
+   },
+   {
+    "label": "Depo-Testosterone clinical pharmacology (Pfizer)",
+    "url": "https://www.pfizermedical.com/depo-testosterone/clinical-pharmacology"
+   }
+  ]
+ },
+ {
+  "id": "testosterone-propionate",
+  "name": "Testosterone propionate",
+  "aka": [
+   "Test P"
+  ],
+  "category": "anabolic",
+  "summary": "A short ester needing frequent injection, with correspondingly little accumulation.",
+  "mechanism": "A three-carbon ester. Too short to hold a depot for long, so it clears quickly and has to be injected every day or two to hold a steady level.",
+  "halfLifeHours": 19,
+  "halfLifeNote": "0.8 days after intramuscular injection in oil.",
+  "tmaxHours": 12,
+  "routes": [
+   "intramuscular",
+   "subcutaneous"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   100
+  ],
+  "vialSizesMg": [
+   1000
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": true,
+  "doseRanges": [
+   {
+    "lowMcg": 25000,
+    "highMcg": 50000,
+    "frequency": "every day or every other day",
+    "perWeek": 3.5,
+    "evidence": "anecdotal",
+    "note": "Weekly totals in the same range as the longer esters, delivered in smaller, more frequent injections. Post-injection soreness is common and dose-related."
+   }
+  ],
+  "sideEffects": [
+   "Injection-site pain, notably more than the longer esters",
+   "As testosterone generally, raised haematocrit, acne, oestradiol effects, testicular atrophy",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds"
+  ],
+  "contraindications": [
+   "Prostate or breast cancer",
+   "Trying to conceive",
+   "Polycythaemia",
+   "Pregnancy"
+  ],
+  "status": "Prescription-only, Schedule III in the United States. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Pharmacokinetics of testosterone",
+    "url": "https://en.wikipedia.org/wiki/Pharmacokinetics_of_testosterone"
+   }
+  ]
+ },
+ {
+  "id": "testosterone-undecanoate",
+  "name": "Testosterone undecanoate (injectable)",
+  "aka": [
+   "Nebido",
+   "Aveed",
+   "Test U"
+  ],
+  "category": "anabolic",
+  "summary": "A very long depot given every ten to fourteen weeks rather than weekly.",
+  "mechanism": "An eleven-carbon ester in castor oil. The long chain and the viscous vehicle together slow depot release enough to hold levels for months from a single injection.",
+  "halfLifeHours": 814,
+  "halfLifeNote": "33.9 days in castor oil; 20.9 days when formulated in tea seed oil. The vehicle matters as much as the ester, so the figure is specific to the preparation.",
+  "tmaxHours": 274,
+  "routes": [
+   "intramuscular"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   250
+  ],
+  "vialSizesMg": [
+   1000
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": true,
+  "doseRanges": [
+   {
+    "lowMcg": 1000000,
+    "highMcg": 1000000,
+    "frequency": "every 10 to 14 weeks",
+    "perWeek": 0.083,
+    "evidence": "approved",
+    "note": "1000 mg, with the second dose six weeks after the first and every 10 to 14 weeks thereafter. The label carries a boxed warning for pulmonary oil microembolism, which is why it is given under observation."
+   }
+  ],
+  "sideEffects": [
+   "Pulmonary oil microembolism, coughing, chest tightness during or just after injection",
+   "A large injection volume, given slowly and deep intramuscular",
+   "As testosterone generally, but harder to reverse quickly given how long the depot lasts",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds"
+  ],
+  "contraindications": [
+   "Prostate or breast cancer",
+   "Trying to conceive",
+   "Polycythaemia",
+   "Pregnancy",
+   "Any situation where a dose may need withdrawing quickly"
+  ],
+  "status": "Prescription-only and in the United States, dispensed through a restricted programme because of the embolism risk. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Pharmacokinetics of testosterone, undecanoate half-life by vehicle",
+    "url": "https://en.wikipedia.org/wiki/Pharmacokinetics_of_testosterone"
+   }
+  ]
+ },
+ {
+  "id": "thymosin-alpha-1",
+  "name": "Thymosin Alpha-1",
+  "aka": [
+   "thymalfasin",
+   "Zadaxin",
+   "Ta1"
+  ],
+  "category": "immune",
+  "summary": "A 28-amino-acid thymic peptide. Approved in around 35 countries, though not the US.",
+  "mechanism": "Immunomodulator cleaved from prothymosin alpha. Promotes T-cell maturation and raises peripheral CD4+ and CD8+ counts, while also damping excessive immune activation.",
+  "halfLifeHours": 2,
+  "halfLifeNote": "Described in the literature as short. The 2-hour figure is commonly cited but was not verified against a primary source. The existence of PEGylated versions confirms the short half-life is a real development problem.",
+  "tmaxHours": 1,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   1.6,
+   5,
+   10
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 1600,
+    "highMcg": 1600,
+    "frequency": "twice weekly",
+    "perWeek": 2,
+    "evidence": "approved",
+    "note": "1.6 mg subcutaneously twice weekly is the canonical maintenance regimen across hepatitis B and C trials."
+   },
+   {
+    "lowMcg": 1600,
+    "highMcg": 3200,
+    "frequency": "once or twice daily",
+    "perWeek": 7,
+    "evidence": "clinical",
+    "note": "Front-loaded daily dosing used in acute settings such as sepsis and acute-on-chronic liver failure."
+   }
+  ],
+  "sideEffects": [
+   "Consistently favourable across large trials. Grade 3 or worse treatment-related events in about 4% when combined with checkpoint inhibitors."
+  ],
+  "contraindications": [
+   "No established contraindications from the approved labels were retrieved."
+  ],
+  "status": "Approved in around 35 countries for chronic hepatitis B and C and as a vaccine adjuvant. Not FDA approved. Not named on the WADA list.",
+  "citations": [
+   {
+    "label": "NCT01178996, phase 3, 1.6 mg twice weekly",
+    "url": "https://clinicaltrials.gov/study/NCT01178996"
+   },
+   {
+    "label": "ETASS sepsis trial",
+    "url": "https://clinicaltrials.gov/study/NCT00711620"
+   }
+  ]
+ },
+ {
+  "id": "tirzepatide",
+  "name": "Tirzepatide",
+  "aka": [
+   "Mounjaro",
+   "Zepbound",
+   "LY3298176"
+  ],
+  "category": "metabolic",
+  "mechanismClass": [
+   "glp1-agonist",
+   "gip-agonist"
+  ],
+  "summary": "GIP and GLP-1 receptor dual agonist. FDA approved.",
+  "mechanism": "A GIP-based peptide that activates both the GIP and GLP-1 receptors. Slows gastric emptying, increases insulin secretion in response to glucose, and reduces appetite. Bound to albumin via a C20 diacid, which is what gives it a weekly half-life.",
+  "halfLifeHours": 120,
+  "halfLifeNote": "About 5 days per the label; population PK gives 5.4 days.",
+  "tmaxHours": 24,
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   2.5,
+   5,
+   7.5,
+   10,
+   12.5,
+   15
+  ],
+  "reconstitutedDays": 30,
+  "doseRanges": [
+   {
+    "lowMcg": 2500,
+    "highMcg": 15000,
+    "frequency": "once weekly",
+    "perWeek": 1,
+    "evidence": "approved",
+    "note": "2.5 mg is a starting dose only and is not intended for glycaemic control."
+   }
+  ],
+  "titrations": [
+   {
+    "id": "tirz-label",
+    "name": "Label escalation to 15 mg",
+    "source": "Zepbound and Mounjaro prescribing information, section 2",
+    "sourceUrl": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=487cd7e7-434c-4925-99fa-aa80b1cc776b",
+    "evidence": "approved",
+    "note": "Each step is held at least 4 weeks. Maintenance doses for weight management are 5, 10 or 15 mg.",
+    "steps": [
+     {
+      "step": 1,
+      "doseMcg": 2500,
+      "weeks": 4,
+      "note": "Starting dose."
+     },
+     {
+      "step": 2,
+      "doseMcg": 5000,
+      "weeks": 4
+     },
+     {
+      "step": 3,
+      "doseMcg": 7500,
+      "weeks": 4
+     },
+     {
+      "step": 4,
+      "doseMcg": 10000,
+      "weeks": 4
+     },
+     {
+      "step": 5,
+      "doseMcg": 12500,
+      "weeks": 4
+     },
+     {
+      "step": 6,
+      "doseMcg": 15000,
+      "weeks": 12
+     }
+    ]
+   }
+  ],
+  "timeline": [
+   {
+    "fromHours": 0,
+    "toHours": 8,
+    "label": "Absorbing. Gastric emptying starts to slow."
+   },
+   {
+    "fromHours": 8,
+    "toHours": 48,
+    "label": "Peak plasma levels, median at 24 hours. Nausea, if it comes, usually peaks here."
+   },
+   {
+    "fromHours": 48,
+    "toHours": 120,
+    "label": "Half of peak by day 5. Steady appetite suppression."
+   },
+   {
+    "fromHours": 120,
+    "toHours": 168,
+    "label": "Trough. About 41% of peak remains at day 7 before the next dose."
+   }
+  ],
+  "sideEffects": [
+   "Nausea, diarrhoea, vomiting, constipation, the dose-limiting effects",
+   "Injection site reactions",
+   "Delayed gastric emptying, strongest after the first 5 mg dose and diminishing thereafter",
+   "Gallbladder disease and pancreatitis, uncommon"
+  ],
+  "contraindications": [
+   "Boxed warning: thyroid C-cell tumours in rats. Contraindicated with a personal or family history of medullary thyroid carcinoma or MEN 2.",
+   "Known hypersensitivity to tirzepatide.",
+   "Caution with insulin or sulfonylureas, risk of hypoglycaemia."
+  ],
+  "status": "FDA approved as Mounjaro (type 2 diabetes) and Zepbound (weight management, obstructive sleep apnoea).",
+  "citations": [
+   {
+    "label": "Zepbound prescribing information",
+    "url": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=487cd7e7-434c-4925-99fa-aa80b1cc776b"
+   },
+   {
+    "label": "Mounjaro prescribing information",
+    "url": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=d2d7da5d-ad07-4228-955f-cf7e355c8cc0"
+   },
+   {
+    "label": "Schneck et al. 2024, population PK",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10962491/"
+   }
+  ]
+ },
+ {
+  "id": "trenbolone-acetate",
+  "name": "Trenbolone acetate",
+  "aka": [
+   "Tren A",
+   "Finaplix"
+  ],
+  "category": "anabolic",
+  "summary": "A cattle-growth implant compound. Never developed for human use, and no human pharmacokinetic data exists.",
+  "mechanism": "Binds the androgen receptor with much higher affinity than testosterone and is not aromatised. It is also a potent progesterone receptor agonist, which accounts for a good deal of what people report from it.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Unmeasured in humans. Trenbolone was developed as a veterinary implant and has never been through human pharmacokinetic study, so there is no half-life to quote and no honest curve to draw. The acetate ester is short, and injections are typically daily or every other day on that basis alone.",
+  "routes": [
+   "intramuscular"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   75,
+   100
+  ],
+  "vialSizesMg": [
+   750,
+   1000
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": false,
+  "doseRanges": [
+   {
+    "lowMcg": 50000,
+    "highMcg": 100000,
+    "frequency": "every day or every other day",
+    "perWeek": 3.5,
+    "evidence": "anecdotal",
+    "note": "Entirely community convention. There is no clinical dosing for this compound in humans at any amount."
+   }
+  ],
+  "sideEffects": [
+   "Night sweats and insomnia, reported very consistently",
+   "Marked cardiovascular strain, a severe fall in HDL is characteristic",
+   "Aggression, anxiety and mood disturbance",
+   "Progestogenic effects including gynecomastia and sexual dysfunction",
+   "Reduced aerobic capacity and breathlessness on exertion",
+   "Strong, prolonged suppression",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds",
+   "Monitor: prolactin, and kidney function"
+  ],
+  "contraindications": [
+   "Any pre-existing cardiovascular or psychiatric condition",
+   "Prostate or breast cancer",
+   "Trying to conceive",
+   "Pregnancy"
+  ],
+  "status": "Not approved for human use anywhere. Schedule III in the United States. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Androgen ester, structural and duration data",
+    "url": "https://en.wikipedia.org/wiki/Androgen_ester"
+   }
+  ],
+  "cautionBanner": "No human pharmacokinetic or safety study exists for this compound. Everything below the mechanism is community report, and the cardiovascular effects reported are more severe than for any other entry here."
+ },
+ {
+  "id": "trenbolone-enanthate",
+  "name": "Trenbolone enanthate",
+  "aka": [
+   "Tren E"
+  ],
+  "category": "anabolic",
+  "summary": "The long-ester trenbolone. The same absence of human data applies.",
+  "mechanism": "As trenbolone acetate, high-affinity androgen receptor agonist with progestogenic activity, on a longer ester intended to allow less frequent injection.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Unmeasured in humans, as for the acetate. The enanthate ester would be expected to empty its depot considerably more slowly, but that is inference from the ester rather than anything measured for this compound.",
+  "routes": [
+   "intramuscular"
+  ],
+  "preparation": "solution",
+  "concentrationsMgPerMl": [
+   200
+  ],
+  "vialSizesMg": [
+   2000
+  ],
+  "suppressesNaturalProduction": true,
+  "aromatises": false,
+  "doseRanges": [
+   {
+    "lowMcg": 150000,
+    "highMcg": 300000,
+    "frequency": "weekly, usually split",
+    "perWeek": 2,
+    "evidence": "anecdotal",
+    "note": "Community convention only."
+   }
+  ],
+  "sideEffects": [
+   "As trenbolone acetate, but harder to withdraw from quickly given the longer depot",
+   "Monitor: Haematocrit, androgens raise red cell mass, and the rise is dose-dependent",
+   "Monitor: Blood pressure",
+   "Monitor: Lipids, especially a fall in HDL",
+   "Monitor: Total and free testosterone, LH and FSH",
+   "Monitor: Oestradiol, for the aromatising compounds",
+   "Monitor: prolactin, and kidney function"
+  ],
+  "contraindications": [
+   "Any pre-existing cardiovascular or psychiatric condition",
+   "Prostate or breast cancer",
+   "Trying to conceive",
+   "Pregnancy"
+  ],
+  "status": "Not approved for human use anywhere. Banned in sport at all times.",
+  "citations": [
+   {
+    "label": "Androgen ester, structural and duration data",
+    "url": "https://en.wikipedia.org/wiki/Androgen_ester"
+   }
+  ],
+  "cautionBanner": "No human pharmacokinetic or safety study exists for this compound, and the long ester means an adverse effect cannot be backed out of quickly."
+ },
+ {
+  "id": "wolverine",
+  "name": "Wolverine blend",
+  "aka": [
+   "BPC-157 + TB-500"
+  ],
+  "category": "blend",
+  "summary": "BPC-157 and TB-500 together, usually in equal parts.",
+  "mechanism": "Pairs the two most common soft-tissue repair peptides. The combination has not been studied.",
+  "halfLifeHours": null,
+  "halfLifeNote": "Not meaningful for a blend. Track the components separately.",
+  "routes": [
+   "subcutaneous"
+  ],
+  "vialSizesMg": [
+   10,
+   15,
+   20,
+   30
+  ],
+  "reconstitutedDays": 28,
+  "components": [
+   {
+    "peptideId": "bpc-157",
+    "name": "BPC-157"
+   },
+   {
+    "peptideId": "tb-500",
+    "name": "TB-500"
+   }
+  ],
+  "doseRanges": [
+   {
+    "lowMcg": 500,
+    "highMcg": 2000,
+    "frequency": "once daily",
+    "perWeek": 7,
+    "evidence": "anecdotal",
+    "note": "Total blend mass per dose. Vendor protocols only."
+   }
+  ],
+  "sideEffects": [
+   "No safety data on the combination exists."
+  ],
+  "contraindications": [
+   "Everything that applies to BPC-157 and TB-500 individually."
+  ],
+  "status": "Not approved. No published trial has tested the two together.",
+  "cautionBanner": "Ratios vary by vendor, 1:1 is most common at 5/5, 10/10 or 15/15 mg, but a 1:2 version exists. Check the specific vial. Note also that pre-blending forces both peptides onto the same schedule, which contradicts the usual separate-vial convention of BPC-157 daily and TB-500 once or twice weekly.",
+  "citations": [
+   {
+    "label": "Vendor ratio survey",
+    "url": "https://www.peptidedosingprotocols.com/stacks/wolverine-stack"
+   }
+  ]
+ }
+]
