@@ -12,6 +12,7 @@ struct CalculatorView: View {
     @State private var peptideId = ""
     @State private var addingCompound = false
     @State private var choosingSyringe = false
+    @State private var showBarrelInfo = false
 
     var body: some View {
         let syringe = syringeById(syringeId) ?? SYRINGES[2]
@@ -42,11 +43,28 @@ struct CalculatorView: View {
                     Pill(text: t("calc_marks_every", ["step": .string(trim(syringe.graduationUnits, 2))]))
                 }
                 if let note = syringe.note { Text(note).font(.caption).foregroundStyle(.secondary) }
-                VStack(alignment: .leading, spacing: 4) {
+                // The headline stays on screen; the why is one tap away.
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Tone.tangerine.color)
                     CalloutText(t("calc_check_barrel"), bold: true)
-                    CalloutText(t("calc_barrel_warning"))
+                    Spacer(minLength: 0)
+                    Button { showBarrelInfo = true } label: { Image(systemName: "info.circle").font(.body) }
+                        .buttonStyle(.borderless)
+                        .accessibilityLabel(t("calc_check_barrel"))
+                        .popover(isPresented: $showBarrelInfo) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(t("calc_check_barrel")).font(.headline)
+                                RichText(t("calc_barrel_warning")).font(.subheadline)
+                            }
+                            .padding()
+                            .frame(idealWidth: 340)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .presentationCompactAdaptation(.popover)
+                        }
                 }
                 .font(.footnote).callout(.tangerine)
+                .contentShape(Rectangle())
+                .onTapGesture { showBarrelInfo = true }
             }
 
             Section {
