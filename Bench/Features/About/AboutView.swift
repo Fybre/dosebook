@@ -67,6 +67,7 @@ struct AboutView: View {
                 RichText(t("ios_about_port"))
                 Link(destination: URL(string: "https://github.com/ArunNGun/Bench")!) { Label(t("ios_about_original"), systemImage: "chevron.left.forwardslash.chevron.right") }
                 Text(t("about_corrections")).font(.footnote).foregroundStyle(.secondary)
+                NavigationLink(t("ios_about_licences")) { LicencesView() }
             }
             Section {
                 VStack(alignment: .leading, spacing: 4) {
@@ -83,5 +84,19 @@ struct AboutView: View {
         }
         .font(.subheadline)
         .navigationTitle(t("about_title"))
+    }
+}
+
+/// The original's MIT licence, which has to travel with the parts of it this app carries.
+private struct LicencesView: View {
+    var body: some View {
+        ScrollView {
+            Text(Bundle.main.url(forResource: "ThirdPartyLicenses", withExtension: "txt").flatMap { try? String(contentsOf: $0, encoding: .utf8) } ?? "")
+                .font(.footnote.monospaced())
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .textSelection(.enabled)
+        }
+        .navigationTitle(t("ios_about_licences"))
     }
 }

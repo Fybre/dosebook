@@ -4,7 +4,7 @@ A native SwiftUI port of [ArunNGun/Bench](https://github.com/ArunNGun/Bench) (MI
 peptide, growth hormone and anabolic protocols. It syncs through iCloud, and a macOS app that
 reads the same data is planned for later.
 
-Status as of 2026-10-21: Phases 1–2 done, Phase 3 done, Phase 4 (calc) well under way. See section 6.
+Status as of 2026-10-22: Phases 1–8 done; Phase 9 (hardening) done except what needs real devices. See section 6.
 
 ---
 
@@ -249,15 +249,25 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
 - `BenchStore`: envelope records in SwiftData (CloudKit private DB when signed in, local
   otherwise), per-row diff writes, dedupe on load, row order kept across reloads, rescue copy,
   `AppStore.mutate {}`.
-- App (XcodeGen `project.yml`, `Bench.xcodeproj` is generated and ignored):
-  Today, Plan (protocol form, phases), Log a dose sheet (drawn syringe), Log (diary),
-  Stock (vials, groups, orders, packs, sprays, water shelf and every form).
-  Placeholders: Calculator, Library (+ peptide detail destination), Labs, Report, Settings, About.
-- Debug launch args: `-demo` (seeded in-memory store), `-tab now|plan|log|stock|more`,
-  `-anchor <id>` (scroll to a section), `-log [peptideId]` (open the log sheet).
-  `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
+- App (XcodeGen `project.yml`, `Bench.xcodeproj` is generated and ignored): every screen of the
+  original. Now, Plan, Log a dose (drawn syringe), Log (diary), Stock (vials, groups, orders, packs,
+  sprays, water shelf), Calculator, Library + peptide detail, Bloodwork, Report (PDF via
+  UIMarkupTextPrintFormatter), Settings, About (iOS changelog, MIT notice for the original).
+- Import (`BenchCore/Import`): CSV/TSV, JSON (ordered keys), xlsx (own zip reader + Compression
+  inflate), PDF text layer, lab reports, Shotsy and generic profiles, import plan. All original
+  tests ported. The app adds a PDFKit fallback for PDFs the built-in reader cannot follow.
+- Platform: local notifications re-armed on every change (`Platform/ReminderScheduler`), ICS via the
+  share sheet, HealthKit read-only (weight sync, weight prefill, sleep and resting HR onto vitals;
+  stored with source `health-connect` for file compatibility, ids prefixed `hk:`), rotating backups
+  in Documents/Bench (visible in Files), app icon (`tools/make-icon.swift`).
+- Hardening done: performance over three years of history (chart prefilters doses, Stock outlook
+  cached; tests in BenchStoreTests), Dynamic Type at accessibility sizes, VoiceOver labels.
+- Debug launch args: `-demo`, `-demoLarge`, `-tab now|plan|log|stock|more`, `-anchor <id>`,
+  `-log [peptideId]`, `-more calculator|library|labs|report|settings|about|importer [peptideId]`,
+  `-importFile <path>`. `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
 
-**Next:** Calculator, Library + peptide detail, Labs, Report (PDF), Settings (profiles, units,
-currency, reminders, backup/import, iCloud status, language), About; then import (JSON,
-CSV/TSV/XLSX, PDF labs), HealthKit read, local notifications, ICS share, app icon, hardening.
-Health strings still say "Health Connect" and need iOS wording.
+**Needs the user / real devices:** set `DEVELOPMENT_TEAM` in project.yml; then test CloudKit sync
+between two devices on one Apple ID, HealthKit permission and reads on a phone, notification
+delivery, and Files visibility of Documents/Bench.
+
+**Later:** macOS target, widgets.

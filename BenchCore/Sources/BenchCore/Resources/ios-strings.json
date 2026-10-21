@@ -39,7 +39,8 @@
     "ios_health_failed": "Sync failed. Check Apple Health permissions and try again.",
     "ios_backups_desc": "Writes a full copy into the **Bench** folder on this iPhone, which the Files app shows under On My iPhone, keeping the most recent few. Nothing leaves the phone. It is a second copy in a folder you can reach yourself, not a cloud backup.",
     "ios_backups_count_one": "{n} backup in On My iPhone › Bench.",
-    "ios_backups_count_other": "{n} backups in On My iPhone › Bench."
+    "ios_backups_count_other": "{n} backups in On My iPhone › Bench.",
+    "ios_about_licences": "Licences"
   },
   "de": {
     "more": "Mehr",
@@ -81,7 +82,8 @@
     "ios_health_failed": "Synchronisierung fehlgeschlagen. Prüfe die Berechtigungen in Apple Health und versuche es erneut.",
     "ios_backups_desc": "Schreibt eine vollständige Kopie in den Ordner **Bench** auf diesem iPhone, den die Dateien-App unter „Auf meinem iPhone“ zeigt, und behält die neuesten. Nichts verlässt das Telefon. Es ist eine zweite Kopie in einem Ordner, den du selbst erreichst, keine Cloud-Sicherung.",
     "ios_backups_count_one": "{n} Sicherung in Auf meinem iPhone › Bench.",
-    "ios_backups_count_other": "{n} Sicherungen in Auf meinem iPhone › Bench."
+    "ios_backups_count_other": "{n} Sicherungen in Auf meinem iPhone › Bench.",
+    "ios_about_licences": "Lizenzen"
   },
   "sl": {
     "more": "Več",
@@ -125,7 +127,8 @@
     "ios_backups_count_one": "{n} varnostna kopija v Na mojem iPhonu › Bench.",
     "ios_backups_count_other": "{n} varnostnih kopij v Na mojem iPhonu › Bench.",
     "ios_backups_count_two": "{n} varnostni kopiji v Na mojem iPhonu › Bench.",
-    "ios_backups_count_few": "{n} varnostne kopije v Na mojem iPhonu › Bench."
+    "ios_backups_count_few": "{n} varnostne kopije v Na mojem iPhonu › Bench.",
+    "ios_about_licences": "Licence"
   },
   "pl": {
     "more": "Więcej",
@@ -169,6 +172,7 @@
     "ios_backups_count_one": "{n} kopia w Na moim iPhonie › Bench.",
     "ios_backups_count_other": "{n} kopii w Na moim iPhonie › Bench.",
     "ios_backups_count_few": "{n} kopie w Na moim iPhonie › Bench.",
-    "ios_backups_count_many": "{n} kopii w Na moim iPhonie › Bench."
+    "ios_backups_count_many": "{n} kopii w Na moim iPhonie › Bench.",
+    "ios_about_licences": "Licencje"
   }
 }
