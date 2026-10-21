@@ -8,7 +8,8 @@
     "ios_language": "Language",
     "ios_nag_never": "You have {n} records and no copy of them anywhere else. They live only on this device, so losing or resetting it would take the lot.",
     "ios_nag_stale": "Your last export was {days} days ago. Everything since then exists only on this device.",
-    "ios_log_delete": "Delete dose"
+    "ios_log_delete": "Delete dose",
+    "ios_continue": "Continue"
   },
   "de": {
     "more": "Mehr",
@@ -19,7 +20,8 @@
     "ios_language": "Sprache",
     "ios_nag_never": "Du hast {n} Einträge und nirgendwo sonst eine Kopie davon. Sie liegen nur auf diesem Gerät, und wenn es verloren geht oder zurückgesetzt wird, ist alles weg.",
     "ios_nag_stale": "Dein letzter Export ist {days} Tage her. Alles seitdem gibt es nur auf diesem Gerät.",
-    "ios_log_delete": "Dosis löschen"
+    "ios_log_delete": "Dosis löschen",
+    "ios_continue": "Weiter"
   },
   "sl": {
     "more": "Več",
@@ -30,7 +32,8 @@
     "ios_language": "Jezik",
     "ios_nag_never": "Imaš {n} zapisov in nikjer drugje kopije. Shranjeni so samo v tej napravi, zato bi jih izguba ali ponastavitev naprave vzela vse.",
     "ios_nag_stale": "Tvoj zadnji izvoz je bil pred {days} dnevi. Vse od takrat obstaja samo v tej napravi.",
-    "ios_log_delete": "Izbriši odmerek"
+    "ios_log_delete": "Izbriši odmerek",
+    "ios_continue": "Nadaljuj"
   },
   "pl": {
     "more": "Więcej",
@@ -41,6 +44,7 @@
     "ios_language": "Język",
     "ios_nag_never": "Masz {n} wpisów i nigdzie ich kopii. Są tylko na tym urządzeniu, więc jego utrata lub reset zabrałyby wszystko.",
     "ios_nag_stale": "Twój ostatni eksport był {days} dni temu. Wszystko od tego czasu istnieje tylko na tym urządzeniu.",
-    "ios_log_delete": "Usuń dawkę"
+    "ios_log_delete": "Usuń dawkę",
+    "ios_continue": "Dalej"
   }
 }
