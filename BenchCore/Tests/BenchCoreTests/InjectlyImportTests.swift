@@ -104,3 +104,69 @@ private func wallClock(_ ms: Millis, _ zone: String) -> String {
         #expect(resolvePeptide("Mounjaro (tirzepatide)", Library.peptides)?.id == "tirzepatide")
     }
 }
+
+private let MEDS = """
+Medication Name,Brand Names,Form,Route,Vial mg,BAC ml,Dose mcg,Units per Dose,Syringe,mcg per IU,Cycle Config (JSON),Titration Config (JSON),Blend Constituents (JSON),Reminders (JSON),Created At
+BPC-157,,reconstituted,SubQ,10.0,2.0,500.0,10,u30,,,,,"[{""frequency"":""daily"",""time"":""17:45"",""isEnabled"":true}]",2026-10-10T20:01:47.040092
+CJC-1295 & Ipamorelin,,reconstituted,SubQ,10.0,3.0,250.0,7.5,u30,,,,"[{""medicationName"":""Ipamorelin"",""amountMg"":5.0,""isPrimary"":false},{""medicationName"":""CJC-1295"",""amountMg"":10.0,""isPrimary"":true}]","[{""frequency"":""weekdays"",""time"":""23:00"",""specificDays"":[1,2,3,4,5],""isEnabled"":true},{""frequency"":""weekdays"",""time"":""09:00"",""specificDays"":[1,2,3,4,5],""isEnabled"":true}]",2026-10-01T21:29:24.865
+Retatrutide,,reconstituted,IM,10.0,1.0,5000.0,50,u50,,,,,"[{""frequency"":""weekly"",""time"":""11:30"",""specificDays"":[7],""isEnabled"":true}]",2026-09-28T11:46:28.878
+Mystery Peptide,,reconstituted,SubQ,5.0,2.0,100.0,4,u30,,,,,"[{""frequency"":""fortnightly"",""time"":""08:00"",""isEnabled"":true}]",2026-09-28T11:46:28.878
+"""
+
+@Suite struct InjectlySetupTests {
+    let meds = parseInjectlyMedications(toTable(parseDelimited(MEDS)))
+
+    @Test func recognisesEachFile() {
+        let kind = { (csv: String) in injectlyFileKind(toTable(parseDelimited(csv)).headers) }
+        #expect(kind(MEDS) == .medications && kind(LOGS) == .logs && kind(WEIGHT) == .weight && kind("Field,Value\na,b") == .profile)
+        #expect(kind("Date,Weight\n2026-01-01,80") == nil)
+    }
+
+    @Test func readsMedications() {
+        #expect(meds.map(\.name) == ["BPC-157", "CJC-1295 & Ipamorelin", "Retatrutide", "Mystery Peptide"])
+        #expect(meds[1].parts.map(\.name) == ["CJC-1295", "Ipamorelin"])
+        #expect(meds[2].route == .intramuscular)
+    }
+
+    @Test func schedules() {
+        let items = planInjectlySetup(meds, peptides: Library.peptides, activeProtocols: [])
+        #expect(items[0].schedule == Schedule(kind: .daily, timeOfDay: "17:45"))
+        #expect(items[1].schedule == Schedule(kind: .daysOfWeek, daysOfWeek: [1, 2, 3, 4, 5], timesOfDay: ["09:00", "23:00"]))
+        // Injectly's 7 is Sunday, the app's 0.
+        #expect(items[2].schedule == Schedule(kind: .daysOfWeek, daysOfWeek: [0], timeOfDay: "11:30"))
+        #expect(items[3].schedule.kind == .asNeeded && items[3].notes.count == 1)
+    }
+
+    @Test func compounds() {
+        let items = planInjectlySetup(meds, peptides: Library.peptides, activeProtocols: [])
+        #expect(items[0].compound == .existing("bpc-157"))
+        guard case .newBlend(let parts) = items[1].compound else { Issue.record("blend expected"); return }
+        #expect(parts[0].candidates.sorted() == ["cjc-1295-dac", "cjc-1295-no-dac"] && parts[0].chosen == nil)
+        #expect(parts[1].chosen == "ipamorelin")
+        // 250 mcg of the 10 mg first part of a 15 mg blend is 375 mcg of blend.
+        #expect(items[1].doseMcg == 375)
+        guard case .newCompound(let c, nil) = items[3].compound else { Issue.record("new compound expected"); return }
+        #expect(c.isEmpty)
+    }
+
+    @Test func alreadyPlannedIsFlagged() {
+        let running = makeProtocol(peptideId: "bpc-157", startedAt: 0, schedule: Schedule(kind: .daily))
+        #expect(planInjectlySetup(meds, peptides: Library.peptides, activeProtocols: [running])[0].alreadyPlanned)
+    }
+
+    @Test func savesABlendAndItsProtocol() {
+        var item = planInjectlySetup(meds, peptides: Library.peptides, activeProtocols: [])[1]
+        guard case .newBlend(var parts) = item.compound else { return }
+        parts[0].chosen = "cjc-1295-no-dac"
+        item.compound = .newBlend(parts)
+        let firstLog = local(2026, 9, 30, 23, 0)
+        let (blend, p) = injectlyResult(item, peptides: Library.peptides,
+                                        logs: [.dose(at: firstLog, label: "CJC-1295 & Ipamorelin", doseMcg: 250, site: nil, notes: nil, sourceRow: 2)])
+        #expect(blend?.components?.map(\.peptideId) == ["cjc-1295-no-dac", "ipamorelin"])
+        #expect(blend?.components?.first?.name == "CJC-1295 without DAC")
+        #expect(blend?.vialSizesMg == [15])
+        #expect(p.peptideId == blend?.id && p.doseMcg == 375 && p.startedAt == local(2026, 9, 30))
+        // Its doses then find it by name.
+        #expect(resolvePeptide("CJC-1295 & Ipamorelin", Library.peptides + [blend!])?.id == blend?.id)
+    }
+}

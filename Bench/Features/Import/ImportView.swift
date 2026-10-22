@@ -37,9 +37,13 @@ struct ImportView: View {
             switch result {
             case nil:
                 Section {
-                    Button { picking = true } label: { Label(busy ? t("import_reading") : t("import_choose_file"), systemImage: "doc.badge.plus") }
-                        .disabled(busy)
-                } footer: { Text(t("import_extensions")) }
+                    NavigationLink { InjectlyImportView() } label: { source(t("ios_src_injectly"), t("ios_src_injectly_desc"), "syringe") }
+                    // The other sources share one picker; the file itself says which it is.
+                    Button { picking = true } label: { source(t("ios_src_other"), t("ios_src_other_desc"), "tablecells") }
+                    Button { picking = true } label: { source(t("ios_src_backup"), t("ios_src_backup_desc"), "externaldrive") }
+                    Button { picking = true } label: { source(t("ios_src_lab"), t("ios_src_lab_desc"), "drop") }
+                } header: { Text(t("ios_import_sources")) } footer: { Text(t("import_extensions")) }
+                .disabled(busy)
             case .benchExport(let raw)?:
                 benchExport(raw)
             case .labReport(let report, let lines)?:
@@ -48,6 +52,9 @@ struct ImportView: View {
                 tablePreview(profile: profile, table: table, plan: plan)
             }
         }
+        #if DEBUG
+        .navigationDestination(isPresented: Binding(get: { ProcessInfo.processInfo.arguments.contains("-injectlyFiles") }, set: { _ in })) { InjectlyImportView() }
+        #endif
         .navigationTitle(t("import_title"))
         .navigationBarTitleDisplayMode(.inline)
         #if DEBUG
@@ -83,6 +90,15 @@ struct ImportView: View {
     }
 
     /// PDFKit's reading of the text layer, for files whose fonts the built-in extractor cannot follow.
+    private func source(_ title: String, _ detail: String, _ icon: String) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).foregroundStyle(.primary)
+                Text(detail).font(.caption).foregroundStyle(.secondary)
+            }
+        } icon: { Image(systemName: icon).foregroundStyle(Color.accentColor) }
+    }
+
     private func pdfKitLines(_ bytes: [UInt8]) -> [String] {
         guard let doc = PDFDocument(data: Data(bytes)) else { return [] }
         return (0..<doc.pageCount).flatMap { (doc.page(at: $0)?.string ?? "").components(separatedBy: .newlines) }
