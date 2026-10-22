@@ -27,7 +27,11 @@ struct BenchApp: App {
                     store.reload()
                 }
                 .onChange(of: scenePhase) { _, phase in
-                    if phase == .active { store.reload(); BackupFolder.runIfDue(store) }
+                    if phase == .active {
+                        store.reload(); BackupFolder.runIfDue(store)
+                        // New weigh-ins from Apple Health each time Bench comes to the front.
+                        Task { _ = try? await HealthKitAdapter.pullWeight(into: store) }
+                    }
                 }
                 .task { BackupFolder.runIfDue(store) }
         }

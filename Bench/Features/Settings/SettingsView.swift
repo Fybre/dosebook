@@ -357,6 +357,7 @@ private struct HealthSection: View {
                 CalloutText(t("ios_health_asked")).font(.footnote).callout(.sky)
                 Button { Task { await sync() } } label: { Label(busy ? t("settings_syncing") : t("settings_sync_now"), systemImage: "arrow.triangle.2.circlepath") }
                     .disabled(busy)
+                Text(t("ios_health_auto")).font(.caption).foregroundStyle(.secondary)
                 Text(t("settings_read_only")).font(.caption).foregroundStyle(.secondary)
             }
             if state != nil && state != .unavailable, let url = URL(string: "x-apple-health://") {
@@ -380,19 +381,11 @@ private struct HealthSection: View {
         busy = true
         result = nil
         defer { busy = false }
-        let measurements = store.data.mine.measurements
-        let newest = measurements.map(\.at).max() ?? 0
-        let since = newest > 0 ? newest : nowMillis() - 365 * DAY_MS
         do {
-            let plan = planPull(measurements, try await HealthKitAdapter.readWeight(since: since))
-            store.mutate { d in
-                for s in plan.toAdd {
-                    d.addMeasurement(BodyMeasurement(id: "", profileId: "", at: s.at, weightKg: s.weightKg, source: .healthConnect, externalId: s.externalId))
-                }
-                for l in plan.toLink { d.updateMeasurement(l.id) { $0.externalId = l.externalId } }
-            }
+            // Nil only when a pull on opening is already under way; it brings the same readings.
+            let plan = try await HealthKitAdapter.pullWeight(into: store)
             await HealthKitAdapter.pullVitals(into: store)
-            result = describeSync(summarise(plan))
+            result = plan.map { describeSync(summarise($0)) } ?? t("ios_health_synced_already")
         } catch {
             result = t("ios_health_failed")
         }
