@@ -67,6 +67,48 @@ struct BackupNagCard: View {
     }
 }
 
+/// Once there is a plan and reminders are off: a one-time suggestion to turn
+/// them on. Reminders stay off by default, so they are never switched on unasked.
+struct RemindersTipCard: View {
+    @Environment(AppStore.self) private var store
+    @Environment(\.openURL) private var openURL
+    /// Per device, as notifications are.
+    @AppStorage("bench.remindersTipDismissed") private var dismissed = false
+    @State private var refused = false
+
+    var body: some View {
+        let data = store.data
+        let enabled = data.settings.reminders?.enabled == true
+        if !dismissed, !enabled, data.mine.protocols.contains(where: \.active) {
+            VStack(alignment: .leading, spacing: 10) {
+                CalloutText(t("ios_tip_reminders_title"), bold: true).font(.subheadline)
+                CalloutText(refused ? t("ios_reminders_refused") : t("ios_tip_reminders_body")).font(.footnote)
+                HStack {
+                    if refused {
+                        Button(t("ios_open_settings")) { if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) } }
+                            .buttonStyle(.borderedProminent)
+                    } else {
+                        Button { Task { await turnOn() } } label: { Label(t("ios_tip_reminders_on"), systemImage: "bell") }.buttonStyle(.borderedProminent)
+                    }
+                    Button(t("later")) { dismissed = true }.buttonStyle(.bordered)
+                }
+            }
+            .callout(.sky)
+        }
+    }
+
+    private func turnOn() async {
+        var ok = await ReminderScheduler.availability() == .available
+        if !ok { ok = await ReminderScheduler.requestPermission() }
+        guard ok else { refused = true; return }
+        store.mutate { d in
+            var r = d.settings.reminders ?? DEFAULT_REMINDERS
+            r.enabled = true
+            d.settings.reminders = r
+        }
+    }
+}
+
 /// History with no plan: offer the protocols the history implies.
 struct HistoryWithoutPlanCard: View {
     @Environment(AppStore.self) private var store

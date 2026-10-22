@@ -33,6 +33,7 @@ struct TodayView: View {
                 TodayCard(protocols: mine.protocols, logs: mine.logs, now: now, earlyHours: data.settings.earlyHours)
                 RescueNotice()
                 BackupNagCard(now: now)
+                RemindersTipCard()
                 if mine.protocols.isEmpty {
                     HistoryWithoutPlanCard(now: now)
                 } else {

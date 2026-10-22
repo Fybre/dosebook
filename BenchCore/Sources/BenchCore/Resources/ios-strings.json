@@ -139,7 +139,10 @@
     "ios_show_missed": "Show missed doses",
     "ios_missed_hint": "Log it records the dose at its scheduled time, from your vial. Skipped marks it as not taken on purpose.",
     "ios_early_hours": "Late doses count for the night before",
-    "ios_early_hours_hint": "A dose logged between midnight and 4 am counts toward the previous night’s scheduled dose when that is the one it is closest to, so taking an evening dose after midnight doesn’t show as missed."
+    "ios_early_hours_hint": "A dose logged between midnight and 4 am counts toward the previous night’s scheduled dose when that is the one it is closest to, so taking an evening dose after midnight doesn’t show as missed.",
+    "ios_tip_reminders_title": "Want a reminder for each dose?",
+    "ios_tip_reminders_body": "Bench can notify you when a dose is due, and you can log it straight from the notification. The notification doesn’t name the compound unless you choose that in Settings.",
+    "ios_tip_reminders_on": "Turn on reminders"
   },
   "de": {
     "more": "Mehr",
@@ -281,7 +284,10 @@
     "ios_show_missed": "Verpasste Dosen zeigen",
     "ios_missed_hint": "„Erfassen“ trägt die Dosis zur geplanten Zeit aus deiner Ampulle ein. „Ausgelassen“ markiert sie als bewusst nicht genommen.",
     "ios_early_hours": "Späte Dosen zählen zum Vorabend",
-    "ios_early_hours_hint": "Eine zwischen Mitternacht und 4 Uhr erfasste Dosis zählt zur geplanten Dosis des Vorabends, wenn diese am nächsten liegt. So gilt eine nach Mitternacht genommene Abenddosis nicht als verpasst."
+    "ios_early_hours_hint": "Eine zwischen Mitternacht und 4 Uhr erfasste Dosis zählt zur geplanten Dosis des Vorabends, wenn diese am nächsten liegt. So gilt eine nach Mitternacht genommene Abenddosis nicht als verpasst.",
+    "ios_tip_reminders_title": "Erinnerung für jede Dosis?",
+    "ios_tip_reminders_body": "Bench kann dich benachrichtigen, wenn eine Dosis fällig ist, und du kannst sie direkt aus der Mitteilung erfassen. Die Mitteilung nennt den Wirkstoff nicht, außer du wählst das in den Einstellungen.",
+    "ios_tip_reminders_on": "Erinnerungen einschalten"
   },
   "sl": {
     "more": "Več",
@@ -427,7 +433,10 @@
     "ios_show_missed": "Pokaži zamujene odmerke",
     "ios_missed_hint": "»Zabeleži« zapiše odmerek ob načrtovanem času iz tvoje viale. »Izpuščeno« ga označi kot namerno nevzetega.",
     "ios_early_hours": "Pozni odmerki štejejo za prejšnji večer",
-    "ios_early_hours_hint": "Odmerek, zabeležen med polnočjo in 4. uro, šteje za načrtovani odmerek prejšnjega večera, kadar je ta najbližji. Tako večerni odmerek po polnoči ni prikazan kot zamujen."
+    "ios_early_hours_hint": "Odmerek, zabeležen med polnočjo in 4. uro, šteje za načrtovani odmerek prejšnjega večera, kadar je ta najbližji. Tako večerni odmerek po polnoči ni prikazan kot zamujen.",
+    "ios_tip_reminders_title": "Želiš opomnik za vsak odmerek?",
+    "ios_tip_reminders_body": "Bench te lahko obvesti, ko je odmerek na vrsti, in ga lahko zabeležiš kar iz obvestila. Obvestilo ne navede snovi, razen če to izbereš v nastavitvah.",
+    "ios_tip_reminders_on": "Vklopi opomnike"
   },
   "pl": {
     "more": "Więcej",
@@ -573,6 +582,9 @@
     "ios_show_missed": "Pokaż pominięte dawki",
     "ios_missed_hint": "„Zapisz” dodaje dawkę o zaplanowanej porze z Twojej fiolki. „Pominięta celowo” oznacza ją jako świadomie niewziętą.",
     "ios_early_hours": "Późne dawki liczą się do poprzedniego wieczoru",
-    "ios_early_hours_hint": "Dawka zapisana między północą a 4:00 liczy się do zaplanowanej dawki z poprzedniego wieczoru, jeśli to ona jest najbliżej. Dzięki temu wieczorna dawka wzięta po północy nie jest oznaczana jako pominięta."
+    "ios_early_hours_hint": "Dawka zapisana między północą a 4:00 liczy się do zaplanowanej dawki z poprzedniego wieczoru, jeśli to ona jest najbliżej. Dzięki temu wieczorna dawka wzięta po północy nie jest oznaczana jako pominięta.",
+    "ios_tip_reminders_title": "Przypominać o każdej dawce?",
+    "ios_tip_reminders_body": "Bench może powiadomić Cię, gdy przypada dawka, a zapiszesz ją prosto z powiadomienia. Powiadomienie nie podaje nazwy substancji, chyba że wybierzesz to w ustawieniach.",
+    "ios_tip_reminders_on": "Włącz przypomnienia"
   }
 }
