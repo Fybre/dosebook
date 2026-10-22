@@ -137,7 +137,9 @@
     "ios_missed_log": "Log it",
     "ios_missed_skip": "Skipped",
     "ios_show_missed": "Show missed doses",
-    "ios_missed_hint": "Log it records the dose at its scheduled time, from your vial. Skipped marks it as not taken on purpose."
+    "ios_missed_hint": "Log it records the dose at its scheduled time, from your vial. Skipped marks it as not taken on purpose.",
+    "ios_early_hours": "Late doses count for the night before",
+    "ios_early_hours_hint": "A dose logged between midnight and 4 am counts toward the previous night’s scheduled dose when that is the one it is closest to, so taking an evening dose after midnight doesn’t show as missed."
   },
   "de": {
     "more": "Mehr",
@@ -277,7 +279,9 @@
     "ios_missed_log": "Erfassen",
     "ios_missed_skip": "Ausgelassen",
     "ios_show_missed": "Verpasste Dosen zeigen",
-    "ios_missed_hint": "„Erfassen“ trägt die Dosis zur geplanten Zeit aus deiner Ampulle ein. „Ausgelassen“ markiert sie als bewusst nicht genommen."
+    "ios_missed_hint": "„Erfassen“ trägt die Dosis zur geplanten Zeit aus deiner Ampulle ein. „Ausgelassen“ markiert sie als bewusst nicht genommen.",
+    "ios_early_hours": "Späte Dosen zählen zum Vorabend",
+    "ios_early_hours_hint": "Eine zwischen Mitternacht und 4 Uhr erfasste Dosis zählt zur geplanten Dosis des Vorabends, wenn diese am nächsten liegt. So gilt eine nach Mitternacht genommene Abenddosis nicht als verpasst."
   },
   "sl": {
     "more": "Več",
@@ -421,7 +425,9 @@
     "ios_missed_log": "Zabeleži",
     "ios_missed_skip": "Izpuščeno",
     "ios_show_missed": "Pokaži zamujene odmerke",
-    "ios_missed_hint": "»Zabeleži« zapiše odmerek ob načrtovanem času iz tvoje viale. »Izpuščeno« ga označi kot namerno nevzetega."
+    "ios_missed_hint": "»Zabeleži« zapiše odmerek ob načrtovanem času iz tvoje viale. »Izpuščeno« ga označi kot namerno nevzetega.",
+    "ios_early_hours": "Pozni odmerki štejejo za prejšnji večer",
+    "ios_early_hours_hint": "Odmerek, zabeležen med polnočjo in 4. uro, šteje za načrtovani odmerek prejšnjega večera, kadar je ta najbližji. Tako večerni odmerek po polnoči ni prikazan kot zamujen."
   },
   "pl": {
     "more": "Więcej",
@@ -565,6 +571,8 @@
     "ios_missed_log": "Zapisz",
     "ios_missed_skip": "Pominięta celowo",
     "ios_show_missed": "Pokaż pominięte dawki",
-    "ios_missed_hint": "„Zapisz” dodaje dawkę o zaplanowanej porze z Twojej fiolki. „Pominięta celowo” oznacza ją jako świadomie niewziętą."
+    "ios_missed_hint": "„Zapisz” dodaje dawkę o zaplanowanej porze z Twojej fiolki. „Pominięta celowo” oznacza ją jako świadomie niewziętą.",
+    "ios_early_hours": "Późne dawki liczą się do poprzedniego wieczoru",
+    "ios_early_hours_hint": "Dawka zapisana między północą a 4:00 liczy się do zaplanowanej dawki z poprzedniego wieczoru, jeśli to ona jest najbliżej. Dzięki temu wieczorna dawka wzięta po północy nie jest oznaczana jako pominięta."
   }
 }

@@ -30,7 +30,7 @@ struct TodayView: View {
         ScrollViewReader { proxy in
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                TodayCard(protocols: mine.protocols, logs: mine.logs, now: now)
+                TodayCard(protocols: mine.protocols, logs: mine.logs, now: now, earlyHours: data.settings.earlyHours)
                 RescueNotice()
                 BackupNagCard(now: now)
                 if mine.protocols.isEmpty {

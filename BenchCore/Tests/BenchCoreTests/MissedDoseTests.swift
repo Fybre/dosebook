@@ -57,6 +57,31 @@ import Testing
         #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 2), nowMs: now).allSatisfy { $0.day != local(2026, 7, 2) || !$0.doses.contains { $0.at == m.at } })
     }
 
+    @Test func earlyHoursCountForTheNightBefore() {
+        var d = AppData()
+        let pid = d.addProtocol(makeProtocol(peptideId: "bpc-157", startedAt: local(2026, 7, 1), doseMcg: 500,
+                                             schedule: Schedule(kind: .daily, timesOfDay: ["23:00"])))
+        d.addLog(DoseLog(id: "", profileId: "", protocolId: pid, peptideId: "bpc-157", at: local(2026, 7, 3, 1, 20), doseMcg: 500, route: .subcutaneous))
+        let now = local(2026, 7, 3, 12)
+        // Off: the 1:20 dose is the 3rd's, so the 2nd's evening is missed.
+        #expect(dayProgress(d.protocols, d.logs, local(2026, 7, 2)).taken == 0)
+        #expect(dayProgress(d.protocols, d.logs, local(2026, 7, 3)).taken == 1)
+        // On: it answers the 2nd's 11 pm dose, and the 3rd's is still to come.
+        #expect(dayProgress(d.protocols, d.logs, local(2026, 7, 2), earlyHours: 4).taken == 1)
+        #expect(dayProgress(d.protocols, d.logs, local(2026, 7, 3), earlyHours: 4).taken == 0)
+        #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 2), nowMs: now, earlyHours: 4).isEmpty)
+    }
+
+    @Test func earlyHoursKeepADoseScheduledThen() {
+        // A 2 am dose taken at 2:10 is that day's, not the night before's.
+        var d = AppData()
+        let pid = d.addProtocol(makeProtocol(peptideId: "bpc-157", startedAt: local(2026, 7, 1), doseMcg: 500,
+                                             schedule: Schedule(kind: .daily, timesOfDay: ["02:00"])))
+        d.addLog(DoseLog(id: "", profileId: "", protocolId: pid, peptideId: "bpc-157", at: local(2026, 7, 3, 2, 10), doseMcg: 500, route: .subcutaneous))
+        #expect(dayProgress(d.protocols, d.logs, local(2026, 7, 3), earlyHours: 4).taken == 1)
+        #expect(dayProgress(d.protocols, d.logs, local(2026, 7, 2), earlyHours: 4).taken == 0)
+    }
+
     @Test func nothingBeforeAPlanStarted() {
         let (d, _) = setup()
         #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 6, 1), nowMs: local(2026, 7, 1, 7)).isEmpty)

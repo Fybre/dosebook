@@ -1067,6 +1067,22 @@ public struct Settings: Extensible {
 
 public let DEFAULT_SETTINGS = Settings()
 
+/// Doses logged before this hour can count toward the night before.
+public let EARLY_HOURS_CUTOFF: Double = 4
+
+extension Settings {
+    /// iOS only, kept in `extra` so backups stay readable by the web app and it
+    /// syncs: a dose in the early hours answers the previous night's dose when
+    /// that is the scheduled time it is nearest to.
+    public var earlyHoursCountForNightBefore: Bool {
+        get { if case .bool(let b)? = extra["iosEarlyHoursNightBefore"] { return b }; return false }
+        set { if newValue { extra["iosEarlyHoursNightBefore"] = .bool(true) } else { extra.removeValue(forKey: "iosEarlyHoursNightBefore") } }
+    }
+
+    /// The hours after midnight that count toward the night before; 0 when off.
+    public var earlyHours: Double { earlyHoursCountForNightBefore ? EARLY_HOURS_CUTOFF : 0 }
+}
+
 // MARK: - Labs
 
 public struct LabBand: Codable, Equatable, Sendable {

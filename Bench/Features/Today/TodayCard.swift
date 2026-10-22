@@ -7,14 +7,15 @@ struct TodayCard: View {
     var protocols: [DoseProtocol]
     var logs: [DoseLog]
     var now: Millis
+    var earlyHours: Double = 0
     @State private var detailDay: DetailDay?
 
     struct DetailDay: Identifiable { var id: Millis }
 
     var body: some View {
-        let today = todayProgress(protocols, logs, now)
-        let streak = currentStreak(protocols, logs, now)
-        let week = recentDays(protocols, logs, now, days: 7)
+        let today = todayProgress(protocols, logs, now, earlyHours: earlyHours)
+        let streak = currentStreak(protocols, logs, now, earlyHours: earlyHours)
+        let week = recentDays(protocols, logs, now, days: 7, earlyHours: earlyHours)
         let tone: Tone = today.complete ? .leaf : today.taken > 0 ? .mint : .neutral
         VStack(spacing: 18) {
             HStack(spacing: 18) {
@@ -115,8 +116,8 @@ struct DayDetailSheet: View {
     var body: some View {
         let data = store.data
         let mine = data.mine
-        let breakdown = dayBreakdown(mine.protocols, mine.logs, day, nowMs: now)
-        let progress = dayProgress(mine.protocols, mine.logs, day)
+        let breakdown = dayBreakdown(mine.protocols, mine.logs, day, nowMs: now, earlyHours: data.settings.earlyHours)
+        let progress = dayProgress(mine.protocols, mine.logs, day, earlyHours: data.settings.earlyHours)
         let palette = assignColors(colorSubjects(mine.protocols.filter(\.active), resolve: { data.peptide($0) }, nowMs: now))
         List {
             if breakdown.protocols.isEmpty {

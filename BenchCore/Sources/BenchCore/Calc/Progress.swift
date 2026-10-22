@@ -49,12 +49,15 @@ public struct DayBreakdown: Equatable, Sendable {
 /// Each log is credited to the protocol it names, else by compound, and no
 /// protocol past what it asked for. Within a protocol, logs answer the nearest
 /// scheduled time; times left over are missed once passed, due before.
-public func dayBreakdown(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs: Millis, nowMs: Millis = nowMillis()) -> DayBreakdown {
+///
+/// With `earlyHours`, a log in that many hours after midnight counts toward the
+/// day before when the scheduled time it is nearest to was that night.
+public func dayBreakdown(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs: Millis, nowMs: Millis = nowMillis(), earlyHours: Double = 0) -> DayBreakdown {
     let day = startOfLocalDay(dayMs)
     let end = endOfLocalDay(dayMs)
     let active = protocols.filter(\.active)
     let times = active.map { protocolDoseTimesBetween($0, day, end).sorted() }
-    let onDay = logs.filter { $0.at >= day && $0.at <= end }
+    let onDay = logs.filter { $0.at >= day && $0.at <= end + earlyHours * HOUR_MS && creditDay($0, active, earlyHours: earlyHours) == day }
     var credited: [[DoseLog]] = Array(repeating: [], count: active.count)
     var claimed = Set<Int>()
     func room(_ i: Int) -> Int { times[i].count - credited[i].count }
@@ -83,9 +86,20 @@ public func dayBreakdown(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs
     return DayBreakdown(day: day, protocols: protocolDays, unplanned: unplanned)
 }
 
+/// The day a log counts toward: its own, unless it falls in the early hours and
+/// the scheduled time it is nearest to was the night before.
+func creditDay(_ l: DoseLog, _ active: [DoseProtocol], earlyHours: Double) -> Millis {
+    let own = startOfLocalDay(l.at)
+    guard earlyHours > 0, l.at < own + earlyHours * HOUR_MS,
+          let p = active.first(where: { $0.id == l.protocolId }) ?? active.first(where: { $0.peptideId == l.peptideId }),
+          let nearest = protocolDoseTimesBetween(p, l.at - DAY_MS, l.at + DAY_MS).min(by: { abs($0 - l.at) < abs($1 - l.at) }),
+          nearest < own else { return own }
+    return startOfLocalDay(nearest)
+}
+
 /// How a single day went, counted from the same crediting as `dayBreakdown`.
-public func dayProgress(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs: Millis) -> DayProgress {
-    let breakdown = dayBreakdown(protocols, logs, dayMs, nowMs: .infinity)
+public func dayProgress(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs: Millis, earlyHours: Double = 0) -> DayProgress {
+    let breakdown = dayBreakdown(protocols, logs, dayMs, nowMs: .infinity, earlyHours: earlyHours)
     let slots = breakdown.protocols.flatMap { $0.slots.map(\.slot) }
     let expected = slots.count
     let t = slots.filter { if case .taken = $0 { true } else { false } }.count
@@ -96,16 +110,16 @@ public func dayProgress(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs:
                        restDay: expected == 0, complete: t >= owed)
 }
 
-public func todayProgress(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ nowMs: Millis) -> DayProgress {
-    dayProgress(protocols, logs, nowMs)
+public func todayProgress(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ nowMs: Millis, earlyHours: Double = 0) -> DayProgress {
+    dayProgress(protocols, logs, nowMs, earlyHours: earlyHours)
 }
 
 /// Consecutive days where every scheduled dose was taken or skipped.
-public func currentStreak(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ nowMs: Millis, maxLookbackDays: Int = 400) -> Int {
+public func currentStreak(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ nowMs: Millis, maxLookbackDays: Int = 400, earlyHours: Double = 0) -> Int {
     var streak = 0
     var cursor = startOfLocalDay(nowMs)
     for i in 0..<maxLookbackDays {
-        let d = dayProgress(protocols, logs, cursor)
+        let d = dayProgress(protocols, logs, cursor, earlyHours: earlyHours)
         if i == 0 && !d.complete { cursor = addLocalDays(cursor, -1); continue }
         if !d.complete { break }
         if d.owed > 0 { streak += 1 }
@@ -115,8 +129,8 @@ public func currentStreak(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ nowM
 }
 
 /// The last N days, oldest first.
-public func recentDays(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ nowMs: Millis, days: Int = 7) -> [DayProgress] {
-    stride(from: days - 1, through: 0, by: -1).map { dayProgress(protocols, logs, addLocalDays(nowMs, Double(-$0))) }
+public func recentDays(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ nowMs: Millis, days: Int = 7, earlyHours: Double = 0) -> [DayProgress] {
+    stride(from: days - 1, through: 0, by: -1).map { dayProgress(protocols, logs, addLocalDays(nowMs, Double(-$0)), earlyHours: earlyHours) }
 }
 
 public struct WeekExposure: Equatable, Sendable {

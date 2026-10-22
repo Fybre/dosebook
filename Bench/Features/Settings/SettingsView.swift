@@ -90,6 +90,11 @@ struct SettingsView: View {
             }
 
             Section {
+                Toggle(t("ios_early_hours"), isOn: Binding(get: { settings.earlyHoursCountForNightBefore },
+                                                          set: { v in store.mutate { $0.settings.earlyHoursCountForNightBefore = v } }))
+            } footer: { Text(t("ios_early_hours_hint")) }
+
+            Section {
                 Text(t("settings_erase_desc")).font(.footnote).foregroundStyle(.secondary)
                 Button(t("settings_erase"), role: .destructive) { confirmingReset = true }
             } header: { Text(t("settings_erase")) }

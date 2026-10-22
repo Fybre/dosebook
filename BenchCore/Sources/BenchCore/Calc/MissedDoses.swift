@@ -14,13 +14,13 @@ public struct MissedDose: Equatable, Sendable, Identifiable {
 
 /// Every missed dose from `fromMs` up to now, by local day, newest day first and
 /// in time order within a day. Today counts only what is already past.
-public func missedDoses(_ protocols: [DoseProtocol], _ logs: [DoseLog], fromMs: Millis, nowMs: Millis) -> [(day: Millis, doses: [MissedDose])] {
+public func missedDoses(_ protocols: [DoseProtocol], _ logs: [DoseLog], fromMs: Millis, nowMs: Millis, earlyHours: Double = 0) -> [(day: Millis, doses: [MissedDose])] {
     var out: [(day: Millis, doses: [MissedDose])] = []
     var day = startOfLocalDay(nowMs)
     let first = startOfLocalDay(fromMs)
     let byId = Dictionary(protocols.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
     while day >= first {
-        let missed = dayBreakdown(protocols, logs, day, nowMs: nowMs).protocols.flatMap { pd in
+        let missed = dayBreakdown(protocols, logs, day, nowMs: nowMs, earlyHours: earlyHours).protocols.flatMap { pd in
             pd.slots.filter { $0.slot == .missed }.map { s in
                 MissedDose(protocolId: pd.protocolId, peptideId: pd.peptideId, at: s.at,
                            doseMcg: byId[pd.protocolId].map { scheduledDoseMcg($0, s.at) } ?? 0)

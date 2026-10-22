@@ -32,7 +32,7 @@ struct LogView: View {
         let logged = diaryDays(shown, at: \.at, checkIns)
         // Missed doses, at most 90 days back, for the compound shown.
         let missedByDay: [Millis: [MissedDose]] = showMissed ? Dictionary(uniqueKeysWithValues:
-            missedDoses(mine.protocols, mine.logs, fromMs: max(now - 90 * DAY_MS, mine.protocols.map(\.startedAt).min() ?? now), nowMs: now)
+            missedDoses(mine.protocols, mine.logs, fromMs: max(now - 90 * DAY_MS, mine.protocols.map(\.startedAt).min() ?? now), nowMs: now, earlyHours: data.settings.earlyHours)
                 .map { ($0.day, $0.doses.filter { filter.isEmpty || $0.peptideId == filter }) }.filter { !$0.1.isEmpty }) : [:]
         let days = Set(logged.map(\.day)).union(missedByDay.keys).sorted(by: >).map { day in
             logged.first { $0.day == day } ?? DiaryDay(day: day, entries: [], checkIn: nil)
