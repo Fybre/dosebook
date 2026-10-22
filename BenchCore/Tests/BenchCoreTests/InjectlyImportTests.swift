@@ -172,3 +172,28 @@ Mystery Peptide,,reconstituted,SubQ,5.0,2.0,100.0,4,u30,,,,,"[{""frequency"":""f
         #expect(resolvePeptide("CJC-1295 & Ipamorelin", Library.peptides + [blend!])?.id == blend?.id)
     }
 }
+
+@Suite struct InjectlyInUseVialTests {
+    func med(_ route: Route = .subcutaneous, vial: Double? = 10, bac: Double? = 2, parts: [InjectlyMedication.Part] = []) -> InjectlyMedication {
+        InjectlyMedication(name: "x", route: route, vialMg: vial, bacMl: bac, doseMcg: 250, parts: parts, reminders: [], createdAt: nil)
+    }
+
+    @Test func singleCompound() throws {
+        let v = try #require(injectlyInUseVial(med()))
+        #expect(v.strengthMg == 10 && v.waterMl == 2)
+    }
+
+    @Test func blendIsTheWholeVial() throws {
+        // Injectly gives the primary's 10 mg as the vial; Bench doses the whole blend, so 20 mg.
+        let v = try #require(injectlyInUseVial(med(bac: 3, parts: [.init(name: "CJC-1295", amountMg: 10, primary: true), .init(name: "Ipamorelin", amountMg: 10, primary: false)])))
+        #expect(v.strengthMg == 20 && v.waterMl == 3)
+        // 500 mcg of blend from 20 mg in 3 mL is 7.5 units on U-100, as Injectly said.
+        #expect(abs(unitsFromDose(500, concentration(mgToMcg(v.strengthMg), v.waterMl), .u100) - 7.5) < 1e-9)
+    }
+
+    @Test func nothingToMix() {
+        #expect(injectlyInUseVial(med(bac: nil)) == nil)
+        #expect(injectlyInUseVial(med(.oral)) == nil)
+        #expect(injectlyInUseVial(med(vial: nil)) == nil)
+    }
+}

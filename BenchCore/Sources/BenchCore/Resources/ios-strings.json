@@ -152,7 +152,10 @@
     "ios_stock_mixed_in_use": "Mixed, in use",
     "ios_stock_mixed_on": "Mixed on",
     "ios_stock_mixed_hint": "For a vial you are already drawing from. It counts as full; doses logged from now on come out of it.",
-    "ios_stock_mixed_hint_many": "One of these is the vial you are drawing from, counted as full; the rest stay sealed."
+    "ios_stock_mixed_hint_many": "One of these is the vial you are drawing from, counted as full; the rest stay sealed.",
+    "ios_inj_add_vial": "Add the vial in use: {mg} mg in {ml} mL",
+    "ios_inj_add_vial_hint": "Into Stock as mixed today and counted as full, so your doses show in syringe units.",
+    "ios_inj_done_vials": "{vials} added to Stock, mixed."
   },
   "de": {
     "more": "Mehr",
@@ -307,7 +310,10 @@
     "ios_stock_mixed_in_use": "Aufgelöst, in Gebrauch",
     "ios_stock_mixed_on": "Aufgelöst am",
     "ios_stock_mixed_hint": "Für eine Ampulle, aus der du schon aufziehst. Sie zählt als voll; ab jetzt erfasste Dosen werden davon abgezogen.",
-    "ios_stock_mixed_hint_many": "Eine davon ist die Ampulle, aus der du aufziehst, als voll gezählt; die übrigen bleiben verschlossen."
+    "ios_stock_mixed_hint_many": "Eine davon ist die Ampulle, aus der du aufziehst, als voll gezählt; die übrigen bleiben verschlossen.",
+    "ios_inj_add_vial": "Ampulle in Gebrauch hinzufügen: {mg} mg in {ml} mL",
+    "ios_inj_add_vial_hint": "Kommt als heute aufgelöst und voll in den Vorrat, damit deine Dosen in Spritzeneinheiten erscheinen.",
+    "ios_inj_done_vials": "{vials} aufgelöst zum Vorrat hinzugefügt."
   },
   "sl": {
     "more": "Več",
@@ -466,7 +472,10 @@
     "ios_stock_mixed_in_use": "Pripravljena, v uporabi",
     "ios_stock_mixed_on": "Pripravljena dne",
     "ios_stock_mixed_hint": "Za vialo, iz katere že jemlješ. Šteje kot polna; odmerki, zabeleženi od zdaj, se odštejejo od nje.",
-    "ios_stock_mixed_hint_many": "Ena od njih je viala, iz katere jemlješ, šteje kot polna; ostale ostanejo zaprte."
+    "ios_stock_mixed_hint_many": "Ena od njih je viala, iz katere jemlješ, šteje kot polna; ostale ostanejo zaprte.",
+    "ios_inj_add_vial": "Dodaj vialo v uporabi: {mg} mg v {ml} mL",
+    "ios_inj_add_vial_hint": "V zalogo kot danes pripravljena in polna, da so tvoji odmerki prikazani v enotah brizge.",
+    "ios_inj_done_vials": "{vials} dodano v zalogo, pripravljeno."
   },
   "pl": {
     "more": "Więcej",
@@ -625,6 +634,9 @@
     "ios_stock_mixed_in_use": "Rozpuszczona, w użyciu",
     "ios_stock_mixed_on": "Rozpuszczona dnia",
     "ios_stock_mixed_hint": "Dla fiolki, z której już pobierasz. Liczy się jako pełna; dawki zapisane od teraz są z niej odejmowane.",
-    "ios_stock_mixed_hint_many": "Jedna z nich to fiolka, z której pobierasz, liczona jako pełna; reszta pozostaje zamknięta."
+    "ios_stock_mixed_hint_many": "Jedna z nich to fiolka, z której pobierasz, liczona jako pełna; reszta pozostaje zamknięta.",
+    "ios_inj_add_vial": "Dodaj fiolkę w użyciu: {mg} mg w {ml} mL",
+    "ios_inj_add_vial_hint": "Trafia do zapasów jako rozpuszczona dziś i pełna, aby Twoje dawki były w jednostkach strzykawki.",
+    "ios_inj_done_vials": "{vials} dodano do zapasów jako rozpuszczone."
   }
 }

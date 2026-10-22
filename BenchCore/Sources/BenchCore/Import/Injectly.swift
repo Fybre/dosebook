@@ -195,3 +195,14 @@ public func injectlyResult(_ item: InjectlyItem, peptides: [Peptide], logs: [Can
                          route: m.route, schedule: item.schedule, notes: "Brought across from Injectly.")
     return (newPeptide, p)
 }
+
+/// The vial a medication was being drawn from, as Injectly describes it: the
+/// whole vial (every part of a blend, as Bench doses blends whole) and the water
+/// in it. Nil without both, or for a route with no vial to draw from.
+public func injectlyInUseVial(_ m: InjectlyMedication) -> (strengthMg: Double, waterMl: Double)? {
+    guard routeHasSite(m.route), let water = m.bacMl, water > 0 else { return nil }
+    let amounts = m.parts.compactMap(\.amountMg)
+    let strength = m.parts.count > 1 && amounts.count == m.parts.count ? amounts.reduce(0, +) : m.vialMg
+    guard let strength, strength > 0 else { return nil }
+    return (strength, water)
+}

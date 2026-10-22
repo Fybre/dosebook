@@ -11,6 +11,8 @@ struct InjectlyImportView: View {
     @State private var picking = false
     @State private var items: [InjectlyItem] = []
     @State private var include: [Bool] = []
+    /// Per item: also put the vial being drawn from in Stock, mixed.
+    @State private var addVial: [Bool] = []
     @State private var history: [CanonicalRecord] = []
     @State private var historyProblems: [RowProblem] = []
     @State private var fileNames: [String] = []
@@ -37,7 +39,7 @@ struct InjectlyImportView: View {
                 historySection(plan)
                 Section {
                     Button { apply(data, preview, plan) } label: { Label(t("ios_inj_import"), systemImage: "square.and.arrow.down") }
-                        .disabled(!include.contains(true) && (planIsEmpty(plan) || (!withDoses && !withWeights)))
+                        .disabled(!include.contains(true) && !addVial.contains(true) && (planIsEmpty(plan) || (!withDoses && !withWeights)))
                     Button(t("cancel"), action: reset)
                 }
             }
@@ -62,7 +64,7 @@ struct InjectlyImportView: View {
 
     // MARK: Reading
 
-    private func reset() { items = []; include = []; history = []; historyProblems = []; fileNames = []; error = nil }
+    private func reset() { items = []; include = []; addVial = []; history = []; historyProblems = []; fileNames = []; error = nil }
 
     private func load(_ urls: [URL]) {
         reset(); done = nil
@@ -86,6 +88,12 @@ struct InjectlyImportView: View {
         let data = store.data
         items = planInjectlySetup(meds, peptides: data.allPeptides, activeProtocols: data.mine.protocols.filter(\.active), logs: history)
         include = items.map { !$0.alreadyPlanned }
+        let mixed = Set(data.mine.vials.filter { $0.state == .reconstituted }.map(\.peptideId))
+        addVial = items.map { item in
+            guard injectlyInUseVial(item.medication) != nil else { return false }
+            if case .existing(let id) = item.compound, mixed.contains(id) { return false }
+            return true
+        }
     }
 
     /// What each included item would save, given the current choices.
@@ -115,6 +123,12 @@ struct InjectlyImportView: View {
                                blendDoseIsFirstPart: true)
     }
 
+    /// The compound an item already is, when it is not being added.
+    private func existingId(_ item: InjectlyItem) -> String? {
+        if case .existing(let id) = item.compound { return id }
+        return nil
+    }
+
     // MARK: Sections
 
     @ViewBuilder private func setupSection(_ data: AppData) -> some View {
@@ -129,6 +143,15 @@ struct InjectlyImportView: View {
                         }
                     }
                     if include[i] { compoundRows(i, data) }
+                    // Also offered for what is already planned: re-importing just to add the vials.
+                    if include[i] || existingId(item) != nil, let v = injectlyInUseVial(item.medication) {
+                        Toggle(isOn: $addVial[i]) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(t("ios_inj_add_vial", ["mg": .string(trim(v.strengthMg, 3)), "ml": .string(trim(v.waterMl, 2))])).font(.subheadline)
+                                Text(t("ios_inj_add_vial_hint")).font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
                     if item.alreadyPlanned { Text(t("ios_inj_already")).font(.caption).foregroundStyle(.secondary) }
                     ForEach(item.notes, id: \.self) { Text($0).font(.caption).foregroundStyle(Tone.tangerine.color) }
                 }
@@ -211,16 +234,28 @@ struct InjectlyImportView: View {
             DoseLog(id: "", profileId: "", peptideId: $0.peptideId, at: $0.at, doseMcg: $0.doseMcg, route: .subcutaneous, site: $0.site, notes: $0.notes)
         } : []
         let weights = withWeights ? plan.weights.map { BodyMeasurement(id: "", profileId: "", at: $0.at, weightKg: $0.weightKg, source: .manual) } : []
+        // Each vial's compound: the one being added, or, for what is not, the one already there.
+        let vialsIn: [(peptideId: String, strengthMg: Double, waterMl: Double)] = items.indices.compactMap { i in
+            guard addVial[i], let v = injectlyInUseVial(items[i].medication),
+                  let id = preview.first(where: { $0.index == i })?.protocol_.peptideId ?? existingId(items[i]) else { return nil }
+            return (id, v.strengthMg, v.waterMl)
+        }
         store.mutate { d in
             for r in preview {
                 if let p = r.peptide, !d.allPeptides.contains(where: { $0.id == p.id }) { d.addCustomPeptide(p) }
                 _ = d.addProtocol(r.protocol_)
+            }
+            // The vials being drawn from, mixed today and counted as full.
+            for v in vialsIn {
+                let id = d.addVial(Vial(id: "", profileId: "", peptideId: v.peptideId, strengthMg: v.strengthMg, state: .sealed, acquiredAt: nowMillis()))
+                d.reconstituteVial(id, diluentMl: v.waterMl, diluent: .bacteriostatic)
             }
             d.importHistory(logs: logs, measurements: weights)
         }
         done = t("ios_inj_done", ["protocols": .string(t("count_protocols", ["n": .number(Double(preview.count))])),
                                   "doses": .string(t("count_doses", ["n": .number(Double(logs.count))])),
                                   "weights": .string(t("count_weights", ["n": .number(Double(weights.count))]))])
+            + (vialsIn.isEmpty ? "" : " " + t("ios_inj_done_vials", ["vials": .string(t("count_vials", ["n": .number(Double(vialsIn.count))]))]))
         reset()
     }
 }
