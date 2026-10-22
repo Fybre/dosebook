@@ -58,7 +58,11 @@ struct TodayView: View {
                 worthSorting(tracks, data: data)
             }
             .padding()
+            // Exactly the screen's width: a chart can lay out a fraction of a point
+            // wider, and that was enough to let the whole page slide sideways.
+            .containerRelativeFrame(.horizontal)
         }
+        .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .debugAnchor(proxy)
         }
         .background(Color(.systemGroupedBackground))

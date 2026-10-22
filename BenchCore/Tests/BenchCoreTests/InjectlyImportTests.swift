@@ -143,8 +143,10 @@ Mystery Peptide,,reconstituted,SubQ,5.0,2.0,100.0,4,u30,,,,,"[{""frequency"":""f
         guard case .newBlend(let parts) = items[1].compound else { Issue.record("blend expected"); return }
         #expect(parts[0].candidates.sorted() == ["cjc-1295-dac", "cjc-1295-no-dac"] && parts[0].chosen == nil)
         #expect(parts[1].chosen == "ipamorelin")
-        // 250 mcg of the 10 mg first part of a 15 mg blend is 375 mcg of blend.
-        #expect(items[1].doseMcg == 375)
+        // 250 mcg of the 10 mg first part of a 15 mg blend is 375 mcg of blend, twice a day.
+        #expect(items[1].doseMcg == 750)
+        #expect(scheduledDoseMcg(makeProtocol(startedAt: 0, doseMcg: items[1].doseMcg, schedule: items[1].schedule), local(2026, 10, 5, 9)) == 375)
+        #expect(items[0].doseMcg == 500)
         guard case .newCompound(let c, nil) = items[3].compound else { Issue.record("new compound expected"); return }
         #expect(c.isEmpty)
     }
@@ -165,7 +167,7 @@ Mystery Peptide,,reconstituted,SubQ,5.0,2.0,100.0,4,u30,,,,,"[{""frequency"":""f
         #expect(blend?.components?.map(\.peptideId) == ["cjc-1295-no-dac", "ipamorelin"])
         #expect(blend?.components?.first?.name == "CJC-1295 without DAC")
         #expect(blend?.vialSizesMg == [15])
-        #expect(p.peptideId == blend?.id && p.doseMcg == 375 && p.startedAt == local(2026, 9, 30))
+        #expect(p.peptideId == blend?.id && p.doseMcg == 750 && p.startedAt == local(2026, 9, 30))
         // Its doses then find it by name.
         #expect(resolvePeptide("CJC-1295 & Ipamorelin", Library.peptides + [blend!])?.id == blend?.id)
     }

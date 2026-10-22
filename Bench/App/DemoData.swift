@@ -24,6 +24,38 @@ enum DemoData {
         }
     }
 
+    /// `-seedInjectly a.csv,b.csv,...`: an Injectly export applied as the import screen would,
+    /// with ambiguous blend parts settled on the first choice. For reproducing layouts with real data.
+    static func seedInjectly(_ store: AppStore, _ paths: [String]) {
+        var meds: [InjectlyMedication] = [], history: [CanonicalRecord] = []
+        for path in paths {
+            guard let text = try? String(contentsOfFile: path, encoding: .utf8) else { continue }
+            let table = toTable(parseDelimited(text))
+            switch injectlyFileKind(table.headers) {
+            case .medications?: meds += parseInjectlyMedications(table)
+            case .logs?, .weight?: history += injectlyProfile.read(table.records, table.headers).records
+            default: break
+            }
+        }
+        let data = store.data
+        var items = planInjectlySetup(meds, peptides: data.allPeptides, activeProtocols: [], logs: history)
+        for i in items.indices {
+            if case .newBlend(var parts) = items[i].compound {
+                for k in parts.indices where parts[k].chosen == nil { parts[k].chosen = parts[k].candidates.last }
+                items[i].compound = .newBlend(parts)
+            }
+        }
+        let results = items.map { injectlyResult($0, peptides: data.allPeptides, logs: history) }
+        let peptides = data.allPeptides + results.compactMap(\.newPeptide)
+        let plan = buildImportPlan(records: history, problems: [], peptides: peptides, existingLogs: [], existingMeasurements: [], blendDoseIsFirstPart: true)
+        store.mutate { d in
+            for r in results { if let p = r.newPeptide { d.addCustomPeptide(p) }; _ = d.addProtocol(r.protocol_) }
+            d.importHistory(logs: plan.doses.map { DoseLog(id: "", profileId: "", peptideId: $0.peptideId, at: $0.at, doseMcg: $0.doseMcg, route: .subcutaneous, site: $0.site) },
+                            measurements: plan.weights.map { BodyMeasurement(id: "", profileId: "", at: $0.at, weightKg: $0.weightKg) })
+            d.settings.lastBackupAt = nowMillis()
+        }
+    }
+
     static func seed(_ store: AppStore) {
         let now = nowMillis()
         let day = DAY_MS

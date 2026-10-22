@@ -45,6 +45,11 @@ enum Bootstrap {
         let args = ProcessInfo.processInfo.arguments
         if let i = args.firstIndex(of: "-tab"), i + 1 < args.count { UserDefaults.standard.set(args[i + 1], forKey: "bench.tab") }
         #if DEBUG
+        if let i = args.firstIndex(of: "-seedInjectly"), i + 1 < args.count {
+            let store = AppStore(records: try! RecordStore(location: .memory), defaults: UserDefaults(suiteName: "bench-demo")!, rescueURL: nil)
+            DemoData.seedInjectly(store, args[i + 1].split(separator: ",").map(String.init))
+            return store
+        }
         if args.contains("-demo") {
             let store = AppStore(records: try! RecordStore(location: .memory), defaults: UserDefaults(suiteName: "bench-demo")!, rescueURL: nil)
             DemoData.seed(store)

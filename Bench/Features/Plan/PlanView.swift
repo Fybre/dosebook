@@ -43,7 +43,9 @@ struct PlanView: View {
                 PctPanelView(nowMs: now)
             }
             .padding()
+            .containerRelativeFrame(.horizontal)
         }
+        .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .background(Color(.systemGroupedBackground))
         .navigationTitle(t("plan_title"))
         .peptideDestination()

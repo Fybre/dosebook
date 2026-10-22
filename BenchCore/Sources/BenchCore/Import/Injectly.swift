@@ -123,7 +123,8 @@ public struct InjectlyItem: Equatable, Sendable {
     public var medication: InjectlyMedication
     public var compound: Compound
     public var schedule: Schedule
-    /// For the whole blend where it is one, scaled from Injectly's first part.
+    /// The day's total, as a protocol holds it: Injectly's per-injection dose times the
+    /// day's injections, and for a blend the whole blend rather than its first part.
     public var doseMcg: Double
     public var notes: [String]
     /// Already planned with an active protocol here, so off by default.
@@ -155,6 +156,8 @@ public func planInjectlySetup(_ meds: [InjectlyMedication], peptides: [Peptide],
         if !m.parts.isEmpty, masses.count == m.parts.count, let first = masses.first, first > 0 {
             dose = jsFixed(dose * masses.reduce(0, +) / first, 6)
         }
+        // Injectly's dose is one injection; a protocol's is the day, split across its times.
+        if schedule.kind != .asNeeded { dose = jsFixed(dose * Double(max(1, scheduleTimes(schedule).count)), 6) }
         let id: String? = { if case .existing(let id) = compound { return id }; return nil }()
         let planned = id.map { pid in activeProtocols.contains { $0.peptideId == pid } } ?? false
         return InjectlyItem(medication: m, compound: compound, schedule: schedule, doseMcg: dose, notes: notes, alreadyPlanned: planned)
