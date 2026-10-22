@@ -9,7 +9,10 @@ struct BenchApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
-        _store = State(initialValue: Bootstrap.makeStore())
+        let store = Bootstrap.makeStore()
+        _store = State(initialValue: store)
+        // Before launch finishes, so a button tapped on a reminder reaches the store.
+        NotificationHandler.shared.install(store)
     }
 
     var body: some Scene {

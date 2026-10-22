@@ -124,6 +124,29 @@ public extension AppData {
         return id
     }
 
+    /// The dose a reminder was for, logged now from the notification: the protocol's
+    /// scheduled amount, the next site in its rotation, and the vial `addLog` would pick.
+    /// nil when the protocol is gone, or when that dose was already logged or skipped,
+    /// so a second tap on an old notification does not log it twice.
+    @discardableResult
+    mutating func logFromReminder(protocolId: String, doseAt: Millis, now: Millis = nowMillis()) -> String? {
+        guard let p = protocols.first(where: { $0.id == protocolId && $0.profileId == activeProfileId }) else { return nil }
+        // A dose answers the scheduled time it is nearest to, so the morning's
+        // dose never counts for the evening's reminder.
+        let window: Millis = 12 * HOUR_MS
+        let times = protocolDoseTimesBetween(p, doseAt - 2 * window, doseAt + 2 * window)
+        let answered = logs.contains { l in
+            guard l.profileId == activeProfileId, l.protocolId == p.id || (l.protocolId == nil && l.peptideId == p.peptideId),
+                  abs(l.at - doseAt) < window else { return false }
+            return times.min { abs($0 - l.at) < abs($1 - l.at) }.map { abs($0 - doseAt) < 60_000 } ?? true
+        }
+        if answered { return nil }
+        let mine = logs.filter { $0.profileId == activeProfileId && $0.peptideId == p.peptideId }
+        let site = routeHasSite(p.route) ? suggestSite(mine, now, allowed: p.sites) : nil
+        return addLog(DoseLog(id: "", profileId: "", protocolId: p.id, peptideId: p.peptideId, at: now,
+                              doseMcg: scheduledDoseMcg(p, doseAt), route: p.route, site: site))
+    }
+
     /// Edits a dose, undoing what it used to take out of stock before applying what it takes now.
     mutating func updateLog(_ id: String, _ change: (inout DoseLog) -> Void) {
         guard let i = logs.firstIndex(where: { $0.id == id }) else { return }

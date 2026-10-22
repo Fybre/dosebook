@@ -95,7 +95,8 @@
     "ios_inj_files": "Read: {files}",
     "ios_inj_import": "Import",
     "ios_inj_done": "Added {protocols} and {doses}, and {weights}.",
-    "ios_inj_no_files": "None of those files came from Injectly."
+    "ios_inj_no_files": "None of those files came from Injectly.",
+    "ios_snooze_15": "Snooze 15 min"
   },
   "de": {
     "more": "Mehr",
@@ -193,7 +194,8 @@
     "ios_inj_files": "Gelesen: {files}",
     "ios_inj_import": "Importieren",
     "ios_inj_done": "{protocols} und {doses} sowie {weights} hinzugefügt.",
-    "ios_inj_no_files": "Keine dieser Dateien stammt aus Injectly."
+    "ios_inj_no_files": "Keine dieser Dateien stammt aus Injectly.",
+    "ios_snooze_15": "15 Min. später"
   },
   "sl": {
     "more": "Več",
@@ -293,7 +295,8 @@
     "ios_inj_files": "Prebrano: {files}",
     "ios_inj_import": "Uvozi",
     "ios_inj_done": "Dodano: {protocols}, {doses} in {weights}.",
-    "ios_inj_no_files": "Nobena od teh datotek ni iz Injectly."
+    "ios_inj_no_files": "Nobena od teh datotek ni iz Injectly.",
+    "ios_snooze_15": "Dremež 15 min"
   },
   "pl": {
     "more": "Więcej",
@@ -393,6 +396,7 @@
     "ios_inj_files": "Odczytano: {files}",
     "ios_inj_import": "Importuj",
     "ios_inj_done": "Dodano {protocols}, {doses} oraz {weights}.",
-    "ios_inj_no_files": "Żaden z tych plików nie pochodzi z Injectly."
+    "ios_inj_no_files": "Żaden z tych plików nie pochodzi z Injectly.",
+    "ios_snooze_15": "Drzemka 15 min"
   }
 }
