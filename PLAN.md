@@ -273,7 +273,9 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
   `-log [peptideId]`, `-more calculator|library|labs|report|settings|about|importer [peptideId]`,
   `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`. `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
 
-**Needs the user / real devices:** set `DEVELOPMENT_TEAM` in project.yml; then test CloudKit sync
+**Needs the user / real devices:** `DEVELOPMENT_TEAM` is set (8BD49F6FX5). Waiting on the app's
+name before the first signed build, which registers `me.fybre.bench` and creates the permanent
+container `iCloud.me.fybre.bench`. Then test CloudKit sync
 between two devices on one Apple ID, HealthKit permission and reads on a phone, notification
 delivery, and Files visibility of Documents/Bench.
 

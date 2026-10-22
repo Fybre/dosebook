@@ -7,8 +7,10 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    # Set your own team for signing, CloudKit and HealthKit.
-    DEVELOPMENT_TEAM: ""
+    # Signing team. Settle the app's name before the first signed build: automatic
+    # signing then registers the bundle id and creates the iCloud container, and a
+    # container can never be deleted or renamed.
+    DEVELOPMENT_TEAM: "8BD49F6FX5"
     CODE_SIGN_STYLE: Automatic
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
