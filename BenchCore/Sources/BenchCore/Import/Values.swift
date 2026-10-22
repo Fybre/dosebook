@@ -23,8 +23,9 @@ public struct Clock: Equatable, Sendable {
 }
 
 /// A date in an unambiguous year-first form, local time. A bare dd/mm or mm/dd is refused.
-/// `time` applies when the date carries none of its own.
-public func parseDate(_ v: String?, _ time: String? = nil) -> Millis? {
+/// `time` applies when the date carries none of its own. `timeZone` (an IANA name such
+/// as "Australia/Sydney") reads the wall-clock time where it was written rather than here.
+public func parseDate(_ v: String?, _ time: String? = nil, timeZone: String? = nil) -> Millis? {
     guard !isBlank(v), let v else { return nil }
     let text = v.trimmingCharacters(in: .whitespacesAndNewlines)
     guard let m = JSRegex(#"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[T ](\d{1,2}):(\d{2})(?::(\d{2}))?)?"#).exec(text) else { return nil }
@@ -33,7 +34,8 @@ public func parseDate(_ v: String?, _ time: String? = nil) -> Millis? {
         : parseClock(time)
     let year = Int(m[1]!)!, month = Int(m[2]!)!, day = Int(m[3]!)!
     guard (1...12).contains(month), (1...31).contains(day) else { return nil }
-    let cal = LocalTime.calendar
+    var cal = LocalTime.calendar
+    if let id = timeZone?.trimmingCharacters(in: .whitespaces), !id.isEmpty, let tz = TimeZone(identifier: id) { cal.timeZone = tz }
     var c = DateComponents()
     c.year = year; c.month = month; c.day = day
     c.hour = clock?.h ?? 0; c.minute = clock?.mi ?? 0; c.second = clock?.s ?? 0
@@ -60,13 +62,13 @@ public func parseClock(_ v: String?) -> Clock? {
 
 /// A mass in micrograms from text that may name its unit. No unit means mg;
 /// syringe units and unknown units are nil, never a guess.
-public func parseDoseMcg(_ v: String?) -> Double? {
+public func parseDoseMcg(_ v: String?, bareUnit: DoseUnit = .mg) -> Double? {
     guard !isBlank(v), let v else { return nil }
     let text = v.trimmingCharacters(in: .whitespacesAndNewlines)
     guard let n = parseNumber(text), n >= 0 else { return nil }
     let raw = JSRegex(#"[\d.]\s*([a-zµμ]+)"#, "i").exec(text)?[1] ?? ""
     let unit = raw.lowercased().replacingOccurrences(of: "µ", with: "u").replacingOccurrences(of: "μ", with: "u")
-    if unit.isEmpty { return n * 1000 }
+    if unit.isEmpty { return bareUnit == .mcg ? n : n * 1000 }
     if ["mcg", "ug", "microgram", "micrograms"].contains(unit) { return n }
     if ["mg", "milligram", "milligrams"].contains(unit) { return n * 1000 }
     if ["g", "gram", "grams"].contains(unit) { return n * 1_000_000 }

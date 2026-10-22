@@ -81,12 +81,14 @@ public func readImportFile(name: String, bytes: [UInt8], options: ImportOptions,
 
     let table = toTable(rows)
     guard !table.headers.isEmpty else { throw ImportError(message: "That file appears to be empty.") }
+    if let message = notHistoryMessage(table.headers) { throw ImportError(message: message) }
     guard let profile = detectProfile(table.headers) else {
         throw ImportError(message: "Could not tell what these columns mean: \(table.headers.prefix(8).joined(separator: ", ")). A date column plus a column naming what was taken, or a weight, is the minimum needed.")
     }
     let read = profile.read(table.records, table.headers)
     let plan = buildImportPlan(records: read.records, problems: read.problems, peptides: options.peptides,
-                               existingLogs: options.existingLogs, existingMeasurements: options.existingMeasurements)
+                               existingLogs: options.existingLogs, existingMeasurements: options.existingMeasurements,
+                               blendDoseIsFirstPart: profile.blendDoseIsFirstPart)
     return .table(format: format, profile: profile, table: table, plan: plan)
 }
 

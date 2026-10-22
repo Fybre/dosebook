@@ -127,17 +127,15 @@ struct CustomCompoundForm: View {
                     }
                 }
                 Button { draft.components.append(BlendComponent(name: "")) } label: { Label(t("ios_ccf_add_part"), systemImage: "plus") }
-                Picker(t("ios_ccf_dosing"), selection: $draft.blendDosing) {
-                    Text(t("ios_ccf_dosing_split")).tag(BlendDosing.split)
-                    Text(t("ios_ccf_dosing_each")).tag(BlendDosing.perComponent)
-                }
                 if let e = error(.components) { Text(e).font(.caption).foregroundStyle(Tone.rose.color) }
             }
         } header: {
             Text(t("ios_ccf_parts")).id("parts")
         } footer: {
             if !draft.components.isEmpty {
-                Text(draft.blendDosing == .perComponent ? t("ios_ccf_each_hint") : t("ios_ccf_split_hint"))
+                // Only whole-blend dosing is offered: it is the one whose syringe marks,
+                // stock and per-part split agree for a blend drawn from one vial.
+                Text(t("ios_ccf_split_hint"))
             }
         }
     }

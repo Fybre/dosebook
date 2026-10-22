@@ -41,7 +41,8 @@ public struct ImportPlan: Equatable, Sendable {
 }
 
 public func buildImportPlan(records: [CanonicalRecord], problems: [RowProblem], peptides: [Peptide],
-                            existingLogs: [(at: Millis, peptideId: String)], existingMeasurements: [(at: Millis, weightKg: Double?)]) -> ImportPlan {
+                            existingLogs: [(at: Millis, peptideId: String)], existingMeasurements: [(at: Millis, weightKg: Double?)],
+                            blendDoseIsFirstPart: Bool = false) -> ImportPlan {
     var doses: [PlannedDose] = [], weights: [PlannedWeight] = []
     var allProblems = problems
     var unresolved = OrderedMap<String, [Int]>()
@@ -66,10 +67,11 @@ public func buildImportPlan(records: [CanonicalRecord], problems: [RowProblem], 
                 unresolved[label] = (unresolved[label] ?? []) + [row]
                 continue
             }
-            guard let dose = doseMcg, dose > 0 else {
+            guard var dose = doseMcg, dose > 0 else {
                 allProblems.append(RowProblem(sourceRow: row, reason: "No readable dose for \(peptide.name). A dose in mg or mcg is needed, syringe units cannot be converted without the vial's concentration."))
                 continue
             }
+            if blendDoseIsFirstPart, let scale = firstPartScale(peptide) { dose = jsFixed(dose * scale, 6) }
             if doseExists(at, peptide.id) { duplicateDoses += 1; continue }
             doses.append(PlannedDose(at: at, peptideId: peptide.id, peptideName: peptide.name, doseMcg: dose, site: site, notes: notes, sourceRow: row))
         }
@@ -78,6 +80,16 @@ public func buildImportPlan(records: [CanonicalRecord], problems: [RowProblem], 
                       duplicateDoses: duplicateDoses, duplicateWeights: duplicateWeights,
                       problems: allProblems.stableSorted { $0.sourceRow < $1.sourceRow },
                       unresolved: unresolved.entries.map { ($0.key, $0.value) })
+}
+
+/// For a blend dosed as the whole blend: whole-blend mass per unit of the first part.
+/// 2 for a 10 mg + 10 mg vial. nil when it cannot be worked out, so nothing is guessed.
+func firstPartScale(_ p: Peptide) -> Double? {
+    guard isBlend(p), blendDosing(p) == .split, let parts = p.components,
+          let first = parts.first?.mgPerVial, first > 0 else { return nil }
+    let masses = parts.compactMap(\.mgPerVial)
+    guard masses.count == parts.count else { return nil }
+    return masses.reduce(0, +) / first
 }
 
 public func planIsEmpty(_ plan: ImportPlan) -> Bool { plan.doses.isEmpty && plan.weights.isEmpty }
