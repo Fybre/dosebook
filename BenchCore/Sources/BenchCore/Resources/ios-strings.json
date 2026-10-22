@@ -144,7 +144,15 @@
     "ios_tip_reminders_body": "Bench can notify you when a dose is due, and you can log it straight from the notification. The notification doesn’t name the compound unless you choose that in Settings.",
     "ios_tip_reminders_on": "Turn on reminders",
     "ios_scan_use": "Use these details",
-    "ios_stock_scan_hint": "Fills in the compound, strength, lot and expiry from the label. Check them before adding."
+    "ios_stock_scan_hint": "Fills in the compound, strength, lot and expiry from the label. Check them before adding.",
+    "ios_log_units_need_mix": "The vial is still sealed. Mix it to see the dose in syringe units.",
+    "ios_log_units_need_vial": "No mixed vial of this in Stock. Add the one you draw from to see the dose in syringe units.",
+    "ios_log_mix_vial": "Mix this vial",
+    "ios_log_add_vial": "Add a vial to Stock",
+    "ios_stock_mixed_in_use": "Mixed, in use",
+    "ios_stock_mixed_on": "Mixed on",
+    "ios_stock_mixed_hint": "For a vial you are already drawing from. It counts as full; doses logged from now on come out of it.",
+    "ios_stock_mixed_hint_many": "One of these is the vial you are drawing from, counted as full; the rest stay sealed."
   },
   "de": {
     "more": "Mehr",
@@ -291,7 +299,15 @@
     "ios_tip_reminders_body": "Bench kann dich benachrichtigen, wenn eine Dosis fällig ist, und du kannst sie direkt aus der Mitteilung erfassen. Die Mitteilung nennt den Wirkstoff nicht, außer du wählst das in den Einstellungen.",
     "ios_tip_reminders_on": "Erinnerungen einschalten",
     "ios_scan_use": "Diese Angaben übernehmen",
-    "ios_stock_scan_hint": "Übernimmt Wirkstoff, Stärke, Charge und Ablaufdatum vom Etikett. Prüfe sie vor dem Hinzufügen."
+    "ios_stock_scan_hint": "Übernimmt Wirkstoff, Stärke, Charge und Ablaufdatum vom Etikett. Prüfe sie vor dem Hinzufügen.",
+    "ios_log_units_need_mix": "Die Ampulle ist noch verschlossen. Löse sie auf, um die Dosis in Spritzeneinheiten zu sehen.",
+    "ios_log_units_need_vial": "Keine aufgelöste Ampulle davon im Vorrat. Füge die hinzu, aus der du aufziehst, um die Dosis in Spritzeneinheiten zu sehen.",
+    "ios_log_mix_vial": "Ampulle auflösen",
+    "ios_log_add_vial": "Ampulle zum Vorrat hinzufügen",
+    "ios_stock_mixed_in_use": "Aufgelöst, in Gebrauch",
+    "ios_stock_mixed_on": "Aufgelöst am",
+    "ios_stock_mixed_hint": "Für eine Ampulle, aus der du schon aufziehst. Sie zählt als voll; ab jetzt erfasste Dosen werden davon abgezogen.",
+    "ios_stock_mixed_hint_many": "Eine davon ist die Ampulle, aus der du aufziehst, als voll gezählt; die übrigen bleiben verschlossen."
   },
   "sl": {
     "more": "Več",
@@ -442,7 +458,15 @@
     "ios_tip_reminders_body": "Bench te lahko obvesti, ko je odmerek na vrsti, in ga lahko zabeležiš kar iz obvestila. Obvestilo ne navede snovi, razen če to izbereš v nastavitvah.",
     "ios_tip_reminders_on": "Vklopi opomnike",
     "ios_scan_use": "Uporabi te podatke",
-    "ios_stock_scan_hint": "Z etikete izpolni snov, jakost, serijo in rok uporabe. Preveri jih, preden dodaš."
+    "ios_stock_scan_hint": "Z etikete izpolni snov, jakost, serijo in rok uporabe. Preveri jih, preden dodaš.",
+    "ios_log_units_need_mix": "Viala je še zaprta. Pripravi jo, da vidiš odmerek v enotah brizge.",
+    "ios_log_units_need_vial": "V zalogi ni pripravljene viale te snovi. Dodaj tisto, iz katere jemlješ, da vidiš odmerek v enotah brizge.",
+    "ios_log_mix_vial": "Pripravi vialo",
+    "ios_log_add_vial": "Dodaj vialo v zalogo",
+    "ios_stock_mixed_in_use": "Pripravljena, v uporabi",
+    "ios_stock_mixed_on": "Pripravljena dne",
+    "ios_stock_mixed_hint": "Za vialo, iz katere že jemlješ. Šteje kot polna; odmerki, zabeleženi od zdaj, se odštejejo od nje.",
+    "ios_stock_mixed_hint_many": "Ena od njih je viala, iz katere jemlješ, šteje kot polna; ostale ostanejo zaprte."
   },
   "pl": {
     "more": "Więcej",
@@ -593,6 +617,14 @@
     "ios_tip_reminders_body": "Bench może powiadomić Cię, gdy przypada dawka, a zapiszesz ją prosto z powiadomienia. Powiadomienie nie podaje nazwy substancji, chyba że wybierzesz to w ustawieniach.",
     "ios_tip_reminders_on": "Włącz przypomnienia",
     "ios_scan_use": "Użyj tych danych",
-    "ios_stock_scan_hint": "Uzupełnia substancję, moc, serię i datę ważności z etykiety. Sprawdź je przed dodaniem."
+    "ios_stock_scan_hint": "Uzupełnia substancję, moc, serię i datę ważności z etykiety. Sprawdź je przed dodaniem.",
+    "ios_log_units_need_mix": "Fiolka jest jeszcze zamknięta. Rozpuść ją, aby zobaczyć dawkę w jednostkach strzykawki.",
+    "ios_log_units_need_vial": "Brak rozpuszczonej fiolki w zapasach. Dodaj tę, z której pobierasz, aby zobaczyć dawkę w jednostkach strzykawki.",
+    "ios_log_mix_vial": "Rozpuść fiolkę",
+    "ios_log_add_vial": "Dodaj fiolkę do zapasów",
+    "ios_stock_mixed_in_use": "Rozpuszczona, w użyciu",
+    "ios_stock_mixed_on": "Rozpuszczona dnia",
+    "ios_stock_mixed_hint": "Dla fiolki, z której już pobierasz. Liczy się jako pełna; dawki zapisane od teraz są z niej odejmowane.",
+    "ios_stock_mixed_hint_many": "Jedna z nich to fiolka, z której pobierasz, liczona jako pełna; reszta pozostaje zamknięta."
   }
 }

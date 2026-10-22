@@ -30,6 +30,8 @@ struct LogDoseSheet: View {
     @State private var confirmDelete = false
     @State private var addingCompound = false
     @State private var showSkipHelp = false
+    @State private var mixing: Vial?
+    @State private var addingVial = false
 
     private var data: AppData { store.data }
     private var mine: AppData { data.mine }
@@ -198,10 +200,18 @@ struct LogDoseSheet: View {
             }
         }
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choosePeptide($0.id) }) } }
+        .sheet(item: $mixing, onDismiss: repickVial) { v in NavigationStack { ReconstituteForm(vial: v) } }
+        .sheet(isPresented: $addingVial, onDismiss: repickVial) { NavigationStack { AddVialForm(startingPeptideId: peptideId, alreadyMixed: true) } }
         .onAppear(perform: load)
         .onChange(of: site) { _, s in
             if let s, !siteOverride, !pinned.isEmpty, !pinned.contains(s) { siteOverride = true }
         }
+    }
+
+    /// After a vial was mixed or added from here: draw from the best one now.
+    private func repickVial() {
+        if vial?.diluentMl != nil { return }
+        vialId = pickVialForDose(mine.vials, peptideId, doseMcg, at.millis, container)?.id ?? vialId
     }
 
     // MARK: Sections
@@ -225,6 +235,17 @@ struct LogDoseSheet: View {
                  ? t("log_per_press_hint", ["dose": .string(formatDose(mcgPerSpray(v!))), "ml": .string(trim(mlForSprays(v!, spraysForDose(v!, doseMcg)), 2))])
                  : t("log_fill_spray_first"))
                 .font(.caption).foregroundStyle(.secondary)
+        } else if !canConvert {
+            // Units need a mixed vial; say so, and offer the step that gets there.
+            let sealed = vial.flatMap { $0.diluentMl == nil ? $0 : nil }
+                ?? drawableVials(mine.vials, peptideId, nowMillis(), container).first { $0.state == .sealed }
+            LabeledContent(t("log_syringe_units"), value: "—")
+            Text(sealed != nil ? t("ios_log_units_need_mix") : t("ios_log_units_need_vial")).font(.caption).foregroundStyle(.secondary)
+            if let sealed {
+                Button { mixing = sealed } label: { Label(t("ios_log_mix_vial"), systemImage: "drop") }.disabled(skipped)
+            } else {
+                Button { addingVial = true } label: { Label(t("ios_log_add_vial"), systemImage: "plus") }.disabled(skipped)
+            }
         } else {
             NumberRow(label: t("log_syringe_units"), value: Binding(
                 get: { canConvert ? jsFixed(unitsFromDose(doseMcg, conc, syringe.scale), 2) : 0 },

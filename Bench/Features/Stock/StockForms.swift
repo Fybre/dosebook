@@ -80,6 +80,13 @@ struct AddVialForm: View {
     @Environment(AppStore.self) private var store
     /// Opens the label scanner straight away.
     var scanFirst = false
+    /// The compound to start on, when added from somewhere that knows it.
+    var startingPeptideId: String?
+    /// Start on "mixed, in use", for a vial already being drawn from.
+    var alreadyMixed = false
+
+    enum Place: Hashable { case fridge, onOrder, mixed }
+    private var arrived: Bool { place != .onOrder }
     @State private var scanning = false
     @State private var lot = ""
     @State private var hasExpiry = false
@@ -93,7 +100,9 @@ struct AddVialForm: View {
     @State private var supplier = ""
     @State private var cost: Double?
     @State private var pricedAsKit = false
-    @State private var arrived = true
+    @State private var place: Place = .fridge
+    @State private var mixedMl: Double = 2
+    @State private var mixedOn = Date()
     @State private var addingCompound = false
     @State private var loaded = false
 
@@ -128,9 +137,14 @@ struct AddVialForm: View {
                 }
                 Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
                 if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
-                Picker(t("stock_where"), selection: $arrived) {
-                    Text(t("stock_in_the_fridge")).tag(true)
-                    Text(t("stock_on_order")).tag(false)
+                Picker(t("stock_where"), selection: $place) {
+                    Text(t("stock_in_the_fridge")).tag(Place.fridge)
+                    if !tablets { Text(t("ios_stock_mixed_in_use")).tag(Place.mixed) }
+                    Text(t("stock_on_order")).tag(Place.onOrder)
+                }
+                if place == .mixed && !tablets {
+                    NumberRow(label: t("stock_water_added"), value: $mixedMl, suffix: "mL", range: 0...100)
+                    DatePicker(t("ios_stock_mixed_on"), selection: $mixedOn, in: ...Date(), displayedComponents: .date)
                 }
             } footer: {
                 VStack(alignment: .leading, spacing: 4) {
@@ -139,6 +153,10 @@ struct AddVialForm: View {
                         Text(t("stock_common_sizes", ["sizes": .string(sizes.map { jsNumberString($0) }.joined(separator: ", "))]))
                     }
                     if !arrived { Text(t("stock_on_order_hint")) }
+                    if place == .mixed && !tablets {
+                        Text(t("stock_makes_conc", ["conc": .string(trim(mixedMl > 0 ? strengthMg / mixedMl : 0, 3))]))
+                        Text(n > 1 ? t("ios_stock_mixed_hint_many") : t("ios_stock_mixed_hint"))
+                    }
                 }
             }
             Section {
@@ -176,7 +194,7 @@ struct AddVialForm: View {
         }
         .formChrome(t("stock_new_vial"),
                     confirm: arrived ? t("stock_add_vials", ["vials": .string(what(tablets, n))]) : t("stock_add_vials_on_order", ["vials": .string(what(tablets, n))]),
-                    disabled: peptideId.isEmpty || !(tablets ? packMg > 0 : strengthMg > 0)) {
+                    disabled: peptideId.isEmpty || !(tablets ? packMg > 0 : strengthMg > 0) || (place == .mixed && !tablets && !(mixedMl > 0))) {
             let base = Vial(id: "", profileId: "", peptideId: peptideId, strengthMg: tablets ? packMg : strengthMg,
                             state: arrived ? .sealed : .onOrder,
                             supplier: supplier.trimmingCharacters(in: .whitespaces).isEmpty ? nil : supplier.trimmingCharacters(in: .whitespaces),
@@ -184,7 +202,16 @@ struct AddVialForm: View {
                             cost: perVial, currency: perVial == nil ? nil : payCurrency, acquiredAt: nowMillis(), expiresAt: hasExpiry ? endOfLocalDay(expiry.millis) : nil,
                             container: tablets ? .pack : nil, mgPerTablet: tablets ? strengthMg : nil)
             let paid = shipping.flatMap { $0 > 0 ? $0 : nil }
-            store.mutate { $0.addOrder(Array(repeating: base, count: Int(n)), shippingCost: paid, currency: paid == nil ? nil : payCurrency) }
+            let mix = place == .mixed && !tablets
+            let ml = mixedMl, mixedAt = min(nowMillis(), mixedOn.millis)
+            store.mutate { d in
+                let before = Set(d.vials.map(\.id))
+                d.addOrder(Array(repeating: base, count: Int(n)), shippingCost: paid, currency: paid == nil ? nil : payCurrency)
+                // One of them is the vial being drawn from; the rest stay sealed.
+                if mix, let id = d.vials.first(where: { !before.contains($0.id) })?.id {
+                    d.reconstituteVial(id, diluentMl: ml, diluent: .bacteriostatic, at: mixedAt)
+                }
+            }
         }
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choose($0.id) }) } }
         .sheet(isPresented: $scanning) { NavigationStack { ScanVialView(onScanned: apply) } }
@@ -192,7 +219,9 @@ struct AddVialForm: View {
             guard !loaded else { return }
             loaded = true
             payCurrency = store.data.settings.currency
-            if let first = store.data.allPeptides.first { choose(first.id) }
+            if let id = startingPeptideId, store.data.peptide(id) != nil { choose(id) }
+            else if let first = store.data.allPeptides.first { choose(first.id) }
+            if alreadyMixed { place = .mixed }
             if scanFirst { scanning = true }
         }
     }
