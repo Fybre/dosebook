@@ -294,6 +294,15 @@ public extension AppData {
         if let b = fromBottleId { diluents = drawFromBottle(diluents, b, diluentMl, at) }
     }
 
+    /// Corrects how much is left in a vial, as counted by eye: what was drawn
+    /// becomes whatever makes the remainder this, never below empty or above full.
+    mutating func setVialRemaining(_ id: String, remainingMcg: Double) {
+        vials.update(id) { v in
+            let cap = vialCapacityMcg(v)
+            v.drawnMcg = jsFixed(cap - min(max(0, remainingMcg), cap), 6)
+        }
+    }
+
     /// More solvent into an open vial. The beyond-use date does not move.
     mutating func topUpVial(_ id: String, addedMl: Double, fromBottleId: String? = nil, now: Millis = nowMillis()) {
         guard let target = vials.first(where: { $0.id == id }), let d = diluentAfterTopUp(target, addedMl) else { return }

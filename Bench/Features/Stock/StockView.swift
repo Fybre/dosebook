@@ -10,11 +10,12 @@ struct StockView: View {
     @State private var now = nowMillis()
 
     enum StockSheet: Identifiable {
-        case add, scan, reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), addBottle, useBottle(DiluentBottle)
+        case add, scan, left(Vial), reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), addBottle, useBottle(DiluentBottle)
         var id: String {
             switch self {
             case .add: "add"
             case .scan: "scan"
+            case .left(let v): "l" + v.id
             case .reconstitute(let v): "r" + v.id
             case .topUp(let v): "t" + v.id
             case .transfer(let v): "s" + v.id
@@ -94,6 +95,7 @@ struct StockView: View {
                 Section {
                     ForEach(open) { v in
                         var actions: [VialAction] = []
+                        if !isPack(v) { actions.append(.init(t("ios_left_title"), "slider.horizontal.3") { sheet = .left(v) }) }
                         if !isPack(v) { actions.append(.init(t("stock_add_diluent"), "drop") { sheet = .topUp(v) }) }
                         if !isSpray(v) && !isPack(v) { actions.append(.init(t("stock_to_spray"), "humidifier") { sheet = .transfer(v) }) }
                         if isPack(v) || data.peptide(v.peptideId)?.preparation == .tablet {
@@ -157,13 +159,19 @@ struct StockView: View {
         }
         .onAppear { now = nowMillis() }
         #if DEBUG
-        .onAppear { if sheet == nil, ProcessInfo.processInfo.arguments.contains("-stockScan") { sheet = .scan } }
+        .onAppear {
+            let args = ProcessInfo.processInfo.arguments
+            if sheet == nil, args.contains("-stockScan") { sheet = .scan }
+            // `-vialLeft`: the amount-left form for the first open vial.
+            if sheet == nil, args.contains("-vialLeft"), let v = store.data.mine.vials.first(where: { $0.state == .reconstituted && !isPack($0) }) { sheet = .left(v) }
+        }
         #endif
         .sheet(item: $sheet) { s in
             NavigationStack {
                 switch s {
                 case .add: AddVialForm()
                 case .scan: AddVialForm(scanFirst: true)
+                case .left(let v): VialLeftForm(vial: v)
                 case .reconstitute(let v): ReconstituteForm(vial: v)
                 case .topUp(let v): TopUpForm(vial: v)
                 case .transfer(let v): TransferToSprayForm(vial: v)

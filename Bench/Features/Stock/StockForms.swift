@@ -244,6 +244,53 @@ struct AddVialForm: View {
     }
 }
 
+// MARK: - Correcting what is left
+
+/// What is left in an open vial, set by eye: in mL of solution for a mixed vial,
+/// or as an amount. Doses logged afterwards come out of the new figure.
+struct VialLeftForm: View {
+    @Environment(AppStore.self) private var store
+    var vial: Vial
+    @State private var leftMcg: Double = 0
+    @State private var inMl = true
+    @State private var loaded = false
+
+    var body: some View {
+        let conc = vialConcentration(vial)
+        let mixed = conc.isFinite && conc > 0
+        let cap = vialCapacityMcg(vial)
+        let name = store.data.peptide(vial.peptideId)?.name ?? vial.peptideId
+        Form {
+            Section {
+                if mixed {
+                    Picker(t("ios_left_enter_as"), selection: $inMl) {
+                        Text("mL").tag(true)
+                        Text(t("ios_left_amount")).tag(false)
+                    }
+                    .pickerStyle(.segmented)
+                }
+                if mixed && inMl {
+                    NumberRow(label: t("ios_left_title"), value: Binding(get: { jsFixed(leftMcg / conc, 3) }, set: { leftMcg = $0 * conc }),
+                              suffix: "mL", range: 0...((vial.diluentMl ?? 0)))
+                } else {
+                    AmountRow(label: t("ios_left_title"), value: $leftMcg, base: .mcg, range: 0...cap)
+                }
+            } header: { Text("\(name) · \(jsNumberString(vial.strengthMg)) mg") } footer: {
+                Text(t("ios_left_hint", ["amount": .string(formatDose(min(leftMcg, cap))), "pct": .string(trim(cap > 0 ? min(leftMcg, cap) / cap * 100 : 0, 0))])
+                     + (mixed ? " " + t("ios_left_ml", ["ml": .string(trim(min(leftMcg, cap) / conc, 2)), "full": .string(trim(vial.diluentMl ?? 0, 2))]) : ""))
+            }
+        }
+        .formChrome(t("ios_left_title"), confirm: t("save")) {
+            store.mutate { $0.setVialRemaining(vial.id, remainingMcg: leftMcg) }
+        }
+        .onAppear {
+            guard !loaded else { return }
+            loaded = true
+            leftMcg = vialRemainingMcg(vial)
+        }
+    }
+}
+
 // MARK: - Making up and topping up
 
 struct ReconstituteForm: View {

@@ -413,3 +413,19 @@ private func stockOf(_ mcg: Double) -> Stock {
         #expect(g[0].supplier == "Peptide Sciences" && g[0].count == 2)
     }
 }
+
+@Suite struct SetVialRemainingTests {
+    @Test func setsWhatIsLeft() {
+        var d = AppData()
+        let id = d.addVial(Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 10, state: .sealed))
+        d.reconstituteVial(id, diluentMl: 2, diluent: .bacteriostatic)
+        d.setVialRemaining(id, remainingMcg: 4000)
+        let v = d.vials[0]
+        #expect(v.drawnMcg == 6000 && vialRemainingMcg(v) == 4000 && abs(vialRemainingMl(v) - 0.8) < 1e-9)
+        // Never past full or below empty.
+        d.setVialRemaining(id, remainingMcg: 50_000)
+        #expect(d.vials[0].drawnMcg == 0)
+        d.setVialRemaining(id, remainingMcg: -5)
+        #expect(vialRemainingMcg(d.vials[0]) == 0)
+    }
+}

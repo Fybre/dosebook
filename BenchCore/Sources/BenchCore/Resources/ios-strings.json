@@ -151,11 +151,16 @@
     "ios_log_add_vial": "Add a vial to Stock",
     "ios_stock_mixed_in_use": "Mixed, in use",
     "ios_stock_mixed_on": "Mixed on",
-    "ios_stock_mixed_hint": "For a vial you are already drawing from. It counts as full; doses logged from now on come out of it.",
+    "ios_stock_mixed_hint": "For a vial you are already drawing from. It counts as full; set what’s left afterwards with Amount left.",
     "ios_stock_mixed_hint_many": "One of these is the vial you are drawing from, counted as full; the rest stay sealed.",
     "ios_inj_add_vial": "Add the vial in use: {mg} mg in {ml} mL",
-    "ios_inj_add_vial_hint": "Into Stock as mixed today and counted as full, so your doses show in syringe units.",
-    "ios_inj_done_vials": "{vials} added to Stock, mixed."
+    "ios_inj_add_vial_hint": "Into Stock as mixed today and counted as full, so your doses show in syringe units. Set what’s left with Amount left in Stock.",
+    "ios_inj_done_vials": "{vials} added to Stock, mixed.",
+    "ios_left_title": "Amount left",
+    "ios_left_enter_as": "Enter as",
+    "ios_left_amount": "Amount",
+    "ios_left_hint": "{amount} left, {pct}% of the vial. Doses logged from now on come out of this.",
+    "ios_left_ml": "That is {ml} of {full} mL."
   },
   "de": {
     "more": "Mehr",
@@ -309,11 +314,16 @@
     "ios_log_add_vial": "Ampulle zum Vorrat hinzufügen",
     "ios_stock_mixed_in_use": "Aufgelöst, in Gebrauch",
     "ios_stock_mixed_on": "Aufgelöst am",
-    "ios_stock_mixed_hint": "Für eine Ampulle, aus der du schon aufziehst. Sie zählt als voll; ab jetzt erfasste Dosen werden davon abgezogen.",
+    "ios_stock_mixed_hint": "Für eine Ampulle, aus der du schon aufziehst. Sie zählt als voll; die Restmenge stellst du danach unter „Restmenge“ ein.",
     "ios_stock_mixed_hint_many": "Eine davon ist die Ampulle, aus der du aufziehst, als voll gezählt; die übrigen bleiben verschlossen.",
     "ios_inj_add_vial": "Ampulle in Gebrauch hinzufügen: {mg} mg in {ml} mL",
-    "ios_inj_add_vial_hint": "Kommt als heute aufgelöst und voll in den Vorrat, damit deine Dosen in Spritzeneinheiten erscheinen.",
-    "ios_inj_done_vials": "{vials} aufgelöst zum Vorrat hinzugefügt."
+    "ios_inj_add_vial_hint": "Kommt als heute aufgelöst und voll in den Vorrat, damit deine Dosen in Spritzeneinheiten erscheinen. Die Restmenge stellst du im Vorrat unter „Restmenge“ ein.",
+    "ios_inj_done_vials": "{vials} aufgelöst zum Vorrat hinzugefügt.",
+    "ios_left_title": "Restmenge",
+    "ios_left_enter_as": "Eingabe als",
+    "ios_left_amount": "Menge",
+    "ios_left_hint": "{amount} übrig, {pct} % der Ampulle. Ab jetzt erfasste Dosen werden davon abgezogen.",
+    "ios_left_ml": "Das sind {ml} von {full} mL."
   },
   "sl": {
     "more": "Več",
@@ -471,11 +481,16 @@
     "ios_log_add_vial": "Dodaj vialo v zalogo",
     "ios_stock_mixed_in_use": "Pripravljena, v uporabi",
     "ios_stock_mixed_on": "Pripravljena dne",
-    "ios_stock_mixed_hint": "Za vialo, iz katere že jemlješ. Šteje kot polna; odmerki, zabeleženi od zdaj, se odštejejo od nje.",
+    "ios_stock_mixed_hint": "Za vialo, iz katere že jemlješ. Šteje kot polna; preostanek nato nastaviš pod »Preostala količina«.",
     "ios_stock_mixed_hint_many": "Ena od njih je viala, iz katere jemlješ, šteje kot polna; ostale ostanejo zaprte.",
     "ios_inj_add_vial": "Dodaj vialo v uporabi: {mg} mg v {ml} mL",
-    "ios_inj_add_vial_hint": "V zalogo kot danes pripravljena in polna, da so tvoji odmerki prikazani v enotah brizge.",
-    "ios_inj_done_vials": "{vials} dodano v zalogo, pripravljeno."
+    "ios_inj_add_vial_hint": "V zalogo kot danes pripravljena in polna, da so tvoji odmerki prikazani v enotah brizge. Preostanek nastaviš v zalogi pod »Preostala količina«.",
+    "ios_inj_done_vials": "{vials} dodano v zalogo, pripravljeno.",
+    "ios_left_title": "Preostala količina",
+    "ios_left_enter_as": "Vnesi kot",
+    "ios_left_amount": "Količina",
+    "ios_left_hint": "Preostane {amount}, {pct} % viale. Odmerki, zabeleženi od zdaj, se odštejejo od tega.",
+    "ios_left_ml": "To je {ml} od {full} mL."
   },
   "pl": {
     "more": "Więcej",
@@ -633,10 +648,15 @@
     "ios_log_add_vial": "Dodaj fiolkę do zapasów",
     "ios_stock_mixed_in_use": "Rozpuszczona, w użyciu",
     "ios_stock_mixed_on": "Rozpuszczona dnia",
-    "ios_stock_mixed_hint": "Dla fiolki, z której już pobierasz. Liczy się jako pełna; dawki zapisane od teraz są z niej odejmowane.",
+    "ios_stock_mixed_hint": "Dla fiolki, z której już pobierasz. Liczy się jako pełna; resztę ustawisz potem w „Pozostała ilość”.",
     "ios_stock_mixed_hint_many": "Jedna z nich to fiolka, z której pobierasz, liczona jako pełna; reszta pozostaje zamknięta.",
     "ios_inj_add_vial": "Dodaj fiolkę w użyciu: {mg} mg w {ml} mL",
-    "ios_inj_add_vial_hint": "Trafia do zapasów jako rozpuszczona dziś i pełna, aby Twoje dawki były w jednostkach strzykawki.",
-    "ios_inj_done_vials": "{vials} dodano do zapasów jako rozpuszczone."
+    "ios_inj_add_vial_hint": "Trafia do zapasów jako rozpuszczona dziś i pełna, aby Twoje dawki były w jednostkach strzykawki. Resztę ustawisz w zapasach w „Pozostała ilość”.",
+    "ios_inj_done_vials": "{vials} dodano do zapasów jako rozpuszczone.",
+    "ios_left_title": "Pozostała ilość",
+    "ios_left_enter_as": "Wpisz jako",
+    "ios_left_amount": "Ilość",
+    "ios_left_hint": "Zostało {amount}, {pct}% fiolki. Dawki zapisane od teraz są odejmowane od tej ilości.",
+    "ios_left_ml": "To {ml} z {full} mL."
   }
 }
