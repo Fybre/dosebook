@@ -271,7 +271,7 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
   cached; tests in BenchStoreTests), Dynamic Type at accessibility sizes, VoiceOver labels.
 - Debug launch args: `-demo`, `-demoLarge`, `-tab now|plan|log|stock|more`, `-anchor <id>`,
   `-log [peptideId]`, `-more calculator|library|labs|report|settings|about|importer [peptideId]`,
-  `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`, `-injectlyFiles a.csv,b.csv` (with `-more importer`). `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
+  `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`, `-injectlyFiles a.csv,b.csv` (with `-more importer`), `-weightTrend`. `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
 
 **Needs the user / real devices:** `DEVELOPMENT_TEAM` is set (8BD49F6FX5). Waiting on the app's
 name before the first signed build, which registers `me.fybre.bench` and creates the permanent

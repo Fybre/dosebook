@@ -121,6 +121,7 @@ struct WeightCard: View {
     @Environment(AppStore.self) private var store
     var now: Millis
     @State private var adding = false
+    @State private var trend = false
 
     var body: some View {
         let data = store.data
@@ -137,6 +138,8 @@ struct WeightCard: View {
                 }
                 .font(.caption).buttonStyle(.bordered).controlSize(.mini)
                 .accessibilityLabel(data.settings.plotWeightOnChart == true ? t("weight_hide_on_chart") : t("weight_show_on_chart"))
+                Button { trend = true } label: { Label(t("ios_trend_button"), systemImage: "chart.xyaxis.line") }.font(.caption).buttonStyle(.bordered).controlSize(.mini)
+                    .disabled(series.count < 2)
                 Button { adding = true } label: { Label(t("add"), systemImage: "plus") }.font(.caption).buttonStyle(.bordered).controlSize(.mini)
             }
             if series.isEmpty {
@@ -165,10 +168,16 @@ struct WeightCard: View {
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
                 .frame(height: 120)
+                .contentShape(Rectangle())
+                .onTapGesture { trend = true }
             }
         }
         .card()
         .sheet(isPresented: $adding) { NavigationStack { WeightEntry() } }
+        .sheet(isPresented: $trend) { NavigationStack { WeightTrendView(now: now) } }
+        #if DEBUG
+        .onAppear { if ProcessInfo.processInfo.arguments.contains("-weightTrend") { DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { trend = true } } }
+        #endif
     }
 
     private func stat(_ label: String, _ value: String, _ unit: String, _ tone: Tone?, _ hint: String?) -> some View {
