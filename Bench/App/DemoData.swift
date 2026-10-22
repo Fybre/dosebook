@@ -29,6 +29,8 @@ enum DemoData {
         let day = DAY_MS
         store.mutate { d in
             d.updateSettings { $0.currency = "EUR" }
+            // The demo is for showing the app, so it does not nag about a backup.
+            d.updateSettings { $0.lastBackupAt = now; $0.dataChangedAt = now }
             let tirz = d.addProtocol(DoseProtocol(id: "", profileId: "", peptideId: "tirzepatide", name: "Tirzepatide weekly",
                                                   startedAt: startOfLocalDay(now - 40 * day) + 8 * HOUR_MS, doseMcg: 5000, route: .subcutaneous,
                                                   schedule: Schedule(kind: .intervalDays, intervalDays: 7, timeOfDay: "08:00"),
