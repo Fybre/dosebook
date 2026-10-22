@@ -10,10 +10,11 @@ struct StockView: View {
     @State private var now = nowMillis()
 
     enum StockSheet: Identifiable {
-        case add, reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), addBottle, useBottle(DiluentBottle)
+        case add, scan, reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), addBottle, useBottle(DiluentBottle)
         var id: String {
             switch self {
             case .add: "add"
+            case .scan: "scan"
             case .reconstitute(let v): "r" + v.id
             case .topUp(let v): "t" + v.id
             case .transfer(let v): "s" + v.id
@@ -148,14 +149,21 @@ struct StockView: View {
         .navigationTitle(t("stock_title"))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { sheet = .add } label: { Label(t("stock_add_vial"), systemImage: "plus") }
+                Menu {
+                    Button { sheet = .add } label: { Label(t("stock_add_vial"), systemImage: "square.and.pencil") }
+                    Button { sheet = .scan } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
+                } label: { Label(t("stock_add_vial"), systemImage: "plus") }
             }
         }
         .onAppear { now = nowMillis() }
+        #if DEBUG
+        .onAppear { if sheet == nil, ProcessInfo.processInfo.arguments.contains("-stockScan") { sheet = .scan } }
+        #endif
         .sheet(item: $sheet) { s in
             NavigationStack {
                 switch s {
                 case .add: AddVialForm()
+                case .scan: AddVialForm(scanFirst: true)
                 case .reconstitute(let v): ReconstituteForm(vial: v)
                 case .topUp(let v): TopUpForm(vial: v)
                 case .transfer(let v): TransferToSprayForm(vial: v)

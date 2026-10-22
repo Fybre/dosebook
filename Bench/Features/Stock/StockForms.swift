@@ -78,6 +78,12 @@ extension View {
 
 struct AddVialForm: View {
     @Environment(AppStore.self) private var store
+    /// Opens the label scanner straight away.
+    var scanFirst = false
+    @State private var scanning = false
+    @State private var lot = ""
+    @State private var hasExpiry = false
+    @State private var expiry = Date()
     @State private var peptideId = ""
     @State private var strengthMg: Double = 10
     @State private var count: Double = 1
@@ -102,6 +108,9 @@ struct AddVialForm: View {
         let perVial: Double? = cost.flatMap { pricedAsKit ? costPerVialInKit($0, n) : $0 }
         Form {
             Section {
+                Button { scanning = true } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
+            } footer: { Text(t("ios_stock_scan_hint")) }
+            Section {
                 Picker(t("plan_peptide"), selection: Binding(get: { peptideId }, set: choose)) {
                     ForEach(data.allPeptides) { Text($0.name).tag($0.id) }
                 }
@@ -114,6 +123,11 @@ struct AddVialForm: View {
                 }
                 NumberRow(label: tablets ? t("stock_how_many_packs") : t("stock_how_many"), value: $count, range: 1...50)
                 TextField(t("stock_source"), text: $supplier, prompt: Text("\(t("stock_source")) (\(t("optional")))"))
+                LabeledContent(t("ios_scan_lot")) {
+                    TextField(t("optional"), text: $lot).multilineTextAlignment(.trailing).textInputAutocapitalization(.characters)
+                }
+                Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
+                if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
                 Picker(t("stock_where"), selection: $arrived) {
                     Text(t("stock_in_the_fridge")).tag(true)
                     Text(t("stock_on_order")).tag(false)
@@ -166,22 +180,33 @@ struct AddVialForm: View {
             let base = Vial(id: "", profileId: "", peptideId: peptideId, strengthMg: tablets ? packMg : strengthMg,
                             state: arrived ? .sealed : .onOrder,
                             supplier: supplier.trimmingCharacters(in: .whitespaces).isEmpty ? nil : supplier.trimmingCharacters(in: .whitespaces),
-                            cost: perVial, currency: perVial == nil ? nil : payCurrency, acquiredAt: nowMillis(),
+                            lot: lot.trimmingCharacters(in: .whitespaces).isEmpty ? nil : lot.trimmingCharacters(in: .whitespaces),
+                            cost: perVial, currency: perVial == nil ? nil : payCurrency, acquiredAt: nowMillis(), expiresAt: hasExpiry ? endOfLocalDay(expiry.millis) : nil,
                             container: tablets ? .pack : nil, mgPerTablet: tablets ? strengthMg : nil)
             let paid = shipping.flatMap { $0 > 0 ? $0 : nil }
             store.mutate { $0.addOrder(Array(repeating: base, count: Int(n)), shippingCost: paid, currency: paid == nil ? nil : payCurrency) }
         }
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choose($0.id) }) } }
+        .sheet(isPresented: $scanning) { NavigationStack { ScanVialView(onScanned: apply) } }
         .onAppear {
             guard !loaded else { return }
             loaded = true
             payCurrency = store.data.settings.currency
             if let first = store.data.allPeptides.first { choose(first.id) }
+            if scanFirst { scanning = true }
         }
     }
 
     private func what(_ tablets: Bool, _ n: Double) -> String {
         tablets ? t("count_packs", ["n": .number(n)]) : t("count_vials", ["n": .number(n)])
+    }
+
+    /// A checked scan: the compound, and whatever else the label gave.
+    private func apply(_ s: ScannedVial) {
+        choose(s.peptideId)
+        if s.strengthMg > 0 { strengthMg = s.strengthMg }
+        if let l = s.lot { lot = l }
+        if let e = s.expiresAt { hasExpiry = true; expiry = Date(millis: e) }
     }
 
     private func choose(_ id: String) {

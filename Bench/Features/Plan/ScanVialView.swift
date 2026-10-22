@@ -4,13 +4,24 @@ import Vision
 import BenchCore
 import BenchStore
 
+/// What a scan found, once checked, for the new-vial form to carry on with.
+struct ScannedVial {
+    var peptideId: String
+    var strengthMg: Double
+    var lot: String?
+    var expiresAt: Millis?
+}
+
 /// Photograph a vial's label to start a protocol for it, and optionally put the
-/// vial in Stock. The text is read on the phone and the photo is not kept.
+/// vial in Stock; or, from Stock, to fill in a new vial. The text is read on the
+/// phone and the photo is not kept.
 struct ScanVialView: View {
     @Environment(AppStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     /// Called with the compound once the person continues to its protocol.
-    var onContinue: (String) -> Void
+    var onContinue: (String) -> Void = { _ in }
+    /// From Stock: hands the details back to the new-vial form instead.
+    var onScanned: ((ScannedVial) -> Void)?
 
     @State private var photo: PhotosPickerItem?
     @State private var camera = false
@@ -53,9 +64,11 @@ struct ScanVialView: View {
                     Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
                     if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
                 } header: { Text(t("ios_scan_found")) } footer: { Text(t("ios_scan_check")) }
-                Section {
-                    Toggle(t("ios_scan_add_stock"), isOn: $addToStock)
-                } footer: { Text(t("ios_scan_add_stock_hint")) }
+                if onScanned == nil {
+                    Section {
+                        Toggle(t("ios_scan_add_stock"), isOn: $addToStock)
+                    } footer: { Text(t("ios_scan_add_stock_hint")) }
+                }
                 Section {
                     DisclosureGroup(t("ios_scan_raw")) {
                         Text(lines!.joined(separator: "\n")).font(.caption.monospaced()).foregroundStyle(.secondary).textSelection(.enabled)
@@ -69,7 +82,7 @@ struct ScanVialView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
-                Button(t("ios_scan_continue"), action: proceed).disabled(peptideId.isEmpty || lines?.isEmpty != false)
+                Button(onScanned == nil ? t("ios_scan_continue") : t("ios_scan_use"), action: proceed).disabled(peptideId.isEmpty || lines?.isEmpty != false)
             }
         }
         .onChange(of: photo) { _, item in
@@ -110,8 +123,14 @@ struct ScanVialView: View {
     }
 
     private func proceed() {
+        let trimmedLot = lot.trimmingCharacters(in: .whitespaces)
+        if let onScanned {
+            onScanned(ScannedVial(peptideId: peptideId, strengthMg: strengthMg, lot: trimmedLot.isEmpty ? nil : trimmedLot,
+                                  expiresAt: hasExpiry ? endOfLocalDay(expiry.millis) : nil))
+            dismiss()
+            return
+        }
         if addToStock, strengthMg > 0 {
-            let trimmedLot = lot.trimmingCharacters(in: .whitespaces)
             store.mutate {
                 $0.addVial(Vial(id: "", profileId: "", peptideId: peptideId, strengthMg: strengthMg, state: .sealed,
                                 lot: trimmedLot.isEmpty ? nil : trimmedLot, acquiredAt: nowMillis(),

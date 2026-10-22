@@ -142,7 +142,9 @@
     "ios_early_hours_hint": "A dose logged between midnight and 4 am counts toward the previous night’s scheduled dose when that is the one it is closest to, so taking an evening dose after midnight doesn’t show as missed.",
     "ios_tip_reminders_title": "Want a reminder for each dose?",
     "ios_tip_reminders_body": "Bench can notify you when a dose is due, and you can log it straight from the notification. The notification doesn’t name the compound unless you choose that in Settings.",
-    "ios_tip_reminders_on": "Turn on reminders"
+    "ios_tip_reminders_on": "Turn on reminders",
+    "ios_scan_use": "Use these details",
+    "ios_stock_scan_hint": "Fills in the compound, strength, lot and expiry from the label. Check them before adding."
   },
   "de": {
     "more": "Mehr",
@@ -287,7 +289,9 @@
     "ios_early_hours_hint": "Eine zwischen Mitternacht und 4 Uhr erfasste Dosis zählt zur geplanten Dosis des Vorabends, wenn diese am nächsten liegt. So gilt eine nach Mitternacht genommene Abenddosis nicht als verpasst.",
     "ios_tip_reminders_title": "Erinnerung für jede Dosis?",
     "ios_tip_reminders_body": "Bench kann dich benachrichtigen, wenn eine Dosis fällig ist, und du kannst sie direkt aus der Mitteilung erfassen. Die Mitteilung nennt den Wirkstoff nicht, außer du wählst das in den Einstellungen.",
-    "ios_tip_reminders_on": "Erinnerungen einschalten"
+    "ios_tip_reminders_on": "Erinnerungen einschalten",
+    "ios_scan_use": "Diese Angaben übernehmen",
+    "ios_stock_scan_hint": "Übernimmt Wirkstoff, Stärke, Charge und Ablaufdatum vom Etikett. Prüfe sie vor dem Hinzufügen."
   },
   "sl": {
     "more": "Več",
@@ -436,7 +440,9 @@
     "ios_early_hours_hint": "Odmerek, zabeležen med polnočjo in 4. uro, šteje za načrtovani odmerek prejšnjega večera, kadar je ta najbližji. Tako večerni odmerek po polnoči ni prikazan kot zamujen.",
     "ios_tip_reminders_title": "Želiš opomnik za vsak odmerek?",
     "ios_tip_reminders_body": "Bench te lahko obvesti, ko je odmerek na vrsti, in ga lahko zabeležiš kar iz obvestila. Obvestilo ne navede snovi, razen če to izbereš v nastavitvah.",
-    "ios_tip_reminders_on": "Vklopi opomnike"
+    "ios_tip_reminders_on": "Vklopi opomnike",
+    "ios_scan_use": "Uporabi te podatke",
+    "ios_stock_scan_hint": "Z etikete izpolni snov, jakost, serijo in rok uporabe. Preveri jih, preden dodaš."
   },
   "pl": {
     "more": "Więcej",
@@ -585,6 +591,8 @@
     "ios_early_hours_hint": "Dawka zapisana między północą a 4:00 liczy się do zaplanowanej dawki z poprzedniego wieczoru, jeśli to ona jest najbliżej. Dzięki temu wieczorna dawka wzięta po północy nie jest oznaczana jako pominięta.",
     "ios_tip_reminders_title": "Przypominać o każdej dawce?",
     "ios_tip_reminders_body": "Bench może powiadomić Cię, gdy przypada dawka, a zapiszesz ją prosto z powiadomienia. Powiadomienie nie podaje nazwy substancji, chyba że wybierzesz to w ustawieniach.",
-    "ios_tip_reminders_on": "Włącz przypomnienia"
+    "ios_tip_reminders_on": "Włącz przypomnienia",
+    "ios_scan_use": "Użyj tych danych",
+    "ios_stock_scan_hint": "Uzupełnia substancję, moc, serię i datę ważności z etykiety. Sprawdź je przed dodaniem."
   }
 }
