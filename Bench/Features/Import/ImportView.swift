@@ -18,8 +18,9 @@ struct ImportView: View {
     @State private var withDoses = true
     @State private var withWeights = true
 
-    private static let types: [UTType] = [.commaSeparatedText, .tabSeparatedText, .plainText, .json, .pdf, .spreadsheet,
-                                          UTType(filenameExtension: "xlsx"), UTType(filenameExtension: "xlsm")].compactMap { $0 }
+    /// Any file: exports are often tagged loosely, and a greyed-out file cannot be
+    /// picked. The file is told apart by its extension and contents instead.
+    private static let types: [UTType] = [.item]
 
     var body: some View {
         List {

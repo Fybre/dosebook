@@ -44,7 +44,9 @@ struct InjectlyImportView: View {
         }
         .navigationTitle(t("ios_src_injectly"))
         .navigationBarTitleDisplayMode(.inline)
-        .fileImporter(isPresented: $picking, allowedContentTypes: [.commaSeparatedText, .plainText], allowsMultipleSelection: true) { r in
+        // Any file: exports are often tagged loosely, and a greyed-out file cannot be picked.
+        // Each file is told apart by its columns instead.
+        .fileImporter(isPresented: $picking, allowedContentTypes: [.item], allowsMultipleSelection: true) { r in
             if case .success(let urls) = r { load(urls) }
         }
         #if DEBUG
