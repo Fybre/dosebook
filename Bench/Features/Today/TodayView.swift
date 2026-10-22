@@ -17,6 +17,7 @@ struct TodayView: View {
     @State private var lastQuickLog: (id: String, name: String)?
     @State private var logRequest: LogRequest?
     @State private var confirmEarly: String?
+    @State private var addingVial: VialFor?
     private let tick = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -34,6 +35,7 @@ struct TodayView: View {
                 RescueNotice()
                 BackupNagCard(now: now)
                 RemindersTipCard()
+                noVialCards(tracks, data: data)
                 if mine.protocols.isEmpty {
                     HistoryWithoutPlanCard(now: now)
                 } else {
@@ -86,6 +88,7 @@ struct TodayView: View {
         .sheet(item: $logRequest) { req in
             NavigationStack { LogDoseSheet(defaultPeptideId: req.peptideId, anySite: req.anySite) }
         }
+        .sheet(item: $addingVial) { v in NavigationStack { AddVialForm(startingPeptideId: v.peptideId, alreadyMixed: v.mixed) } }
     }
 
     // MARK: Pieces
@@ -327,8 +330,32 @@ struct TodayView: View {
         return line
     }
 
+    /// Never had a vial is not running low: near the top, with a way to add one.
+    /// Running low stays under "worth sorting".
+    @ViewBuilder private func noVialCards(_ tracks: [Track], data: AppData) -> some View {
+        let noVial = tracks.filter { $0.targetMcg > 0 && !hasAnyVial(data, $0.protocol_.peptideId) }
+            .reduce(into: [Track]()) { out, t in if !out.contains(where: { $0.protocol_.peptideId == t.protocol_.peptideId }) { out.append(t) } }
+        if !noVial.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                CalloutText(noVial.count == 1 ? t("ios_now_no_vial", ["name": .string(noVial[0].name)]) : t("ios_now_no_vial_many")).font(.footnote)
+                ForEach(noVial) { track in
+                    HStack(spacing: 8) {
+                        if noVial.count > 1 { Text(track.name).font(.subheadline.weight(.medium)).lineLimit(1); Spacer(minLength: 4) }
+                        Button { addingVial = VialFor(peptideId: track.protocol_.peptideId) } label: { Label(t("ios_now_add_vial"), systemImage: "plus") }
+                            .buttonStyle(.bordered).controlSize(.small).fixedSize()
+                        if routeHasSite(track.protocol_.route) {
+                            Button(t("ios_now_add_mixed")) { addingVial = VialFor(peptideId: track.protocol_.peptideId, mixed: true) }
+                                .buttonStyle(.bordered).controlSize(.small).fixedSize()
+                        }
+                    }
+                }
+            }
+            .callout(.sky)
+        }
+    }
+
     @ViewBuilder private func worthSorting(_ tracks: [Track], data: AppData) -> some View {
-        let low = tracks.filter { $0.stock.dosesRemaining <= data.settings.lowStockDoses && $0.targetMcg > 0 }
+        let low = tracks.filter { $0.stock.dosesRemaining <= data.settings.lowStockDoses && $0.targetMcg > 0 && hasAnyVial(data, $0.protocol_.peptideId) }
         let expiring = data.mine.vials.filter { $0.state == .reconstituted && $0.budAt.map { $0 - now < data.settings.budWarningDays * DAY_MS } == true }
         if !low.isEmpty || !expiring.isEmpty {
             VStack(alignment: .leading, spacing: 8) {

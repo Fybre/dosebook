@@ -244,6 +244,19 @@ struct AddVialForm: View {
     }
 }
 
+/// Whether a compound has ever had a vial in Stock, in any state. With none, a
+/// protocol for it has nothing to draw from and no syringe units to show.
+@MainActor func hasAnyVial(_ data: AppData, _ peptideId: String) -> Bool {
+    data.mine.vials.contains { $0.peptideId == peptideId }
+}
+
+/// A compound to add a vial for, from a prompt elsewhere.
+struct VialFor: Identifiable {
+    var peptideId: String
+    var mixed = false
+    var id: String { peptideId + (mixed ? "+mixed" : "") }
+}
+
 // MARK: - Correcting what is left
 
 /// What is left in an open vial, set by eye: in mL of solution for a mixed vial,

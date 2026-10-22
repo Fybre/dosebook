@@ -32,6 +32,8 @@ struct ProtocolForm: View {
     @State private var route: Route = .subcutaneous
     @State private var loaded = false
     @State private var addingCompound = false
+    @State private var askVial = false
+    @State private var addingVial: VialFor?
 
     private var peptides: [Peptide] { store.data.allPeptides }
     private var peptide: Peptide? { store.data.peptide(peptideId) }
@@ -198,6 +200,15 @@ struct ProtocolForm: View {
         .sheet(isPresented: $addingCompound) {
             NavigationStack { CustomCompoundForm(onCreated: { pick($0.id) }) }
         }
+        // A new protocol with nothing in Stock to draw from: offer the vial now.
+        .confirmationDialog(t("ios_novial_title", ["name": .string(peptide?.name ?? peptideId)]), isPresented: $askVial, titleVisibility: .visible) {
+            Button(t("ios_novial_sealed")) { addingVial = VialFor(peptideId: peptideId) }
+            if routeHasSite(route) { Button(t("ios_novial_mixed")) { addingVial = VialFor(peptideId: peptideId, mixed: true) } }
+            Button(t("ios_novial_later"), role: .cancel) { dismiss() }
+        } message: { Text(t("ios_novial_message")) }
+        .sheet(item: $addingVial, onDismiss: { dismiss() }) { v in
+            NavigationStack { AddVialForm(startingPeptideId: v.peptideId, alreadyMixed: v.mixed) }
+        }
         .onAppear(perform: load)
         .onChange(of: routes) { _, r in if !r.contains(route) { route = r.first ?? .subcutaneous } }
     }
@@ -270,6 +281,7 @@ struct ProtocolForm: View {
             store.mutate { $0.updateProtocol(initial.id) { $0 = p } }
         } else {
             store.mutate { $0.addProtocol(p) }
+            if !hasAnyVial(store.data, peptideId) { askVial = true; return }
         }
         dismiss()
     }

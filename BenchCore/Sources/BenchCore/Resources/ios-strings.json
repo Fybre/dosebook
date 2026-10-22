@@ -160,7 +160,16 @@
     "ios_left_enter_as": "Enter as",
     "ios_left_amount": "Amount",
     "ios_left_hint": "{amount} left, {pct}% of the vial. Doses logged from now on come out of this.",
-    "ios_left_ml": "That is {ml} of {full} mL."
+    "ios_left_ml": "That is {ml} of {full} mL.",
+    "ios_novial_title": "No vial of {name} in Stock",
+    "ios_novial_message": "Add one now, so doses show in syringe units and Stock counts down as you log.",
+    "ios_novial_sealed": "Add a sealed vial",
+    "ios_novial_mixed": "Add the vial I’m using (mixed)",
+    "ios_novial_later": "Not now",
+    "ios_now_no_vial": "No vial of {name} in Stock yet. Add one so doses show in syringe units and Stock counts down.",
+    "ios_now_add_vial": "Add a vial",
+    "ios_now_add_mixed": "Vial in use",
+    "ios_now_no_vial_many": "Nothing in Stock yet for these. Add a vial so doses show in syringe units and Stock counts down."
   },
   "de": {
     "more": "Mehr",
@@ -323,7 +332,16 @@
     "ios_left_enter_as": "Eingabe als",
     "ios_left_amount": "Menge",
     "ios_left_hint": "{amount} übrig, {pct} % der Ampulle. Ab jetzt erfasste Dosen werden davon abgezogen.",
-    "ios_left_ml": "Das sind {ml} von {full} mL."
+    "ios_left_ml": "Das sind {ml} von {full} mL.",
+    "ios_novial_title": "Keine Ampulle {name} im Vorrat",
+    "ios_novial_message": "Füge jetzt eine hinzu, damit Dosen in Spritzeneinheiten erscheinen und der Vorrat beim Erfassen abnimmt.",
+    "ios_novial_sealed": "Verschlossene Ampulle hinzufügen",
+    "ios_novial_mixed": "Ampulle in Gebrauch hinzufügen (aufgelöst)",
+    "ios_novial_later": "Nicht jetzt",
+    "ios_now_no_vial": "Noch keine Ampulle {name} im Vorrat. Füge eine hinzu, damit Dosen in Spritzeneinheiten erscheinen und der Vorrat abnimmt.",
+    "ios_now_add_vial": "Ampulle hinzufügen",
+    "ios_now_add_mixed": "Ampulle in Gebrauch",
+    "ios_now_no_vial_many": "Dafür ist noch nichts im Vorrat. Füge eine Ampulle hinzu, damit Dosen in Spritzeneinheiten erscheinen und der Vorrat abnimmt."
   },
   "sl": {
     "more": "Več",
@@ -490,7 +508,16 @@
     "ios_left_enter_as": "Vnesi kot",
     "ios_left_amount": "Količina",
     "ios_left_hint": "Preostane {amount}, {pct} % viale. Odmerki, zabeleženi od zdaj, se odštejejo od tega.",
-    "ios_left_ml": "To je {ml} od {full} mL."
+    "ios_left_ml": "To je {ml} od {full} mL.",
+    "ios_novial_title": "V zalogi ni viale {name}",
+    "ios_novial_message": "Dodaj jo zdaj, da so odmerki prikazani v enotah brizge in se zaloga ob beleženju zmanjšuje.",
+    "ios_novial_sealed": "Dodaj zaprto vialo",
+    "ios_novial_mixed": "Dodaj vialo v uporabi (pripravljeno)",
+    "ios_novial_later": "Ne zdaj",
+    "ios_now_no_vial": "V zalogi še ni viale {name}. Dodaj jo, da so odmerki prikazani v enotah brizge in se zaloga zmanjšuje.",
+    "ios_now_add_vial": "Dodaj vialo",
+    "ios_now_add_mixed": "Viala v uporabi",
+    "ios_now_no_vial_many": "Za te v zalogi še ni ničesar. Dodaj vialo, da so odmerki prikazani v enotah brizge in se zaloga zmanjšuje."
   },
   "pl": {
     "more": "Więcej",
@@ -657,6 +684,15 @@
     "ios_left_enter_as": "Wpisz jako",
     "ios_left_amount": "Ilość",
     "ios_left_hint": "Zostało {amount}, {pct}% fiolki. Dawki zapisane od teraz są odejmowane od tej ilości.",
-    "ios_left_ml": "To {ml} z {full} mL."
+    "ios_left_ml": "To {ml} z {full} mL.",
+    "ios_novial_title": "Brak fiolki {name} w zapasach",
+    "ios_novial_message": "Dodaj ją teraz, aby dawki były w jednostkach strzykawki, a zapasy malały przy zapisywaniu.",
+    "ios_novial_sealed": "Dodaj zamkniętą fiolkę",
+    "ios_novial_mixed": "Dodaj fiolkę w użyciu (rozpuszczoną)",
+    "ios_novial_later": "Nie teraz",
+    "ios_now_no_vial": "Brak jeszcze fiolki {name} w zapasach. Dodaj ją, aby dawki były w jednostkach strzykawki, a zapasy malały.",
+    "ios_now_add_vial": "Dodaj fiolkę",
+    "ios_now_add_mixed": "Fiolka w użyciu",
+    "ios_now_no_vial_many": "Dla tych nie ma jeszcze nic w zapasach. Dodaj fiolkę, aby dawki były w jednostkach strzykawki, a zapasy malały."
   }
 }
