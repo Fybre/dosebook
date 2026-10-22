@@ -8,6 +8,8 @@ struct ProtocolForm: View {
     @Environment(AppStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     var initial: DoseProtocol?
+    /// For a new protocol: the compound to start with, as when a vial was scanned.
+    var startingPeptideId: String? = nil
 
     enum PlanMode: String { case fixed, titration, phases }
     static let existingTitration = "__existing__"
@@ -208,7 +210,7 @@ struct ProtocolForm: View {
         guard !loaded else { return }
         loaded = true
         guard let p = initial else {
-            if let first = peptides.first { pick(first.id) }
+            if let id = startingPeptideId ?? peptides.first?.id { pick(id) }
             phases = [ProtocolPhase(step: 1, doseMcg: 500, weeks: 4)]
             return
         }

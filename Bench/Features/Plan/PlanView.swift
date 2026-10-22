@@ -7,8 +7,15 @@ struct PlanView: View {
     @State private var editing: EditTarget?
 
     enum EditTarget: Identifiable {
-        case new, existing(DoseProtocol)
-        var id: String { if case .existing(let p) = self { return p.id }; return "new" }
+        case new, existing(DoseProtocol), scan, startingWith(String)
+        var id: String {
+            switch self {
+            case .new: "new"
+            case .existing(let p): p.id
+            case .scan: "scan"
+            case .startingWith(let id): "start-" + id
+            }
+        }
     }
 
     var body: some View {
@@ -42,14 +49,22 @@ struct PlanView: View {
         .peptideDestination()
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { editing = .new } label: { Label(t("plan_new_protocol"), systemImage: "plus") }
+                Menu {
+                    Button { editing = .new } label: { Label(t("plan_new_protocol"), systemImage: "square.and.pencil") }
+                    Button { editing = .scan } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
+                } label: { Label(t("plan_new_protocol"), systemImage: "plus") }
             }
         }
+        #if DEBUG
+        .onAppear { if editing == nil, ProcessInfo.processInfo.arguments.contains("-scanImage") { editing = .scan } }
+        #endif
         .sheet(item: $editing) { target in
             NavigationStack {
                 switch target {
                 case .new: ProtocolForm(initial: nil)
                 case .existing(let p): ProtocolForm(initial: p)
+                case .scan: ScanVialView { id in editing = .startingWith(id) }
+                case .startingWith(let id): ProtocolForm(initial: nil, startingPeptideId: id)
                 }
             }
         }
