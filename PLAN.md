@@ -273,6 +273,11 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
   `-log [peptideId]`, `-more calculator|library|labs|report|settings|about|importer [peptideId]`,
   `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`, `-injectlyFiles a.csv,b.csv` (with `-more importer`), `-weightTrend`, `-scanImage <png>` (opens Plan's scan). `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
 
+**Test builds on a phone:** scheme `BenchTest` (bundle `me.fybre.bench.test`, shown as "Bench Test",
+signed with team 8BD49F6FX5, no iCloud entitlement, `LOCAL_ONLY` so the store is this device only).
+Data moves to the release app through an exported backup. The release `Bench` target has no team on
+purpose, so it cannot be signed until its name is settled.
+
 **Needs the user / real devices:** `DEVELOPMENT_TEAM` is set (8BD49F6FX5). Waiting on the app's
 name before the first signed build, which registers `me.fybre.bench` and creates the permanent
 container `iCloud.me.fybre.bench`. Then test CloudKit sync

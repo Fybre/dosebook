@@ -125,7 +125,12 @@ struct SettingsView: View {
     private var syncText: String {
         switch store.location {
         case .cloud: t("ios_sync_cloud")
-        case .local: t("ios_sync_local")
+        case .local:
+            #if LOCAL_ONLY
+            t("ios_sync_test")
+            #else
+            t("ios_sync_local")
+            #endif
         case .memory: t("ios_sync_memory")
         }
     }

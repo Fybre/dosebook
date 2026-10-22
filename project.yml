@@ -7,10 +7,10 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    # Signing team. Settle the app's name before the first signed build: automatic
-    # signing then registers the bundle id and creates the iCloud container, and a
-    # container can never be deleted or renamed.
-    DEVELOPMENT_TEAM: "8BD49F6FX5"
+    # No team here: the release target stays unsigned until its name is settled,
+    # because its first signed build creates an iCloud container, which can never
+    # be deleted or renamed. The BenchTest target carries the team instead.
+    DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
@@ -23,6 +23,7 @@ targets:
     platform: iOS
     sources:
       - path: Bench
+        excludes: [Info-Test.plist, BenchTest.entitlements]
     dependencies:
       - package: BenchCore
         product: BenchCore
@@ -56,6 +57,49 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: me.fybre.bench
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1,2"
+  # A test build for real devices: its own bundle id, no iCloud (nothing permanent
+  # in the Apple account), data on the phone only. Moves to the release app later
+  # through an exported backup.
+  BenchTest:
+    type: application
+    platform: iOS
+    sources:
+      - path: Bench
+        excludes: [Info.plist, Bench.entitlements]
+    dependencies:
+      - package: BenchCore
+        product: BenchCore
+      - package: BenchCore
+        product: BenchStore
+    entitlements:
+      path: Bench/BenchTest.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+        com.apple.developer.healthkit.access: []
+    info:
+      path: Bench/Info-Test.plist
+      properties:
+        CFBundleDisplayName: Bench Test
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UISupportedInterfaceOrientations~ipad:
+          [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown,
+           UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        NSHealthShareUsageDescription: "Bench reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back."
+        NSCameraUsageDescription: "Bench reads a vial's label to fill in the compound, strength, lot and expiry. The photo is read on this iPhone and not kept."
+        ITSAppUsesNonExemptEncryption: false
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UTImportedTypeDeclarations: []
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.bench.test
+        DEVELOPMENT_TEAM: "8BD49F6FX5"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) LOCAL_ONLY"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor

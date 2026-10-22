@@ -59,8 +59,13 @@ enum Bootstrap {
             return store
         }
         #endif
+        #if LOCAL_ONLY
+        // The test build has no iCloud entitlement: this device only.
+        let wantsCloud = false
+        #else
         let wantsCloud = FileManager.default.ubiquityIdentityToken != nil
             && !ProcessInfo.processInfo.arguments.contains("-localOnly")
+        #endif
         if wantsCloud, let records = try? RecordStore(location: .cloud(containerId: containerId)) {
             return AppStore(records: records)
         }

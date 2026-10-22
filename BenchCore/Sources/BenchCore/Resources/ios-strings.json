@@ -126,7 +126,8 @@
     "ios_scan_continue": "Continue to protocol",
     "ios_scan_choose": "Choose the compound",
     "ios_scan_raw": "Text read",
-    "ios_scan_again": "Scan again"
+    "ios_scan_again": "Scan again",
+    "ios_sync_test": "Test build: stored on this iPhone only, with no iCloud. To move to the release app, export a backup under Your data and import it there."
   },
   "de": {
     "more": "Mehr",
@@ -255,7 +256,8 @@
     "ios_scan_continue": "Weiter zum Protokoll",
     "ios_scan_choose": "Wirkstoff wählen",
     "ios_scan_raw": "Gelesener Text",
-    "ios_scan_again": "Erneut scannen"
+    "ios_scan_again": "Erneut scannen",
+    "ios_sync_test": "Testversion: nur auf diesem iPhone gespeichert, ohne iCloud. Für den Umzug in die finale App unter „Deine Daten“ eine Sicherung exportieren und dort importieren."
   },
   "sl": {
     "more": "Več",
@@ -388,7 +390,8 @@
     "ios_scan_continue": "Naprej na protokol",
     "ios_scan_choose": "Izberi spojino",
     "ios_scan_raw": "Prebrano besedilo",
-    "ios_scan_again": "Skeniraj znova"
+    "ios_scan_again": "Skeniraj znova",
+    "ios_sync_test": "Testna različica: shranjeno samo na tem iPhonu, brez iCloud. Za prenos v končno aplikacijo pod Tvoji podatki izvozi varnostno kopijo in jo tam uvozi."
   },
   "pl": {
     "more": "Więcej",
@@ -521,6 +524,7 @@
     "ios_scan_continue": "Dalej do protokołu",
     "ios_scan_choose": "Wybierz związek",
     "ios_scan_raw": "Odczytany tekst",
-    "ios_scan_again": "Skanuj ponownie"
+    "ios_scan_again": "Skanuj ponownie",
+    "ios_sync_test": "Wersja testowa: dane tylko na tym iPhonie, bez iCloud. Aby przenieść je do wersji docelowej, wyeksportuj kopię w sekcji Twoje dane i zaimportuj ją tam."
   }
 }
