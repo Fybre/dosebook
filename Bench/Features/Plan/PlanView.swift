@@ -139,7 +139,7 @@ struct ProtocolCard: View {
     }
 
     @ViewBuilder private func figures(_ p: DoseProtocol, _ s: Schedule, _ next: Millis?) -> some View {
-        Text(formatDosePerDay(scheduledDoseMcg(p, nowMs), dosesPerDoseDay(s))).monospacedDigit().foregroundStyle(Tone.tangerine.color)
+        Text(doseLabelPerDay(scheduledDoseMcg(p, nowMs), dosesPerDoseDay(s), store.data.peptide(p.peptideId))).monospacedDigit().foregroundStyle(Tone.tangerine.color)
         Text(describeSchedule(s)).foregroundStyle(.secondary)
         Text("\(trim(protocolDosesPerWeek(p, nowMs), 2)) \(t("plan_per_week"))").foregroundStyle(.tertiary)
         if let next { Text("\(t("plan_next")) \(relativeTime(next, nowMs: nowMs))").foregroundStyle(.secondary) }
@@ -177,7 +177,7 @@ struct UpcomingView: View {
                                     Text(formatTime(r.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                                     if let tone { Circle().fill(tone.color).frame(width: 7, height: 7) }
                                     Text(r.name).font(.footnote.weight(.medium)).foregroundStyle(tone?.color ?? .primary)
-                                    Text(formatDose(r.doseMcg)).font(.footnote.monospacedDigit())
+                                    Text(doseLabel(r.doseMcg, data.peptide(r.peptideId))).font(.footnote.monospacedDigit())
                                     DoseMarksText(peptideId: r.peptideId, doseMcg: r.doseMcg, route: r.route, nowMs: nowMs).font(.caption).foregroundStyle(.secondary)
                                 }
                             }

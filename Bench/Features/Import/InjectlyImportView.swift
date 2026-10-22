@@ -125,7 +125,7 @@ struct InjectlyImportView: View {
                     Toggle(isOn: $include[i]) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(item.medication.name).font(.subheadline.weight(.semibold))
-                            Text("\(formatDose(item.doseMcg)) · \(describeSchedule(item.schedule))").font(.caption).foregroundStyle(.secondary)
+                            Text("\(doseLabelPerDay(item.doseMcg / Double(max(1, item.schedule.kind == .asNeeded ? 1 : scheduleTimes(item.schedule).count)), item.schedule.kind == .asNeeded ? 1 : scheduleTimes(item.schedule).count, injectlyPreviewPeptide(item, data))) · \(describeSchedule(item.schedule))").font(.caption).foregroundStyle(.secondary)
                         }
                     }
                     if include[i] { compoundRows(i, data) }
@@ -222,5 +222,14 @@ struct InjectlyImportView: View {
                                   "doses": .string(t("count_doses", ["n": .number(Double(logs.count))])),
                                   "weights": .string(t("count_weights", ["n": .number(Double(weights.count))]))])
         reset()
+    }
+}
+
+/// The compound an item stands for in the preview, including a blend not yet saved.
+@MainActor func injectlyPreviewPeptide(_ item: InjectlyItem, _ data: AppData) -> Peptide? {
+    switch item.compound {
+    case .existing(let id): return data.peptide(id)
+    case .newCompound(_, let chosen): return chosen.flatMap { data.peptide($0) }
+    case .newBlend: return injectlyResult(item, peptides: data.allPeptides, logs: []).newPeptide
     }
 }

@@ -135,10 +135,10 @@ struct ProtocolForm: View {
             Section {
                 if planMode != .phases {
                     if let locked = lockedDose {
-                        LabeledContent(t("plan_starting_dose"), value: formatDose(locked))
-                        Text(t("plan_dose_set_by_plan", ["dose": .string(formatDose(locked))])).font(.caption).foregroundStyle(.secondary)
+                        LabeledContent(t("plan_starting_dose"), value: doseLabel(locked, store.data.peptide(peptideId)))
+                        Text(t("plan_dose_set_by_plan", ["dose": .string(doseLabel(locked, store.data.peptide(peptideId)))])).font(.caption).foregroundStyle(.secondary)
                     } else {
-                        AmountRow(label: t("plan_dose"), value: $doseMcg, range: 0...10_000_000)
+                        DoseRow(label: t("plan_dose"), value: $doseMcg, peptide: store.data.peptide(peptideId), range: 0...10_000_000)
                         if let r = peptide?.doseRanges.first {
                             Text(t("plan_dose_typical", ["low": .string(formatDose(r.lowMcg)), "high": .string(formatDose(r.highMcg))])).font(.caption).foregroundStyle(.secondary)
                         }
@@ -158,7 +158,7 @@ struct ProtocolForm: View {
                 if kind == .intervalDays { NumberRow(label: t("plan_interval"), value: $intervalDays, suffix: t("days"), range: 1...90) }
                 if kind == .daysOfWeek { WeekdayPicker(days: $daysOfWeek) }
                 if kind != .asNeeded {
-                    TimesOfDayEditor(times: $times, dailyMcg: lockedDose == nil ? doseMcg : nil)
+                    TimesOfDayEditor(times: $times, dailyMcg: lockedDose == nil ? doseMcg : nil, peptide: store.data.peptide(peptideId))
                     NumberRow(label: t("plan_weeks_on"), value: $cycleOn, range: 0...52)
                     NumberRow(label: t("plan_weeks_off"), value: $cycleOff, range: 0...52)
                     Text(t("ios_plan_weeks_on_hint")).font(.caption).foregroundStyle(.secondary)

@@ -82,13 +82,13 @@ struct WeekdayPicker: View {
 }
 
 /// "500 mcg a day, as 2 doses of 250 mcg at 07:00 and 19:00."
-func describeSplit(_ dailyMcg: Double?, _ times: [String]) -> String? {
+func describeSplit(_ dailyMcg: Double?, _ times: [String], peptide: Peptide? = nil) -> String? {
     let clean = times.filter { !$0.isEmpty }
     guard clean.count >= 2 else { return nil }
     let when = clean.sorted().joined(separator: " \(t("plan_and")) ")
     if let daily = dailyMcg, daily > 0 {
-        return t("times_split_dose", ["daily": .string(formatDose(daily)), "n": .number(Double(clean.count)),
-                                      "each": .string(formatDose(daily / Double(clean.count))), "when": .string(when)])
+        return t("times_split_dose", ["daily": .string(doseLabel(daily, peptide)), "n": .number(Double(clean.count)),
+                                      "each": .string(doseLabel(daily / Double(clean.count), peptide)), "when": .string(when)])
     }
     return t("times_split_plain", ["n": .number(Double(clean.count)), "when": .string(when)])
 }
@@ -97,6 +97,7 @@ func describeSplit(_ dailyMcg: Double?, _ times: [String]) -> String? {
 struct TimesOfDayEditor: View {
     @Binding var times: [String]
     var dailyMcg: Double?
+    var peptide: Peptide? = nil
 
     var body: some View {
         ForEach(times.indices, id: \.self) { i in
@@ -113,7 +114,7 @@ struct TimesOfDayEditor: View {
         if times.count < 6 {
             Button { times.append(nextFreeTime(times)) } label: { Label(t("times_add"), systemImage: "plus") }
         }
-        if let split = describeSplit(dailyMcg, times) {
+        if let split = describeSplit(dailyMcg, times, peptide: peptide) {
             Text(split).font(.footnote).foregroundStyle(.secondary)
         }
     }
@@ -267,5 +268,47 @@ struct OptionalAmountRow: View {
             }
             if let msg = error ?? hint { Text(msg).font(.caption).foregroundStyle(error != nil ? Tone.rose.color : .secondary) }
         }
+    }
+}
+
+/// A dose for a compound that may be a blend. The value is always the whole blend
+/// drawn, as stock and the syringe need it; for a blend it can be entered as each
+/// part (or the first part of an uneven blend), with the other figure shown beneath.
+struct DoseRow: View {
+    var label: String
+    @Binding var value: Double
+    var peptide: Peptide?
+    var range: ClosedRange<Double>? = nil
+    var resolve: ((String) -> Peptide?)? = nil
+    @AppStorage("bench.blendDoseByPart") private var byPart = true
+
+    var body: some View {
+        if let share = firstPartShare(peptide), share > 0, let parts = blendParts(peptide, 1000) {
+            let even = parts.allSatisfy { abs($0.fraction - parts[0].fraction) < 1e-9 }
+            let partLabel = even ? t("ios_dose_each_part") : parts[0].name
+            VStack(alignment: .leading, spacing: 6) {
+                AmountRow(label: byPart ? "\(label) · \(partLabel)" : "\(label) · \(t("ios_dose_whole_blend"))",
+                          value: Binding(get: { byPart ? jsFixed(value * share, 6) : value },
+                                         set: { value = byPart ? jsFixed($0 / share, 6) : $0 }),
+                          range: range.map { byPart ? ($0.lowerBound * share)...($0.upperBound * share) : $0 })
+                    .id(byPart)
+                Picker(t("ios_dose_enter_as"), selection: $byPart) {
+                    Text(partLabel).tag(true)
+                    Text(t("ios_dose_whole_blend")).tag(false)
+                }
+                .pickerStyle(.segmented)
+                if value > 0 {
+                    Text(byPart ? t("ios_dose_is_blend", ["total": .string(formatDose(value)), "parts": .string(partsSentence(value))])
+                                : t("ios_dose_is_parts", ["parts": .string(partsSentence(value))]))
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
+        } else {
+            AmountRow(label: label, value: $value, range: range)
+        }
+    }
+
+    private func partsSentence(_ total: Double) -> String {
+        (blendParts(peptide, total, resolve: resolve) ?? []).map { "\(formatDose($0.mcg)) \($0.name)" }.joined(separator: " + ")
     }
 }

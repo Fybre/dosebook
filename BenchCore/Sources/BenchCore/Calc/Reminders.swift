@@ -32,11 +32,11 @@ public func reminderId(_ key: String) -> Int {
 }
 
 /// Discreet by default: "Bench" / "A dose is due." names nothing on a lock screen.
-private func reminderText(_ p: DoseProtocol, _ name: String?, _ doseMcg: Double, _ settings: RemindersSettings) -> (String, String) {
+private func reminderText(_ p: DoseProtocol, _ peptide: Peptide?, _ doseMcg: Double, _ settings: RemindersSettings) -> (String, String) {
     guard settings.showCompound else { return ("Bench", "A dose is due.") }
     let trimmed = p.name.trimmingCharacters(in: .whitespaces)
-    let label = !trimmed.isEmpty ? trimmed : (name ?? "Dose")
-    return (label, "\(formatDose(doseMcg)) due.")
+    let label = !trimmed.isEmpty ? trimmed : (peptide?.name ?? "Dose")
+    return (label, "\(doseLabel(doseMcg, peptide)) due.")
 }
 
 /// Every reminder that should be armed, soonest first. Goes through
@@ -46,7 +46,7 @@ public func remindersFor(protocols: [DoseProtocol], logs: [DoseLog], peptides: [
     guard settings.enabled else { return [] }
     let until = nowMs + horizonDays * DAY_MS
     let lead = max(0, settings.leadMinutes) * 60_000
-    let names = Dictionary(peptides.map { ($0.id, $0.name) }, uniquingKeysWith: { a, _ in a })
+    let byId = Dictionary(peptides.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
     var out: [Reminder] = []
     for p in protocols {
         guard p.active, p.schedule.kind != .asNeeded else { continue }
@@ -56,7 +56,7 @@ public func remindersFor(protocols: [DoseProtocol], logs: [DoseLog], peptides: [
             let at = doseAt - lead
             if at <= nowMs { continue }
             let key = "\(p.id):\(jsNumberString(doseAt))"
-            let (title, body) = reminderText(p, names[p.peptideId], scheduledDoseMcg(p, doseAt), settings)
+            let (title, body) = reminderText(p, byId[p.peptideId], scheduledDoseMcg(p, doseAt), settings)
             out.append(Reminder(id: reminderId(key), key: key, at: at, doseAt: doseAt, protocolId: p.id, title: title, body: body))
         }
     }

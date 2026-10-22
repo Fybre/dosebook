@@ -60,7 +60,7 @@ public func buildCalendar(protocols: [DoseProtocol], peptides: [Peptide], settin
                           days: Double? = nil) -> String {
     let span = max(1, days ?? settings.calendarDays)
     let until = nowMs + span * DAY_MS
-    let names = Dictionary(peptides.map { ($0.id, $0.name) }, uniquingKeysWith: { a, _ in a })
+    let byId = Dictionary(peptides.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
     let seq = Int((nowMs / 60_000).rounded(.down))
     var lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Bench//Dose schedule//EN", "CALSCALE:GREGORIAN",
                  "METHOD:PUBLISH", "X-WR-CALNAME:\(escapeText("Bench doses"))"]
@@ -72,8 +72,8 @@ public func buildCalendar(protocols: [DoseProtocol], peptides: [Peptide], settin
             if count >= MAX_EVENTS { break }
             count += 1
             let trimmed = p.name.trimmingCharacters(in: .whitespaces)
-            let label = settings.showCompound ? (!trimmed.isEmpty ? trimmed : (names[p.peptideId] ?? "Dose")) : "Bench"
-            let summary = settings.showCompound ? "\(label) \(formatDose(scheduledDoseMcg(p, at)))" : "Bench: dose due"
+            let label = settings.showCompound ? (!trimmed.isEmpty ? trimmed : (byId[p.peptideId]?.name ?? "Dose")) : "Bench"
+            let summary = settings.showCompound ? "\(label) \(doseLabel(scheduledDoseMcg(p, at), byId[p.peptideId]))" : "Bench: dose due"
             let trigger = settings.leadMinutes > 0 ? "-PT\(jsNumberString(jsRound(settings.leadMinutes)))M" : "PT0S"
             lines += ["BEGIN:VEVENT", "UID:\(p.id)-\(jsNumberString(at))@bench.app", "DTSTAMP:\(utcStamp(nowMs))",
                       "SEQUENCE:\(seq)", "DTSTART:\(floating(at))", "DURATION:PT\(EVENT_MINUTES)M",

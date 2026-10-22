@@ -69,7 +69,7 @@ struct LogDoseSheet: View {
                     Picker(t("log_protocol"), selection: Binding(get: { protocolId }, set: chooseProtocol)) {
                         Text(t("log_no_protocol")).tag("")
                         ForEach(active) { p in
-                            Text("\(data.peptide(p.peptideId)?.name ?? p.peptideId), \(p.name), \(formatDose(scheduledDoseMcg(p, at.millis)))").tag(p.id)
+                            Text("\(data.peptide(p.peptideId)?.name ?? p.peptideId), \(p.name), \(doseLabel(scheduledDoseMcg(p, at.millis), data.peptide(p.peptideId)))").tag(p.id)
                         }
                         if let p = protocol_, !p.active {
                             Text(t("log_protocol_stopped", ["peptide": .string(data.peptide(p.peptideId)?.name ?? p.peptideId), "name": .string(p.name)])).tag(p.id)
@@ -86,10 +86,10 @@ struct LogDoseSheet: View {
             }
 
             Section {
-                AmountRow(label: t("plan_dose"), value: $doseMcg, range: 0...100_000_000)
+                DoseRow(label: t("plan_dose"), value: $doseMcg, peptide: peptide, range: 0...100_000_000, resolve: { data.peptide($0) })
                     .disabled(skipped)
                 if let p = protocol_ {
-                    Text(t("log_protocol_calls_for", ["dose": .string(formatDose(scheduledDoseMcg(p, at.millis)))])).font(.caption).foregroundStyle(.secondary)
+                    Text(t("log_protocol_calls_for", ["dose": .string(doseLabel(scheduledDoseMcg(p, at.millis), peptide))])).font(.caption).foregroundStyle(.secondary)
                 }
                 countField
                 if !noBarrel {
@@ -177,7 +177,7 @@ struct LogDoseSheet: View {
             if let e = editing {
                 Section {
                     Button(t("ios_log_delete"), role: .destructive) { confirmDelete = true }
-                } footer: { Text(t("log_delete_returns", ["dose": .string(formatDose(e.doseMcg))])) }
+                } footer: { Text(t("log_delete_returns", ["dose": .string(doseLabel(e.doseMcg, peptide))])) }
             }
         }
         .debugAnchor(proxy)
@@ -258,7 +258,7 @@ struct LogDoseSheet: View {
                     let vialDosesAfter = (leftAfter / doseMcg).rounded(.down)
                     HStack(alignment: .firstTextBaseline) {
                         Text(jsNumberString(vialDosesAfter)).font(.title3.monospacedDigit()).foregroundStyle(Tone.tangerine.color)
-                        Text(t("log_doses_left_in_vial", ["n": .number(vialDosesAfter), "dose": .string(formatDose(doseMcg))])).font(.footnote).foregroundStyle(.secondary)
+                        Text(t("log_doses_left_in_vial", ["n": .number(vialDosesAfter), "dose": .string(doseLabel(doseMcg, peptide))])).font(.footnote).foregroundStyle(.secondary)
                     }
                     Text("\(t("log_remaining_in_vial", ["left": .string(formatDose(leftAfter))])) · \(jsNumberString(max(0, stock.dosesRemaining - 1))) \(t("log_across_your_stock"))")
                         .font(.caption).foregroundStyle(.secondary)

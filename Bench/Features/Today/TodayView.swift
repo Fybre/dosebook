@@ -132,7 +132,7 @@ struct TodayView: View {
                 Pill(text: t(DUE_KEY[track.due.label] ?? "due_now"), tone: overdue ? .rose : .tangerine)
                 Circle().fill(track.tone.color).frame(width: 7, height: 7)
                 Text(track.name).font(.subheadline.weight(.semibold)).foregroundStyle(track.tone.color)
-                Text(formatDose(track.targetMcg)).font(.subheadline.monospacedDigit())
+                Text(doseLabel(track.targetMcg, track.peptide)).font(.subheadline.monospacedDigit())
                 DoseMarksText(peptideId: track.protocol_.peptideId, doseMcg: track.targetMcg, route: track.protocol_.route, nowMs: now)
                     .font(.caption).foregroundStyle(.secondary)
             }
@@ -164,7 +164,7 @@ struct TodayView: View {
                         log(track, site: options[0].site)
                     }
                     .buttonStyle(.borderedProminent)
-                    .accessibilityHint(t("now_log_with_site", ["dose": .string(formatDose(track.targetMcg))]))
+                    .accessibilityHint(t("now_log_with_site", ["dose": .string(doseLabel(track.targetMcg, track.peptide))]))
                 }
                 Button(t("now_details")) { logRequest = LogRequest(peptideId: track.protocol_.peptideId) }.buttonStyle(.bordered)
             }
@@ -190,7 +190,7 @@ struct TodayView: View {
                             Text(formatTime(row.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(width: 64, alignment: .leading)
                             Circle().fill(row.track.tone.color).frame(width: 7, height: 7)
                             Text(row.track.name).font(.subheadline.weight(.medium)).foregroundStyle(row.track.tone.color)
-                            Text(formatDose(row.track.targetMcg)).font(.footnote.monospacedDigit())
+                            Text(doseLabel(row.track.targetMcg, row.track.peptide)).font(.footnote.monospacedDigit())
                             Spacer()
                             if confirmEarly != key {
                                 Button { confirmEarly = key } label: { Image(systemName: "checkmark.circle") }
@@ -263,7 +263,7 @@ struct TodayView: View {
                         Text(t("now_next_at", ["when": .string(relativeTime(at, nowMs: now))])).font(.caption).foregroundStyle(.secondary)
                     }
                     HStack(spacing: 6) {
-                        Text(formatDosePerDay(track.targetMcg, track.perDay))
+                        Text(doseLabelPerDay(track.targetMcg, track.perDay, track.peptide))
                         DoseMarksText(peptideId: track.protocol_.peptideId, doseMcg: track.targetMcg, route: track.protocol_.route, nowMs: now).foregroundStyle(.tertiary)
                         Text("· \(track.protocol_.name)").lineLimit(1)
                     }

@@ -132,7 +132,7 @@ struct DayDetailSheet: View {
                 let tone = doseColor(palette, protocolId: p.protocolId, peptideId: p.peptideId)
                 Section {
                     ForEach(Array(p.slots.enumerated()), id: \.offset) { _, s in
-                        slotRow(s.at, s.slot, dose: proto.map { scheduledDoseMcg($0, s.at) })
+                        slotRow(s.at, s.slot, dose: proto.map { scheduledDoseMcg($0, s.at) }, peptide: data.peptide(p.peptideId))
                     }
                 } header: {
                     HStack(spacing: 6) {
@@ -148,7 +148,7 @@ struct DayDetailSheet: View {
                             Text(formatTime(l.at)).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary).frame(width: 76, alignment: .leading)
                             Text(data.peptide(l.peptideId)?.name ?? l.peptideId).font(.subheadline)
                             Spacer()
-                            Text(l.isSkipped ? t("ios_day_skipped") : formatDose(l.doseMcg)).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+                            Text(l.isSkipped ? t("ios_day_skipped") : doseLabel(l.doseMcg, data.peptide(l.peptideId))).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -159,7 +159,7 @@ struct DayDetailSheet: View {
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button(t("done")) { dismiss() } } }
     }
 
-    private func slotRow(_ at: Millis, _ slot: ProtocolDay.Slot, dose: Double?) -> some View {
+    private func slotRow(_ at: Millis, _ slot: ProtocolDay.Slot, dose: Double?, peptide: Peptide?) -> some View {
         let (icon, tone, text): (String, Tone, String) = {
             switch slot {
             case .taken(let l): return ("checkmark.circle.fill", .leaf, t("ios_day_logged_at", ["time": .string(formatTime(l.at))]))
@@ -168,7 +168,7 @@ struct DayDetailSheet: View {
             case .due: return ("clock", .sky, t("ios_day_due"))
             }
         }()
-        let amount: String? = { if case .taken(let l) = slot { return formatDose(l.doseMcg) }; return dose.map { formatDose($0) } }()
+        let amount: String? = { if case .taken(let l) = slot { return doseLabel(l.doseMcg, peptide) }; return dose.map { doseLabel($0, peptide) } }()
         return HStack(spacing: 10) {
             Image(systemName: icon).foregroundStyle(tone.color).font(.body)
             VStack(alignment: .leading, spacing: 2) {

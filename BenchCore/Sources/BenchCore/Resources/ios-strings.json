@@ -127,7 +127,12 @@
     "ios_scan_choose": "Choose the compound",
     "ios_scan_raw": "Text read",
     "ios_scan_again": "Scan again",
-    "ios_sync_test": "Test build: stored on this iPhone only, with no iCloud. To move to the release app, export a backup under Your data and import it there."
+    "ios_sync_test": "Test build: stored on this iPhone only, with no iCloud. To move to the release app, export a backup under Your data and import it there.",
+    "ios_dose_each_part": "Each part",
+    "ios_dose_whole_blend": "Whole blend",
+    "ios_dose_enter_as": "Enter the dose as",
+    "ios_dose_is_blend": "That is {total} of blend drawn: {parts}.",
+    "ios_dose_is_parts": "That gives {parts}."
   },
   "de": {
     "more": "Mehr",
@@ -257,7 +262,12 @@
     "ios_scan_choose": "Wirkstoff wählen",
     "ios_scan_raw": "Gelesener Text",
     "ios_scan_again": "Erneut scannen",
-    "ios_sync_test": "Testversion: nur auf diesem iPhone gespeichert, ohne iCloud. Für den Umzug in die finale App unter „Deine Daten“ eine Sicherung exportieren und dort importieren."
+    "ios_sync_test": "Testversion: nur auf diesem iPhone gespeichert, ohne iCloud. Für den Umzug in die finale App unter „Deine Daten“ eine Sicherung exportieren und dort importieren.",
+    "ios_dose_each_part": "Jeder Teil",
+    "ios_dose_whole_blend": "Ganze Mischung",
+    "ios_dose_enter_as": "Dosis angeben als",
+    "ios_dose_is_blend": "Das sind {total} Mischung aufgezogen: {parts}.",
+    "ios_dose_is_parts": "Das ergibt {parts}."
   },
   "sl": {
     "more": "Več",
@@ -391,7 +401,12 @@
     "ios_scan_choose": "Izberi spojino",
     "ios_scan_raw": "Prebrano besedilo",
     "ios_scan_again": "Skeniraj znova",
-    "ios_sync_test": "Testna različica: shranjeno samo na tem iPhonu, brez iCloud. Za prenos v končno aplikacijo pod Tvoji podatki izvozi varnostno kopijo in jo tam uvozi."
+    "ios_sync_test": "Testna različica: shranjeno samo na tem iPhonu, brez iCloud. Za prenos v končno aplikacijo pod Tvoji podatki izvozi varnostno kopijo in jo tam uvozi.",
+    "ios_dose_each_part": "Vsak del",
+    "ios_dose_whole_blend": "Cela mešanica",
+    "ios_dose_enter_as": "Odmerek vnesi kot",
+    "ios_dose_is_blend": "To je {total} izvlečene mešanice: {parts}.",
+    "ios_dose_is_parts": "To da {parts}."
   },
   "pl": {
     "more": "Więcej",
@@ -525,6 +540,11 @@
     "ios_scan_choose": "Wybierz związek",
     "ios_scan_raw": "Odczytany tekst",
     "ios_scan_again": "Skanuj ponownie",
-    "ios_sync_test": "Wersja testowa: dane tylko na tym iPhonie, bez iCloud. Aby przenieść je do wersji docelowej, wyeksportuj kopię w sekcji Twoje dane i zaimportuj ją tam."
+    "ios_sync_test": "Wersja testowa: dane tylko na tym iPhonie, bez iCloud. Aby przenieść je do wersji docelowej, wyeksportuj kopię w sekcji Twoje dane i zaimportuj ją tam.",
+    "ios_dose_each_part": "Każda część",
+    "ios_dose_whole_blend": "Cała mieszanka",
+    "ios_dose_enter_as": "Podaj dawkę jako",
+    "ios_dose_is_blend": "To {total} pobranej mieszanki: {parts}.",
+    "ios_dose_is_parts": "To daje {parts}."
   }
 }

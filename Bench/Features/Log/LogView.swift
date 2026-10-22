@@ -142,7 +142,7 @@ struct LogView: View {
                 Text(t("ios_calendar_nothing")).font(.footnote).foregroundStyle(.secondary)
             }
             ForEach(day.entries) { l in
-                Button { editing = LogEdit(id: l.id, logId: l.id) } label: { LogRow(log: l, name: data.peptide(l.peptideId)?.name ?? l.peptideId, tone: doseColor(palette, protocolId: l.protocolId, peptideId: l.peptideId)) }
+                Button { editing = LogEdit(id: l.id, logId: l.id) } label: { LogRow(log: l, name: data.peptide(l.peptideId)?.name ?? l.peptideId, tone: doseColor(palette, protocolId: l.protocolId, peptideId: l.peptideId), peptide: data.peptide(l.peptideId)) }
                     .buttonStyle(.plain)
                     .accessibilityLabel(t("log_edit_dose", ["when": .string(formatDateTime(l.at, nowMs: now))]))
             }
@@ -194,6 +194,7 @@ private struct LogRow: View {
     var log: DoseLog
     var name: String
     var tone: Tone?
+    var peptide: Peptide? = nil
 
     var body: some View {
         let l = log
@@ -206,7 +207,7 @@ private struct LogRow: View {
                     if let tone { Circle().fill(tone.color).frame(width: 8, height: 8) }
                     Text(name).font(.subheadline.weight(.medium)).foregroundStyle(tone?.color ?? .primary)
                     if l.isSkipped { Pill(text: t("log_skipped"), tone: .rose) }
-                    else { Text(formatDose(l.doseMcg)).font(.subheadline.monospacedDigit()) }
+                    else { Text(doseLabel(l.doseMcg, peptide)).font(.subheadline.monospacedDigit()) }
                 }
                 let amount: String? = l.isSkipped ? nil
                     : l.tablets.map { t("count_tablets", ["n": .string(trim($0, 2))]) }
