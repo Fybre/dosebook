@@ -15,6 +15,7 @@ struct LogView: View {
     @State private var month = startOfLocalMonth(nowMillis())
     @State private var selectedDay: Millis? = startOfLocalDay(nowMillis())
     @State private var farDown = false
+    @AppStorage("bench.log.showMissed") private var showMissed = true
 
     enum Mode: String { case list, calendar }
     struct LogEdit: Identifiable { var id: String; var logId: String? }
@@ -28,7 +29,14 @@ struct LogView: View {
         let palette = assignColors(colorSubjects(mine.protocols.filter(\.active), resolve: { data.peptide($0) }, nowMs: now))
         // A check-in belongs to a day and not to a compound, so a filtered list leaves them out.
         let checkIns = filter.isEmpty ? mine.checkIns : []
-        let days = diaryDays(shown, at: \.at, checkIns)
+        let logged = diaryDays(shown, at: \.at, checkIns)
+        // Missed doses, at most 90 days back, for the compound shown.
+        let missedByDay: [Millis: [MissedDose]] = showMissed ? Dictionary(uniqueKeysWithValues:
+            missedDoses(mine.protocols, mine.logs, fromMs: max(now - 90 * DAY_MS, mine.protocols.map(\.startedAt).min() ?? now), nowMs: now)
+                .map { ($0.day, $0.doses.filter { filter.isEmpty || $0.peptideId == filter }) }.filter { !$0.1.isEmpty }) : [:]
+        let days = Set(logged.map(\.day)).union(missedByDay.keys).sorted(by: >).map { day in
+            logged.first { $0.day == day } ?? DiaryDay(day: day, entries: [], checkIn: nil)
+        }
         ScrollViewReader { proxy in
         List {
             Section {
@@ -47,11 +55,11 @@ struct LogView: View {
                 if peptideIds.count > 1 { filterSection(data, peptideIds) }
                 Section {
                     LogCalendarView(logs: shown, checkIns: checkIns, palette: palette, weekStartsOn: data.settings.weekStartsOn,
-                                    now: now, month: $month, selected: $selectedDay)
+                                    now: now, month: $month, selected: $selectedDay, missedDays: Set(missedByDay.keys))
                 }
                 if let day = selectedDay {
                     let entry = days.first { $0.day == day } ?? DiaryDay(day: day, entries: [], checkIn: nil)
-                    daySection(entry, data: data, palette: palette)
+                    daySection(entry, missed: missedByDay[day] ?? [], data: data, palette: palette)
                 }
             } else {
                 if !logs.isEmpty { Section { stats(mine) } }
@@ -79,7 +87,7 @@ struct LogView: View {
                     }
                 } else {
                     Color.clear.frame(height: 0).listRowBackground(Color.clear).id("diary")
-                    ForEach(days, id: \.day) { day in daySection(day, data: data, palette: palette).id("day-\(Int(day.day))") }
+                    ForEach(days, id: \.day) { day in daySection(day, missed: missedByDay[day.day] ?? [], data: data, palette: palette).id("day-\(Int(day.day))") }
                 }
             }
         }
@@ -108,6 +116,9 @@ struct LogView: View {
             ToolbarItem(placement: .secondaryAction) {
                 Button { pickingDay = true } label: { Label(t("log_rate_another_day"), systemImage: "calendar.badge.plus") }
             }
+            ToolbarItem(placement: .secondaryAction) {
+                Toggle(isOn: $showMissed) { Label(t("ios_show_missed"), systemImage: "exclamationmark.circle") }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button { editing = LogEdit(id: "new", logId: nil) } label: { Label(t("log_new_dose"), systemImage: "plus") }
             }
@@ -126,6 +137,32 @@ struct LogView: View {
         }
     }
 
+    /// A dose that was due and never logged, with the two ways to settle it.
+    private func missedRow(_ m: MissedDose, data: AppData, palette: Palette) -> some View {
+        let p = data.peptide(m.peptideId)
+        let tone = doseColor(palette, protocolId: m.protocolId, peptideId: m.peptideId)
+        return HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(formatTime(m.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(width: 64, alignment: .leading)
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
+                    Image(systemName: "xmark.circle.fill").foregroundStyle(Tone.rose.color).font(.caption)
+                    Text(p?.name ?? m.peptideId).font(.subheadline.weight(.medium)).foregroundStyle(tone?.color ?? .primary)
+                    Text(doseLabel(m.doseMcg, p)).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+                }
+                HStack(spacing: 8) {
+                    Pill(text: t("ios_missed"), tone: .rose)
+                    Spacer()
+                    Button(t("ios_missed_skip")) { store.mutate { _ = $0.logMissed(m, skipped: true) } }
+                        .buttonStyle(.bordered).controlSize(.small)
+                    Button(t("ios_missed_log")) { store.mutate { _ = $0.logMissed(m) } }
+                        .buttonStyle(.borderedProminent).controlSize(.small)
+                }
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityHint(t("ios_missed_hint"))
+    }
+
     private func filterSection(_ data: AppData, _ peptideIds: [String]) -> some View {
         Section {
             Picker(t("log_filter_by_peptide"), selection: $filter) {
@@ -136,9 +173,10 @@ struct LogView: View {
     }
 
     /// One day: its doses, then how it went. Shared by the list and the calendar.
-    private func daySection(_ day: DiaryDay<DoseLog>, data: AppData, palette: Palette) -> some View {
+    private func daySection(_ day: DiaryDay<DoseLog>, missed: [MissedDose], data: AppData, palette: Palette) -> some View {
         Section(day.day == startOfLocalDay(now) ? t("checkin_today") : "\(formatWeekday(day.day)), \(formatDate(day.day, nowMs: now))") {
-            if day.entries.isEmpty && day.checkIn == nil && mode == .calendar {
+            ForEach(missed) { m in missedRow(m, data: data, palette: palette) }
+            if day.entries.isEmpty && day.checkIn == nil && missed.isEmpty && mode == .calendar {
                 Text(t("ios_calendar_nothing")).font(.footnote).foregroundStyle(.secondary)
             }
             ForEach(day.entries) { l in

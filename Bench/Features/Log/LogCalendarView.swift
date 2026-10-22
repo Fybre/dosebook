@@ -12,6 +12,8 @@ struct LogCalendarView: View {
     var now: Millis
     @Binding var month: Millis
     @Binding var selected: Millis?
+    /// Days with a dose that was due and never logged.
+    var missedDays: Set<Millis> = []
 
     var body: some View {
         let marks = marksByDay(logs)
@@ -70,7 +72,7 @@ struct LogCalendarView: View {
             VStack(spacing: 3) {
                 Text(String(LocalTime.calendar.component(.day, from: Date(millis: day))))
                     .font(.subheadline.weight(isToday ? .bold : .regular).monospacedDigit())
-                    .foregroundStyle(isSelected ? Color.white : future ? Color.secondary.opacity(0.5) : isToday ? Color.accentColor : Color.primary)
+                    .foregroundStyle(isSelected ? Color.white : future ? Color.secondary.opacity(0.5) : missedDays.contains(day) ? Tone.rose.color : isToday ? Color.accentColor : Color.primary)
                     .frame(width: 30, height: 30)
                     .background(isSelected ? Color.accentColor : .clear, in: Circle())
                 HStack(spacing: 2) {
@@ -101,6 +103,7 @@ struct LogCalendarView: View {
         var parts = [formatDate(day, nowMs: now)]
         if doses > 0 { parts.append(t("count_doses", ["n": .number(Double(doses))])) }
         if rated { parts.append(t("log_how_day_went")) }
+        if missedDays.contains(day) { parts.append(t("ios_missed")) }
         return parts.joined(separator: ", ")
     }
 

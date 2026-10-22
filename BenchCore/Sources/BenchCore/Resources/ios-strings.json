@@ -132,7 +132,12 @@
     "ios_dose_whole_blend": "Whole blend",
     "ios_dose_enter_as": "Enter the dose as",
     "ios_dose_is_blend": "That is {total} of blend drawn: {parts}.",
-    "ios_dose_is_parts": "That gives {parts}."
+    "ios_dose_is_parts": "That gives {parts}.",
+    "ios_missed": "Missed",
+    "ios_missed_log": "Log it",
+    "ios_missed_skip": "Skipped",
+    "ios_show_missed": "Show missed doses",
+    "ios_missed_hint": "Log it records the dose at its scheduled time, from your vial. Skipped marks it as not taken on purpose."
   },
   "de": {
     "more": "Mehr",
@@ -267,7 +272,12 @@
     "ios_dose_whole_blend": "Ganze Mischung",
     "ios_dose_enter_as": "Dosis angeben als",
     "ios_dose_is_blend": "Das sind {total} Mischung aufgezogen: {parts}.",
-    "ios_dose_is_parts": "Das ergibt {parts}."
+    "ios_dose_is_parts": "Das ergibt {parts}.",
+    "ios_missed": "Verpasst",
+    "ios_missed_log": "Erfassen",
+    "ios_missed_skip": "Ausgelassen",
+    "ios_show_missed": "Verpasste Dosen zeigen",
+    "ios_missed_hint": "„Erfassen“ trägt die Dosis zur geplanten Zeit aus deiner Ampulle ein. „Ausgelassen“ markiert sie als bewusst nicht genommen."
   },
   "sl": {
     "more": "Več",
@@ -406,7 +416,12 @@
     "ios_dose_whole_blend": "Cela mešanica",
     "ios_dose_enter_as": "Odmerek vnesi kot",
     "ios_dose_is_blend": "To je {total} izvlečene mešanice: {parts}.",
-    "ios_dose_is_parts": "To da {parts}."
+    "ios_dose_is_parts": "To da {parts}.",
+    "ios_missed": "Zamujeno",
+    "ios_missed_log": "Zabeleži",
+    "ios_missed_skip": "Izpuščeno",
+    "ios_show_missed": "Pokaži zamujene odmerke",
+    "ios_missed_hint": "»Zabeleži« zapiše odmerek ob načrtovanem času iz tvoje viale. »Izpuščeno« ga označi kot namerno nevzetega."
   },
   "pl": {
     "more": "Więcej",
@@ -545,6 +560,11 @@
     "ios_dose_whole_blend": "Cała mieszanka",
     "ios_dose_enter_as": "Podaj dawkę jako",
     "ios_dose_is_blend": "To {total} pobranej mieszanki: {parts}.",
-    "ios_dose_is_parts": "To daje {parts}."
+    "ios_dose_is_parts": "To daje {parts}.",
+    "ios_missed": "Pominięta",
+    "ios_missed_log": "Zapisz",
+    "ios_missed_skip": "Pominięta celowo",
+    "ios_show_missed": "Pokaż pominięte dawki",
+    "ios_missed_hint": "„Zapisz” dodaje dawkę o zaplanowanej porze z Twojej fiolki. „Pominięta celowo” oznacza ją jako świadomie niewziętą."
   }
 }
