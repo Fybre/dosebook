@@ -45,6 +45,18 @@ import Testing
         #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 3), nowMs: now).isEmpty)
     }
 
+    @Test func lateNightDoseOnTheNextDayDoesNotBlockIt() throws {
+        // The evening's dose taken after midnight belongs to the next day, so the
+        // evening is missed, and logging it must work rather than count that dose.
+        var (d, pid) = setup()
+        d.addLog(DoseLog(id: "", profileId: "", protocolId: pid, peptideId: "bpc-157", at: local(2026, 7, 3, 1, 20), doseMcg: 250, route: .subcutaneous))
+        let now = local(2026, 7, 3, 12)
+        let m = try #require(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 2), nowMs: now).first { $0.day == local(2026, 7, 2) }?.doses.last)
+        #expect(m.at == local(2026, 7, 2, 20))
+        #expect(d.logMissed(m) != nil)
+        #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 2), nowMs: now).allSatisfy { $0.day != local(2026, 7, 2) || !$0.doses.contains { $0.at == m.at } })
+    }
+
     @Test func nothingBeforeAPlanStarted() {
         let (d, _) = setup()
         #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 6, 1), nowMs: local(2026, 7, 1, 7)).isEmpty)

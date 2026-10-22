@@ -35,13 +35,21 @@ public func missedDoses(_ protocols: [DoseProtocol], _ logs: [DoseLog], fromMs: 
 public extension AppData {
     /// A forgotten dose, recorded at the time it was scheduled: taken, from the
     /// vial and at the site it would have used then, or skipped on purpose.
+    /// No check for a nearby dose, unlike a reminder: `missedDoses` already found
+    /// this time unanswered on its own day, and a dose just past midnight that a
+    /// reminder would count for it is credited to the next day instead.
     @discardableResult
     mutating func logMissed(_ m: MissedDose, skipped: Bool = false) -> String? {
+        guard let p = protocols.first(where: { $0.id == m.protocolId && $0.profileId == activeProfileId }) else { return nil }
+        // Not twice, if the button is tapped again before the row goes.
+        if logs.contains(where: { $0.profileId == activeProfileId && $0.peptideId == p.peptideId && $0.at == m.at }) { return nil }
         if skipped {
-            guard let p = protocols.first(where: { $0.id == m.protocolId }) else { return nil }
             return addLog(DoseLog(id: "", profileId: "", protocolId: p.id, peptideId: p.peptideId, at: m.at,
                                   doseMcg: m.doseMcg, route: p.route, skipped: true))
         }
-        return logFromReminder(protocolId: m.protocolId, doseAt: m.at, now: m.at)
+        let earlier = logs.filter { $0.profileId == activeProfileId && $0.peptideId == p.peptideId && $0.at <= m.at }
+        let site = routeHasSite(p.route) ? suggestSite(earlier, m.at, allowed: p.sites) : nil
+        return addLog(DoseLog(id: "", profileId: "", protocolId: p.id, peptideId: p.peptideId, at: m.at,
+                              doseMcg: m.doseMcg, route: p.route, site: site))
     }
 }
