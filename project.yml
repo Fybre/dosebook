@@ -1,6 +1,6 @@
 name: Bench
 options:
-  bundleIdPrefix: com.craigmewett
+  bundleIdPrefix: me.fybre
   deploymentTarget:
     iOS: "18.0"
   createIntermediateGroups: true
@@ -29,7 +29,7 @@ targets:
     entitlements:
       path: Bench/Bench.entitlements
       properties:
-        com.apple.developer.icloud-container-identifiers: [iCloud.com.craigmewett.bench]
+        com.apple.developer.icloud-container-identifiers: [iCloud.me.fybre.bench]
         com.apple.developer.icloud-services: [CloudKit]
         aps-environment: development
         com.apple.developer.healthkit: true
@@ -52,7 +52,7 @@ targets:
         UTImportedTypeDeclarations: []
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.craigmewett.bench
+        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.bench
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor

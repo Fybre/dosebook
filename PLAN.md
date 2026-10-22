@@ -19,7 +19,7 @@ Status as of 2026-10-22: Phases 1–8 done; Phase 9 (hardening) done except what
 
 Defaults chosen by me, which the user can override:
 - Minimum OS: iOS 18 and macOS 15 (for the later Mac target).
-- Bundle id placeholder: `com.craigmewett.bench`. The iCloud container is `iCloud.com.craigmewett.bench`.
+- Bundle id: `me.fybre.bench` (the user's usual `me.fybre` prefix). The iCloud container is `iCloud.me.fybre.bench`.
   The user must set their own `DEVELOPMENT_TEAM` for signing and CloudKit.
 - English first. Translations (de/sl/pl, about 5.9k lines in `src/lib/i18n/translations.ts`) come later:
   a script will generate a `Localizable.xcstrings` from that file.
@@ -134,7 +134,7 @@ bench2/
   `TZ=America/New_York`).
 
 ### Persistence and iCloud sync
-- **SwiftData** with `ModelConfiguration(cloudKitDatabase: .private("iCloud.com.craigmewett.bench"))`.
+- **SwiftData** with `ModelConfiguration(cloudKitDatabase: .private("iCloud.me.fybre.bench"))`.
 - **Envelope-record design** (CloudKit-friendly: every attribute optional or defaulted, no unique
   constraints, no relationships):
   ```swift

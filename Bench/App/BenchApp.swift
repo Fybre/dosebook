@@ -33,7 +33,7 @@ struct BenchApp: App {
 
 @MainActor
 enum Bootstrap {
-    static let containerId = "iCloud.com.craigmewett.bench"
+    static let containerId = "iCloud.me.fybre.bench"
 
     /// CloudKit when there is an iCloud account and the build is entitled; this
     /// device only otherwise. The choice is shown in Settings.
