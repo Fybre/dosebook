@@ -53,6 +53,7 @@ struct ImportView: View {
                 tablePreview(profile: profile, table: table, plan: plan)
             }
         }
+        .readableWidth()
         #if DEBUG
         .navigationDestination(isPresented: Binding(get: { ProcessInfo.processInfo.arguments.contains("-injectlyFiles") }, set: { _ in })) { InjectlyImportView() }
         #endif

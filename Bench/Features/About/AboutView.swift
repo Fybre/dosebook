@@ -82,6 +82,7 @@ struct AboutView: View {
             } header: { Label(t("about_numbers_title"), systemImage: "exclamationmark.shield") }
             Section { NavigationLink(t("about_export_data"), value: MoreView.Screen.settings) }
         }
+        .readableWidth()
         .font(.subheadline)
         .navigationTitle(t("about_title"))
     }

@@ -107,6 +107,7 @@ struct SettingsView: View {
             } header: { Text(t("settings_what_it_is")) }
             .font(.footnote)
         }
+        .readableWidth()
         .navigationTitle(t("settings_title"))
         .backupExporter(isPresented: $exporting)
         .fileExporter(isPresented: $exportingCsv, document: CsvDocument(text: csv.text), contentType: .commaSeparatedText,

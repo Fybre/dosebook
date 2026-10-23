@@ -44,6 +44,7 @@ struct LabsView: View {
                 }
             }
         }
+        .readableWidth()
         .navigationTitle(t("labs_title"))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

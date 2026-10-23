@@ -146,6 +146,7 @@ struct StockView: View {
                 }
             }
         }
+        .readableWidth()
         .debugAnchor(proxy)
         }
         .navigationTitle(t("stock_title"))

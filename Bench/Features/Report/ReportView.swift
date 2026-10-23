@@ -50,6 +50,7 @@ struct ReportView: View {
             tableSection(t("report_dose_history"), report.history, empty: t("report_no_doses"), note: report.historyNote)
             Section { Text(report.footer).font(.caption2).foregroundStyle(.secondary) }
         }
+        .readableWidth()
         .navigationTitle(t("report_title"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

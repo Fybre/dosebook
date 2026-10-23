@@ -159,6 +159,7 @@ struct CalculatorView: View {
                 Label(t("calc_disclaimer"), systemImage: "exclamationmark.triangle").font(.footnote).foregroundStyle(.secondary)
             }
         }
+        .readableWidth()
         .debugAnchor(proxy)
         }
         .navigationTitle(t("calc_title"))

@@ -45,6 +45,7 @@ struct MoreView: View {
                 NavigationLink(value: Screen.about) { Label(t("nav_about"), systemImage: "info.circle") }
             }
         }
+        .readableWidth()
         .navigationTitle(t("more"))
         .navigationDestination(for: Screen.self) { s in
             switch s {

@@ -45,6 +45,7 @@ struct PlanView: View {
             .padding()
             .containerRelativeFrame(.horizontal)
         }
+        .readableWidth()
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .background(Color(.systemGroupedBackground))
         .navigationTitle(t("plan_title"))

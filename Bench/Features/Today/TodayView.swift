@@ -65,6 +65,7 @@ struct TodayView: View {
             // wider, and that was enough to let the whole page slide sideways.
             .containerRelativeFrame(.horizontal)
         }
+        .readableWidth()
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .debugAnchor(proxy)
         }

@@ -33,6 +33,7 @@ struct LibraryView: View {
                 }
             }
         }
+        .readableWidth()
         .searchable(text: $query, prompt: t("library_search_placeholder"))
         .navigationTitle(t("library_title"))
         .peptideDestination()

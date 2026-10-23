@@ -91,6 +91,7 @@ struct LogView: View {
                 }
             }
         }
+        .readableWidth()
         .onScrollGeometryChange(for: Bool.self) { $0.contentOffset.y > 1500 } action: { _, far in
             withAnimation(.easeOut(duration: 0.2)) { farDown = far }
         }
