@@ -26,21 +26,21 @@ struct RootView: View {
             if next == tab { reselects[next, default: 0] += 1 }
             tab = next
         })) {
-            Tab(t("nav_now"), systemImage: "waveform.path.ecg", value: "now") { NavigationStack { TodayView().plainTitleBar() } }
-            Tab(t("nav_plan"), systemImage: "checklist", value: "plan") { NavigationStack { PlanView().plainTitleBar() } }
-            Tab(t("nav_log"), systemImage: "book.pages", value: "log") { NavigationStack { LogView().plainTitleBar() } }
-            Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView().plainTitleBar() } }
+            Tab(t("nav_now"), systemImage: "waveform.path.ecg", value: "now") { NavigationStack { TodayView() } }
+            Tab(t("nav_plan"), systemImage: "checklist", value: "plan") { NavigationStack { PlanView() } }
+            Tab(t("nav_log"), systemImage: "book.pages", value: "log") { NavigationStack { LogView() } }
+            Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView() } }
             // On a wide screen the sidebar lists everything; on a phone these sit under More.
             // Left out entirely when narrow: hidden tabs still count, and past five the
             // system adds its own More tab around ours.
             if sizeClass != .compact {
                 TabSection(t("more")) {
-                    Tab(t("nav_calc"), systemImage: "function", value: "calculator") { NavigationStack { CalculatorView().plainTitleBar() } }
-                    Tab(t("nav_library"), systemImage: "books.vertical", value: "library") { NavigationStack { LibraryView().plainTitleBar() } }
-                    Tab(t("nav_bloodwork"), systemImage: "drop", value: "labs") { NavigationStack { LabsView().plainTitleBar() } }
-                    Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView().plainTitleBar() } }
-                    Tab(t("nav_settings_label"), systemImage: "gear", value: "settings") { NavigationStack { SettingsView().plainTitleBar() } }
-                    Tab(t("nav_about"), systemImage: "info.circle", value: "about") { NavigationStack { AboutView().plainTitleBar() } }
+                    Tab(t("nav_calc"), systemImage: "function", value: "calculator") { NavigationStack { CalculatorView() } }
+                    Tab(t("nav_library"), systemImage: "books.vertical", value: "library") { NavigationStack { LibraryView() } }
+                    Tab(t("nav_bloodwork"), systemImage: "drop", value: "labs") { NavigationStack { LabsView() } }
+                    Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView() } }
+                    Tab(t("nav_settings_label"), systemImage: "gear", value: "settings") { NavigationStack { SettingsView() } }
+                    Tab(t("nav_about"), systemImage: "info.circle", value: "about") { NavigationStack { AboutView() } }
                 }
                 .defaultVisibility(.hidden, for: .tabBar)
             }

@@ -42,7 +42,7 @@ struct BenchApp: App {
         #if os(macOS)
         // The Mac's own Settings window, under the app menu and ⌘,.
         Settings {
-            NavigationStack { SettingsView().plainTitleBar() }
+            NavigationStack { SettingsView() }
                 .environment(store)
                 .formStyle(.grouped)
                 .frame(minWidth: 560, minHeight: 640)
