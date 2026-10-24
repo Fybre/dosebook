@@ -26,18 +26,6 @@ extension View {
         #endif
     }
 
-    /// A scroll view's content held to exactly its width, so a chart a fraction of a
-    /// point too wide cannot let the page slide sideways under a finger. The Mac has
-    /// no such slide, and there the pin fed back through the window's size and the
-    /// readable-width margins until the content was thousands of points wide.
-    func pinnedToScrollWidth() -> some View {
-        #if os(iOS)
-        containerRelativeFrame(.horizontal)
-        #else
-        frame(maxWidth: .infinity)
-        #endif
-    }
-
     /// A row's actions: swiped to on iOS, a right-click menu on the Mac, where rows
     /// do not swipe.
     func rowActions<A: View>(@ViewBuilder _ actions: () -> A) -> some View {

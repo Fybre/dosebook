@@ -18,6 +18,9 @@ struct PlanView: View {
         }
     }
 
+    /// The page's visible width, for `pageWidth`.
+    @State private var width: CGFloat = 0
+
     var body: some View {
         let now = nowMillis()
         let data = store.data
@@ -43,9 +46,11 @@ struct PlanView: View {
                 PctPanelView(nowMs: now)
             }
             .padding()
-            .pinnedToScrollWidth()
+            .pageWidth(width)
         }
-        .readableWidth()
+        // The scroll view fills the screen, so what is measured is the space there is.
+        .frame(maxWidth: .infinity)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .background(Color(.systemGroupedBackground))
         .navigationTitle(t("plan_title"))

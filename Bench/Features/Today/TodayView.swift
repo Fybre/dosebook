@@ -73,11 +73,10 @@ struct TodayView: View {
             .frame(maxWidth: wide ? 420 : .infinity, alignment: .leading)
             }
             .padding()
-            // Exactly the screen's width: a chart can lay out a fraction of a point
-            // wider, and that was enough to let the whole page slide sideways.
-            .pinnedToScrollWidth()
+            .pageWidth(width, limit: wide ? 1240 : READABLE_WIDTH)
         }
-        .readableWidth(wide ? 1240 : READABLE_WIDTH)
+        // The scroll view fills the screen, so what is measured is the space there is.
+        .frame(maxWidth: .infinity)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .debugAnchor(proxy)
