@@ -59,7 +59,12 @@ struct PlanView: View {
             }
         }
         #if DEBUG
-        .onAppear { if editing == nil, ProcessInfo.processInfo.arguments.contains("-scanImage") { editing = .scan } }
+        .onAppear {
+            let args = ProcessInfo.processInfo.arguments
+            if editing == nil, args.contains("-scanImage") { editing = .scan }
+            // `-newProtocol <peptideId>`: the protocol form, started on that compound.
+            if editing == nil, let i = args.firstIndex(of: "-newProtocol"), i + 1 < args.count { editing = .startingWith(args[i + 1]) }
+        }
         #endif
         .sheet(item: $editing) { target in
             NavigationStack {

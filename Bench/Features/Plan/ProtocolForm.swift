@@ -167,6 +167,9 @@ struct ProtocolForm: View {
                 }
             } header: { Text(t("plan_how_often")) } footer: { if planMode == .phases { Text(t("plan_how_often_hint")) } }
 
+            // Right under the schedule, so changing it shows what it does to the curve.
+            Section { ProjectionPreviewView(protocol_: draft, peptide: peptide, resolve: { store.data.peptide($0) }) }
+
             if routeHasSite(route) {
                 Section {
                     SiteMapView(logs: [], selected: Set(sites), multi: true, onSelect: toggleSite).frame(maxWidth: .infinity)
@@ -179,8 +182,6 @@ struct ProtocolForm: View {
             Section {
                 TextField(peptide.map { t("plan_name_example", ["name": .string($0.name)]) } ?? t("plan_name_empty"), text: $name)
             } header: { Text(t("plan_name_it")) } footer: { Text(t("plan_name_hint")) }
-
-            Section { ProjectionPreviewView(protocol_: draft, peptide: peptide) }
 
             if rewritesHistory {
                 Section {

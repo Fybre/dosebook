@@ -44,11 +44,14 @@ struct PkChartView: View {
                             .symbol(.triangle).symbolSize(30).foregroundStyle(s.tone.color)
                     }
                 }
+                // One dose's own peak: above it, doses are stacking up.
+                RuleMark(y: .value("one dose", 1.0)).foregroundStyle(.secondary.opacity(0.6)).lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
                 RuleMark(x: .value("now", Date(millis: now))).foregroundStyle(.secondary).lineStyle(StrokeStyle(lineWidth: 1, dash: [2, 3]))
                 if let picked { RuleMark(x: .value("picked", picked)).foregroundStyle(Color.accentColor) }
             }
             .chartXScale(domain: Date(millis: from)...Date(millis: to))
             .chartYAxis { AxisMarks(position: .leading) }
+            .chartYAxisLabel(t("ios_chart_axis"), position: .leading)
             .chartXSelection(value: $picked)
             .frame(height: 200)
             readout(at)

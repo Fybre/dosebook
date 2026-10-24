@@ -181,10 +181,22 @@ struct PctPanelView: View {
 struct ProjectionPreviewView: View {
     var protocol_: DoseProtocol
     var peptide: Peptide?
+    /// For a blend's parts, each of which has its own curve.
+    var resolve: (String) -> Peptide? = { _ in nil }
 
     var body: some View {
         if let peptide {
-            if let h = peptide.halfLifeHours {
+            // A blend has no half-life of its own: one projection per part that has one.
+            // The figures are ratios, so the same whatever share of the dose a part is.
+            let parts = (peptide.components ?? []).compactMap { c in c.peptideId.flatMap(resolve).flatMap { $0.halfLifeHours != nil ? $0 : nil } }
+            if isBlend(peptide), !parts.isEmpty {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(parts, id: \.id) { part in
+                        let p = project(protocol_, halfLifeHours: part.halfLifeHours!, tmaxHours: part.tmaxHours)
+                        if p.series.count >= 2 { chart(p, part, partName: part.name) }
+                    }
+                }
+            } else if let h = peptide.halfLifeHours {
                 let p = project(protocol_, halfLifeHours: h, tmaxHours: peptide.tmaxHours)
                 if p.series.count >= 2 { chart(p, peptide) }
             } else {
@@ -197,10 +209,11 @@ struct ProjectionPreviewView: View {
         }
     }
 
-    private func chart(_ p: Projection, _ peptide: Peptide) -> some View {
+    private func chart(_ p: Projection, _ peptide: Peptide, partName: String? = nil) -> some View {
         let from = p.series[0].t
         return VStack(alignment: .leading, spacing: 10) {
             CardHeader(title: t("projection_header"), systemImage: "chart.line.uptrend.xyaxis")
+            if let partName { Text(partName).font(.subheadline.weight(.semibold)) }
             Chart {
                 ForEach(p.series, id: \.t) { s in
                     AreaMark(x: .value("t", Date(millis: s.t)), y: .value("level", s.level))
