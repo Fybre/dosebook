@@ -74,7 +74,7 @@ struct TodayView: View {
             .padding()
             // Exactly the screen's width: a chart can lay out a fraction of a point
             // wider, and that was enough to let the whole page slide sideways.
-            .containerRelativeFrame(.horizontal)
+            .pinnedToScrollWidth()
         }
         .readableWidth(wide ? 1240 : READABLE_WIDTH)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }

@@ -43,7 +43,7 @@ struct PlanView: View {
                 PctPanelView(nowMs: now)
             }
             .padding()
-            .containerRelativeFrame(.horizontal)
+            .pinnedToScrollWidth()
         }
         .readableWidth()
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
