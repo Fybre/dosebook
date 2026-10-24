@@ -8,8 +8,14 @@ private struct ReadableWidth: ViewModifier {
     @State private var width: CGFloat = 0
 
     /// Nil keeps the system's own margins, as on iPhone and in narrow windows.
+    /// The Mac's lists take no notice of content margins, so the Mac keeps them
+    /// everywhere and every screen fills the window alike.
     private var margin: CGFloat? {
+        #if os(macOS)
+        nil
+        #else
         width > limit + 80 ? (width - limit) / 2 : nil
+        #endif
     }
 
     func body(content: Content) -> some View {
