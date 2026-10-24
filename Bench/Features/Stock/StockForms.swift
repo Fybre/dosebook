@@ -60,7 +60,7 @@ private struct FormChrome: ViewModifier {
     func body(content: Content) -> some View {
         content
             .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) { Button(confirm) { action(); dismiss() }.disabled(disabled) }
@@ -133,7 +133,7 @@ struct AddVialForm: View {
                 NumberRow(label: tablets ? t("stock_how_many_packs") : t("stock_how_many"), value: $count, range: 1...50)
                 TextField(t("stock_source"), text: $supplier, prompt: Text("\(t("stock_source")) (\(t("optional")))"))
                 LabeledContent(t("ios_scan_lot")) {
-                    TextField(t("optional"), text: $lot).multilineTextAlignment(.trailing).textInputAutocapitalization(.characters)
+                    TextField(t("optional"), text: $lot).multilineTextAlignment(.trailing).capitalisedCharacters()
                 }
                 Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
                 if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }

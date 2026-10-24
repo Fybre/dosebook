@@ -190,7 +190,7 @@ struct ProtocolForm: View {
             }
         }
         .navigationTitle(initial == nil ? t("plan_new_protocol_form") : t("plan_edit_protocol"))
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {

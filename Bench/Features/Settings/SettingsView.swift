@@ -141,7 +141,7 @@ struct SettingsView: View {
         }
     }
 
-    private func setting<V>(_ path: WritableKeyPath<Settings, V>) -> Binding<V> {
+    private func setting<V>(_ path: WritableKeyPath<BenchCore.Settings, V>) -> Binding<V> {
         Binding(get: { store.data.settings[keyPath: path] }, set: { v in store.mutate { $0.settings[keyPath: path] = v } })
     }
 
@@ -265,7 +265,7 @@ private struct RemindersSection: View {
             case .notAsked?: CalloutText(t("ios_notify_ask")).font(.footnote).callout(.tangerine)
             case .denied?:
                 CalloutText(t("ios_notify_off")).font(.footnote).callout(.tangerine)
-                Button(t("ios_open_settings")) { if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) } }
+                Button(t("ios_open_settings")) { if let url = notificationSettingsURL { openURL(url) } }
             }
             Picker(t("reminders_remind_me"), selection: Binding(get: { reminders.enabled ? reminders.leadMinutes : -1 }, set: { v in Task { await setEnabled(v >= 0, v >= 0 ? v : reminders.leadMinutes) } })) {
                 Text(t("reminders_never")).tag(-1.0)

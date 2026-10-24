@@ -126,4 +126,8 @@ struct BodyShape: Shape {
 }
 
 /// A rested spot: white on the light body, a soft grey on the dark one rather than a black hole.
+#if canImport(UIKit)
 private let restedFill = Color(UIColor { $0.userInterfaceStyle == .dark ? .systemGray4 : .systemBackground })
+#else
+private let restedFill = Color(nsColor: NSColor(name: nil) { $0.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? .systemGray : .textBackgroundColor })
+#endif

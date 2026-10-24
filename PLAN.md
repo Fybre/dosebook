@@ -269,9 +269,9 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
   in Documents/Bench (visible in Files), app icon (`tools/make-icon.swift`).
 - Hardening done: performance over three years of history (chart prefilters doses, Stock outlook
   cached; tests in BenchStoreTests), Dynamic Type at accessibility sizes, VoiceOver labels.
-- Debug launch args: `-demo`, `-demoLarge`, `-tab now|plan|log|stock|more`, `-anchor <id>`,
+- Debug launch args: `-demo`, `-demoLarge`, `-tab now|plan|log|stock|more|calculator|library|labs|report|settings|about`, `-anchor <id>`,
   `-log [peptideId]`, `-more calculator|library|labs|report|settings|about|importer [peptideId]`,
-  `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`, `-injectlyFiles a.csv,b.csv` (with `-more importer`), `-weightTrend`, `-scanImage <png>` (opens Plan's scan). `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
+  `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`, `-injectlyFiles a.csv,b.csv` (with `-more importer`), `-weightTrend`, `-scanImage <png>` (opens Plan's scan), `-stockScan` (Stock's scan), `-vialLeft`, `-seedInjectly a.csv,...`. `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
 
 **Test builds on a phone:** scheme `BenchTest` (bundle `me.fybre.bench.test`, shown as "Bench Test",
 signed with team 8BD49F6FX5, no iCloud entitlement, `LOCAL_ONLY` so the store is this device only).
@@ -284,4 +284,22 @@ container `iCloud.me.fybre.bench`. Then test CloudKit sync
 between two devices on one Apple ID, HealthKit permission and reads on a phone, notification
 delivery, and Files visibility of Documents/Bench.
 
-**Later:** macOS target, widgets.
+**iPad and Mac (started 2026-10-24):**
+- Scheme `BenchTestMac` (macOS 15, bundle `me.fybre.bench.test`, "Bench Test"): the same `Bench/`
+  sources, `LOCAL_ONLY`, ad-hoc signed to run on this Mac, no team and no iCloud. Its Info.plist is
+  in `MacSupport/`. A release Mac target waits on the app's name, like the iOS one.
+- `Platform/PlatformShims.swift` holds the few iOS/macOS differences (`inlineTitle()`,
+  `decimalKeyboard()`, `capitalisedCharacters()`, `PlatformImage`, `notificationSettingsURL`, iOS
+  system colour names on `NSColor`). The report PDF uses AppKit printing on the Mac. The vial scan
+  has no camera on the Mac (photo or file instead). Apple Health reports unavailable on the Mac.
+- `RootView` is a `.sidebarAdaptable` TabView: Now/Plan/Log/Stock, plus the More screens as a
+  sidebar section on wide screens. They are left out when compact, because hidden tabs still count
+  and past five iOS wraps everything in its own More tab. iPad opens on the sidebar.
+- `readableWidth()` (Components) centres List/ScrollView content at 720 pt on wide screens; Now
+  goes to two columns at 1000 pt and wider (plan on the left, how you are doing on the right).
+- Mac: default window 1280×860, the standard Settings window (⌘,), and ⌘N for Log a dose (also
+  in the iPad keyboard menu), sent as `Notification.Name.benchLogDose`.
+- Not done yet: Mac tables for Log and Stock, multiple windows, a look at the Mac app on screen
+  (the screen was locked when it was built), widgets.
+
+**Later:** widgets.

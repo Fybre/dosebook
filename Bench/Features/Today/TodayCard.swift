@@ -156,7 +156,7 @@ struct DayDetailSheet: View {
             }
         }
         .navigationTitle(startOfLocalDay(day) == startOfLocalDay(now) ? t("checkin_today") : "\(formatWeekday(day)), \(formatDate(day, nowMs: now))")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button(t("done")) { dismiss() } } }
     }
 

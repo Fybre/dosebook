@@ -78,7 +78,7 @@ struct WeightTrendView: View {
             }
         }
         .navigationTitle(t("ios_trend_title"))
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button(t("done")) { dismiss() } } }
     }
 }

@@ -18,6 +18,9 @@ struct TodayView: View {
     @State private var logRequest: LogRequest?
     @State private var confirmEarly: String?
     @State private var addingVial: VialFor?
+    /// The screen's width: wide enough, and Now goes to two columns.
+    @State private var width: CGFloat = 0
+    private var wide: Bool { width >= 1000 }
     private let tick = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -30,6 +33,9 @@ struct TodayView: View {
         let attention = tracks.filter { $0.due.state == .overdue || $0.due.state == .dueNow }
         ScrollViewReader { proxy in
         ScrollView {
+            let columns = wide ? AnyLayout(HStackLayout(alignment: .top, spacing: 20)) : AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
+            columns {
+            // Today and the plan on the left; how you are doing on the right.
             VStack(alignment: .leading, spacing: 16) {
                 TodayCard(protocols: mine.protocols, logs: mine.logs, now: now, earlyHours: data.settings.earlyHours)
                 RescueNotice()
@@ -54,18 +60,24 @@ struct TodayView: View {
                     Text(t("now_active_protocols").uppercased()).font(.caption.bold()).foregroundStyle(.secondary).id("protocols")
                     ForEach(tracks) { protocolCard($0, data: data) }
                 }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 16) {
                 WeightCard(now: now).id("cards")
                 CheckInCard(now: now)
                 LabsCard()
                 if !mine.protocols.isEmpty { InsightsView(tracks: tracks, logs: mine.logs, now: now) }
                 worthSorting(tracks, data: data)
             }
+            .frame(maxWidth: wide ? 420 : .infinity, alignment: .leading)
+            }
             .padding()
             // Exactly the screen's width: a chart can lay out a fraction of a point
             // wider, and that was enough to let the whole page slide sideways.
             .containerRelativeFrame(.horizontal)
         }
-        .readableWidth()
+        .readableWidth(wide ? 1240 : READABLE_WIDTH)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .debugAnchor(proxy)
         }
@@ -77,6 +89,9 @@ struct TodayView: View {
             }
         }
         .onReceive(tick) { _ in now = nowMillis() }
+        .onReceive(NotificationCenter.default.publisher(for: .benchLogDose)) { _ in
+            if logRequest == nil { logRequest = LogRequest(peptideId: nil) }
+        }
         .onAppear {
             now = nowMillis()
             #if DEBUG

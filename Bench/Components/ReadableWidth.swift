@@ -4,11 +4,12 @@ import SwiftUI
 let READABLE_WIDTH: CGFloat = 720
 
 private struct ReadableWidth: ViewModifier {
+    var limit: CGFloat
     @State private var width: CGFloat = 0
 
     /// Nil keeps the system's own margins, as on iPhone and in narrow windows.
     private var margin: CGFloat? {
-        width > READABLE_WIDTH + 80 ? (width - READABLE_WIDTH) / 2 : nil
+        width > limit + 80 ? (width - limit) / 2 : nil
     }
 
     func body(content: Content) -> some View {
@@ -22,5 +23,5 @@ extension View {
     /// On a wide screen, centres a List or ScrollView's content at a readable
     /// width. Put it on the scroll view itself, before any `.sheet`, so sheets
     /// keep their own margins.
-    func readableWidth() -> some View { modifier(ReadableWidth()) }
+    func readableWidth(_ limit: CGFloat = READABLE_WIDTH) -> some View { modifier(ReadableWidth(limit: limit)) }
 }

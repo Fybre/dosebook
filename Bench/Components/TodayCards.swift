@@ -85,7 +85,7 @@ struct RemindersTipCard: View {
                 CalloutText(refused ? t("ios_reminders_refused") : t("ios_tip_reminders_body")).font(.footnote)
                 HStack {
                     if refused {
-                        Button(t("ios_open_settings")) { if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) } }
+                        Button(t("ios_open_settings")) { if let url = notificationSettingsURL { openURL(url) } }
                             .buttonStyle(.borderedProminent)
                     } else {
                         Button { Task { await turnOn() } } label: { Label(t("ios_tip_reminders_on"), systemImage: "bell") }.buttonStyle(.borderedProminent)
@@ -250,7 +250,7 @@ struct WeightEntry: View {
             OptionalNumberRow(label: t("weight_title"), value: Binding(get: { value }, set: { value = $0; prefilled = nil }), suffix: unit.rawValue)
             DatePicker(t("weight_when"), selection: Binding(get: { at }, set: { at = $0; prefilled = nil }))
         }
-        .navigationTitle(t("weight_title")).navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(t("weight_title")).inlineTitle()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
@@ -394,7 +394,7 @@ struct CheckInSheet: View {
                 Text(t("checkin_not_yet")).foregroundStyle(.secondary)
             }
         }
-        .navigationTitle(t("checkin_how_went", ["date": .string(formatDate(dayMs))])).navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(t("checkin_how_went", ["date": .string(formatDate(dayMs))])).inlineTitle()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {

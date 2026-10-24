@@ -7,6 +7,9 @@ struct RootView: View {
     @AppStorage("bench.tab") private var tab = "now"
     @AppStorage("bench.lang") private var langRaw = I18n.lang.rawValue
     @State private var reselects: [String: Int] = [:]
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    /// Shown only in the sidebar; a narrow window has no sidebar, so they go under More.
+    private static let sidebarOnly: Set<String> = ["calculator", "library", "labs", "report", "settings", "about"]
 
     var body: some View {
         TabView(selection: Binding(get: { tab }, set: { next in
@@ -18,9 +21,36 @@ struct RootView: View {
             Tab(t("nav_plan"), systemImage: "checklist", value: "plan") { NavigationStack { PlanView() } }
             Tab(t("nav_log"), systemImage: "book.pages", value: "log") { NavigationStack { LogView() } }
             Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView() } }
+            // On a wide screen the sidebar lists everything; on a phone these sit under More.
+            // Left out entirely when narrow: hidden tabs still count, and past five the
+            // system adds its own More tab around ours.
+            if sizeClass != .compact {
+                TabSection(t("more")) {
+                    Tab(t("nav_calc"), systemImage: "function", value: "calculator") { NavigationStack { CalculatorView() } }
+                    Tab(t("nav_library"), systemImage: "books.vertical", value: "library") { NavigationStack { LibraryView() } }
+                    Tab(t("nav_bloodwork"), systemImage: "drop", value: "labs") { NavigationStack { LabsView() } }
+                    Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView() } }
+                    Tab(t("nav_settings_label"), systemImage: "gear", value: "settings") { NavigationStack { SettingsView() } }
+                    Tab(t("nav_about"), systemImage: "info.circle", value: "about") { NavigationStack { AboutView() } }
+                }
+                .defaultVisibility(.hidden, for: .tabBar)
+            }
+            #if os(iOS)
+            // The phone's way to the screens above; the Mac always has its sidebar.
             Tab(t("more"), systemImage: "ellipsis.circle", value: "more") { MoreStack() }
+                .defaultVisibility(.hidden, for: .sidebar)
+            #endif
         }
+        .tabViewStyle(.sidebarAdaptable)
+        #if os(iOS)
+        // iPad opens on the sidebar; iPhone, which has no room for one, keeps its tab bar.
+        .defaultAdaptableTabBarPlacement(sizeClass == .regular ? .sidebar : .automatic)
+        #endif
         .environment(\.tabReselects, reselects)
+        .onChange(of: sizeClass, initial: true) { _, size in
+            if size == .compact, Self.sidebarOnly.contains(tab) { tab = "more" }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .benchLogDose)) { _ in tab = "now" }
         // Strings are read when views build, so a new language rebuilds the tree.
         .id(langRaw)
         .onChange(of: langRaw) { _, raw in if let l = Lang(rawValue: raw) { I18n.lang = l } }

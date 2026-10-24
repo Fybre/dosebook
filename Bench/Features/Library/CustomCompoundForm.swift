@@ -68,7 +68,7 @@ struct CustomCompoundForm: View {
         .debugAnchor(proxy)
         }
         .navigationTitle(editing == nil ? t("add_compound_inline") : editing!.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {

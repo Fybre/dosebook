@@ -192,7 +192,7 @@ struct StockView: View {
     }
 
     /// Water, on its own shelf: none of the vial arithmetic applies to it.
-    @ViewBuilder private func waterShelf(_ mine: AppData, _ settings: Settings) -> some View {
+    @ViewBuilder private func waterShelf(_ mine: AppData, _ settings: BenchCore.Settings) -> some View {
         let live = mine.diluents.filter { $0.state != .finished && $0.state != .discarded }
         let rows = shelfRows(live, now, grouped: settings.groupIdenticalVials == true)
         let stock = diluentStock(mine.diluents, .bacteriostatic, now)

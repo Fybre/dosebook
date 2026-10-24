@@ -311,7 +311,7 @@ private struct RateDayPicker: View {
                 .datePickerStyle(.graphical)
                 .padding()
                 .navigationTitle(t("log_rate_another_day"))
-                .navigationBarTitleDisplayMode(.inline)
+                .inlineTitle()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
                     ToolbarItem(placement: .confirmationAction) { Button(t("ios_continue")) { onPick(date) } }

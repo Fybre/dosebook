@@ -1,5 +1,9 @@
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#else
+import AppKit
+#endif
 import BenchCore
 import BenchStore
 
@@ -52,7 +56,7 @@ struct ReportView: View {
         }
         .readableWidth()
         .navigationTitle(t("report_title"))
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 if let pdf {
@@ -89,10 +93,12 @@ struct ReportView: View {
 @MainActor
 enum ReportPDF {
     static func write(_ html: String) -> URL? {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("bench-report.pdf")
+        let page = CGRect(x: 0, y: 0, width: 595.2, height: 841.8)
+        #if canImport(UIKit)
         let formatter = UIMarkupTextPrintFormatter(markupText: html)
         let renderer = UIPrintPageRenderer()
         renderer.addPrintFormatter(formatter, startingAtPageAt: 0)
-        let page = CGRect(x: 0, y: 0, width: 595.2, height: 841.8)
         renderer.setValue(page, forKey: "paperRect")
         renderer.setValue(page.insetBy(dx: 40, dy: 44), forKey: "printableRect")
         let data = NSMutableData()
@@ -102,8 +108,27 @@ enum ReportPDF {
             renderer.drawPage(at: i, in: UIGraphicsGetPDFContextBounds())
         }
         UIGraphicsEndPDFContext()
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("bench-report.pdf")
         do { try data.write(to: url, options: .atomic) } catch { return nil }
+        #else
+        // The Mac has no print formatter for HTML: lay it out in a text view and
+        // print that to a file, which paginates it the same way.
+        guard let text = NSAttributedString(html: Data(html.utf8), documentAttributes: nil) else { return nil }
+        let info = NSPrintInfo()
+        info.paperSize = page.size
+        info.leftMargin = 40; info.rightMargin = 40; info.topMargin = 44; info.bottomMargin = 44
+        info.horizontalPagination = .fit
+        info.verticalPagination = .automatic
+        info.jobDisposition = .save
+        info.dictionary()[NSPrintInfo.AttributeKey.jobSavingURL] = url
+        let view = NSTextView(frame: NSRect(x: 0, y: 0, width: page.width - 80, height: page.height - 88))
+        view.textStorage?.setAttributedString(text)
+        view.isVerticallyResizable = true
+        view.sizeToFit()
+        let op = NSPrintOperation(view: view, printInfo: info)
+        op.showsPrintPanel = false
+        op.showsProgressPanel = false
+        guard op.run() else { return nil }
+        #endif
         return url
     }
 }

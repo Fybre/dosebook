@@ -163,7 +163,7 @@ struct CalculatorView: View {
         .debugAnchor(proxy)
         }
         .navigationTitle(t("calc_title"))
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { apply($0.id) }) } }
     }
 

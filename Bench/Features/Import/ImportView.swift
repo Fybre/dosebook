@@ -58,7 +58,7 @@ struct ImportView: View {
         .navigationDestination(isPresented: Binding(get: { ProcessInfo.processInfo.arguments.contains("-injectlyFiles") }, set: { _ in })) { InjectlyImportView() }
         #endif
         .navigationTitle(t("import_title"))
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         #if DEBUG
         .onAppear {
             // `-importFile <path>` reads a file straight away, for screenshots.

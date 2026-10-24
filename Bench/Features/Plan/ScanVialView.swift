@@ -25,6 +25,7 @@ struct ScanVialView: View {
 
     @State private var photo: PhotosPickerItem?
     @State private var camera = false
+    @State private var choosingFile = false
     @State private var reading = false
     @State private var lines: [String]?
     @State private var label: VialLabel?
@@ -41,9 +42,12 @@ struct ScanVialView: View {
             if lines == nil {
                 Section {
                     Text(t("ios_scan_intro")).font(.footnote).foregroundStyle(.secondary)
+                    #if os(iOS)
                     Button { camera = true } label: { Label(t("ios_scan_camera"), systemImage: "camera") }
                         .disabled(!UIImagePickerController.isSourceTypeAvailable(.camera))
+                    #endif
                     PhotosPicker(selection: $photo, matching: .images) { Label(t("ios_scan_library"), systemImage: "photo") }
+                    Button { choosingFile = true } label: { Label(t("ios_scan_file"), systemImage: "doc") }
                     if reading { HStack { ProgressView(); Text(t("ios_scan_reading")).foregroundStyle(.secondary) } }
                 }
             } else if lines!.isEmpty {
@@ -59,7 +63,7 @@ struct ScanVialView: View {
                     }
                     AmountRow(label: t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
                     LabeledContent(t("ios_scan_lot")) {
-                        TextField(t("ios_scan_lot"), text: $lot).multilineTextAlignment(.trailing).textInputAutocapitalization(.characters)
+                        TextField(t("ios_scan_lot"), text: $lot).multilineTextAlignment(.trailing).capitalisedCharacters()
                     }
                     Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
                     if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
@@ -78,7 +82,7 @@ struct ScanVialView: View {
             }
         }
         .navigationTitle(t("ios_scan_title"))
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
@@ -87,16 +91,24 @@ struct ScanVialView: View {
         }
         .onChange(of: photo) { _, item in
             guard let item else { return }
-            Task { if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) { await read(image) } }
+            Task { if let data = try? await item.loadTransferable(type: Data.self), let image = PlatformImage(data: data) { await read(image) } }
         }
+        .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.image]) { r in
+            guard case .success(let url) = r else { return }
+            let access = url.startAccessingSecurityScopedResource()
+            defer { if access { url.stopAccessingSecurityScopedResource() } }
+            if let data = try? Data(contentsOf: url), let image = PlatformImage(data: data) { Task { await read(image) } }
+        }
+        #if os(iOS)
         .sheet(isPresented: $camera) {
             CameraPicker { image in Task { await read(image) } }.ignoresSafeArea()
         }
+        #endif
         #if DEBUG
         .task {
             // `-scanImage <path>` reads a picture straight away, for screenshots.
             let args = ProcessInfo.processInfo.arguments
-            if lines == nil, let i = args.firstIndex(of: "-scanImage"), i + 1 < args.count, let image = UIImage(contentsOfFile: args[i + 1]) { await read(image) }
+            if lines == nil, let i = args.firstIndex(of: "-scanImage"), i + 1 < args.count, let image = PlatformImage(contentsOfFile: args[i + 1]) { await read(image) }
         }
         #endif
     }
@@ -108,7 +120,7 @@ struct ScanVialView: View {
         return first + all.filter { p in !first.contains { $0.id == p.id } }
     }
 
-    private func read(_ image: UIImage) async {
+    private func read(_ image: PlatformImage) async {
         reading = true
         defer { reading = false }
         let found = await recognizeText(image)
@@ -142,9 +154,13 @@ struct ScanVialView: View {
 }
 
 /// Text in a photo, line by line, read on the device.
-func recognizeText(_ image: UIImage) async -> [String] {
-    guard let cg = image.cgImage else { return [] }
+func recognizeText(_ image: PlatformImage) async -> [String] {
+    guard let cg = image.pixels else { return [] }
+    #if canImport(UIKit)
     let orientation = CGImagePropertyOrientation(image.imageOrientation)
+    #else
+    let orientation = CGImagePropertyOrientation.up
+    #endif
     return await withCheckedContinuation { cont in
         let request = VNRecognizeTextRequest { req, _ in
             let lines = (req.results as? [VNRecognizedTextObservation] ?? []).compactMap { $0.topCandidates(1).first?.string }
@@ -158,6 +174,7 @@ func recognizeText(_ image: UIImage) async -> [String] {
     }
 }
 
+#if os(iOS)
 private extension CGImagePropertyOrientation {
     init(_ o: UIImage.Orientation) {
         switch o {
@@ -198,3 +215,4 @@ struct CameraPicker: UIViewControllerRepresentable {
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) { parent.dismiss() }
     }
 }
+#endif

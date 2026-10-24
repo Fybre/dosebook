@@ -21,7 +21,7 @@ struct NumberField: View {
                     let n = Double(text.replacingOccurrences(of: ",", with: ".")) ?? (text.isEmpty ? 0 : value)
                     value = range.map { min(max(n, $0.lowerBound), $0.upperBound) } ?? n
                 }))
-                .keyboardType(.decimalPad)
+                .decimalKeyboard()
                 .multilineTextAlignment(.trailing)
                 .focused($focused)
                 .monospacedDigit()
@@ -154,7 +154,7 @@ struct OptionalNumberField: View {
     var body: some View {
         HStack(spacing: 6) {
             TextField(title, text: $text)
-                .keyboardType(.decimalPad)
+                .decimalKeyboard()
                 .multilineTextAlignment(.trailing)
                 .monospacedDigit()
                 .onChange(of: text) { _, s in

@@ -185,7 +185,7 @@ struct LogDoseSheet: View {
         .debugAnchor(proxy)
         }
         .navigationTitle(editing != nil ? t("log_edit_dose_title") : t("log_log_a_dose"))
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {

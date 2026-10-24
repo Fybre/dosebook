@@ -172,7 +172,8 @@
     "ios_now_no_vial_many": "Nothing in Stock yet for these. Add a vial so doses show in syringe units and Stock counts down.",
     "ios_health_synced_already": "Already syncing; new weights will appear in a moment.",
     "ios_health_auto": "Bench reads new weights from Apple Health each time you open it. Sync now also fetches them straight away.",
-    "ios_now_log_now": "Log now"
+    "ios_now_log_now": "Log now",
+    "ios_scan_file": "Choose a file"
   },
   "de": {
     "more": "Mehr",
@@ -347,7 +348,8 @@
     "ios_now_no_vial_many": "Dafür ist noch nichts im Vorrat. Füge eine Ampulle hinzu, damit Dosen in Spritzeneinheiten erscheinen und der Vorrat abnimmt.",
     "ios_health_synced_already": "Wird bereits abgeglichen; neue Gewichte erscheinen gleich.",
     "ios_health_auto": "Bench liest bei jedem Öffnen neue Gewichte aus Apple Health. „Jetzt synchronisieren“ holt sie sofort.",
-    "ios_now_log_now": "Jetzt erfassen"
+    "ios_now_log_now": "Jetzt erfassen",
+    "ios_scan_file": "Datei auswählen"
   },
   "sl": {
     "more": "Več",
@@ -526,7 +528,8 @@
     "ios_now_no_vial_many": "Za te v zalogi še ni ničesar. Dodaj vialo, da so odmerki prikazani v enotah brizge in se zaloga zmanjšuje.",
     "ios_health_synced_already": "Usklajevanje že poteka; nove teže se bodo kmalu prikazale.",
     "ios_health_auto": "Bench ob vsakem odprtju prebere nove teže iz Apple Health. »Sinhroniziraj zdaj« jih pridobi takoj.",
-    "ios_now_log_now": "Zabeleži zdaj"
+    "ios_now_log_now": "Zabeleži zdaj",
+    "ios_scan_file": "Izberi datoteko"
   },
   "pl": {
     "more": "Więcej",
@@ -705,6 +708,7 @@
     "ios_now_no_vial_many": "Dla tych nie ma jeszcze nic w zapasach. Dodaj fiolkę, aby dawki były w jednostkach strzykawki, a zapasy malały.",
     "ios_health_synced_already": "Synchronizacja już trwa; nowe pomiary wagi pojawią się za chwilę.",
     "ios_health_auto": "Bench przy każdym otwarciu odczytuje nowe pomiary wagi z Apple Health. „Synchronizuj teraz” pobiera je od razu.",
-    "ios_now_log_now": "Zapisz teraz"
+    "ios_now_log_now": "Zapisz teraz",
+    "ios_scan_file": "Wybierz plik"
   }
 }

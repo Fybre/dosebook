@@ -35,7 +35,29 @@ struct BenchApp: App {
                 }
                 .task { BackupFolder.runIfDue(store) }
         }
+        #if os(macOS)
+        .defaultSize(width: 1280, height: 860)
+        #endif
+        .commands {
+            CommandGroup(after: .newItem) {
+                Button(t("log_new_dose")) { NotificationCenter.default.post(name: .benchLogDose, object: nil) }
+                    .keyboardShortcut("n")
+            }
+        }
+        #if os(macOS)
+        // The Mac's own Settings window, under the app menu and ⌘,.
+        Settings {
+            NavigationStack { SettingsView() }
+                .environment(store)
+                .frame(minWidth: 560, minHeight: 640)
+        }
+        #endif
     }
+}
+
+extension Notification.Name {
+    /// "Log a dose" from the menu or ⌘N: Now opens the sheet.
+    static let benchLogDose = Notification.Name("bench.logDose")
 }
 
 @MainActor
@@ -85,6 +107,7 @@ enum Bootstrap {
 }
 
 extension ThemeSetting {
+    #if canImport(UIKit)
     var interfaceStyle: UIUserInterfaceStyle {
         switch self {
         case .dark: .dark
@@ -99,4 +122,14 @@ extension ThemeSetting {
             for window in scene.windows { window.overrideUserInterfaceStyle = interfaceStyle }
         }
     }
+    #else
+    /// The whole app, so every window and sheet follows.
+    @MainActor func apply() {
+        switch self {
+        case .dark: NSApp.appearance = NSAppearance(named: .darkAqua)
+        case .light: NSApp.appearance = NSAppearance(named: .aqua)
+        default: NSApp.appearance = nil
+        }
+    }
+    #endif
 }
