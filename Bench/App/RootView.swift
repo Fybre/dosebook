@@ -5,7 +5,13 @@ import BenchStore
 struct RootView: View {
     @Environment(AppStore.self) private var store
     /// Per window, so a second window on the Mac or iPad keeps its own screen.
-    @SceneStorage("bench.tab") private var tab = "now"
+    @SceneStorage("bench.tab") private var tab = RootView.firstTab
+    /// A new window opens on Now, or on `-tab <name>` when launched with one (for screenshots).
+    private static var firstTab: String {
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-tab"), i + 1 < args.count { return args[i + 1] }
+        return "now"
+    }
     @AppStorage("bench.lang") private var langRaw = I18n.lang.rawValue
     @State private var reselects: [String: Int] = [:]
     /// Bumped by ⌘N in this window; Now opens Log a dose when it changes.
@@ -20,21 +26,21 @@ struct RootView: View {
             if next == tab { reselects[next, default: 0] += 1 }
             tab = next
         })) {
-            Tab(t("nav_now"), systemImage: "waveform.path.ecg", value: "now") { NavigationStack { TodayView() } }
-            Tab(t("nav_plan"), systemImage: "checklist", value: "plan") { NavigationStack { PlanView() } }
-            Tab(t("nav_log"), systemImage: "book.pages", value: "log") { NavigationStack { LogView() } }
-            Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView() } }
+            Tab(t("nav_now"), systemImage: "waveform.path.ecg", value: "now") { NavigationStack { TodayView().plainTitleBar() } }
+            Tab(t("nav_plan"), systemImage: "checklist", value: "plan") { NavigationStack { PlanView().plainTitleBar() } }
+            Tab(t("nav_log"), systemImage: "book.pages", value: "log") { NavigationStack { LogView().plainTitleBar() } }
+            Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView().plainTitleBar() } }
             // On a wide screen the sidebar lists everything; on a phone these sit under More.
             // Left out entirely when narrow: hidden tabs still count, and past five the
             // system adds its own More tab around ours.
             if sizeClass != .compact {
                 TabSection(t("more")) {
-                    Tab(t("nav_calc"), systemImage: "function", value: "calculator") { NavigationStack { CalculatorView() } }
-                    Tab(t("nav_library"), systemImage: "books.vertical", value: "library") { NavigationStack { LibraryView() } }
-                    Tab(t("nav_bloodwork"), systemImage: "drop", value: "labs") { NavigationStack { LabsView() } }
-                    Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView() } }
-                    Tab(t("nav_settings_label"), systemImage: "gear", value: "settings") { NavigationStack { SettingsView() } }
-                    Tab(t("nav_about"), systemImage: "info.circle", value: "about") { NavigationStack { AboutView() } }
+                    Tab(t("nav_calc"), systemImage: "function", value: "calculator") { NavigationStack { CalculatorView().plainTitleBar() } }
+                    Tab(t("nav_library"), systemImage: "books.vertical", value: "library") { NavigationStack { LibraryView().plainTitleBar() } }
+                    Tab(t("nav_bloodwork"), systemImage: "drop", value: "labs") { NavigationStack { LabsView().plainTitleBar() } }
+                    Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView().plainTitleBar() } }
+                    Tab(t("nav_settings_label"), systemImage: "gear", value: "settings") { NavigationStack { SettingsView().plainTitleBar() } }
+                    Tab(t("nav_about"), systemImage: "info.circle", value: "about") { NavigationStack { AboutView().plainTitleBar() } }
                 }
                 .defaultVisibility(.hidden, for: .tabBar)
             }
@@ -50,11 +56,17 @@ struct RootView: View {
         .defaultAdaptableTabBarPlacement(sizeClass == .regular ? .sidebar : .automatic)
         #endif
         .environment(\.tabReselects, reselects)
-        .onAppear {
-            // `-tab <name>` opens on that screen, for screenshots.
+        #if DEBUG
+        // After the window's own saved screen is put back, which would otherwise win.
+        .task {
             let args = ProcessInfo.processInfo.arguments
-            if let i = args.firstIndex(of: "-tab"), i + 1 < args.count { tab = args[i + 1] }
+            if let i = args.firstIndex(of: "-tab"), i + 1 < args.count {
+                try? await Task.sleep(for: .milliseconds(300))
+                tab = args[i + 1]
+            }
         }
+        #endif
+
         // Forms and sheets as grouped sections on the Mac too, not its two-column default.
         .formStyle(.grouped)
         .onChange(of: sizeClass, initial: true) { _, size in

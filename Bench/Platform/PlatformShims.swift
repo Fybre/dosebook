@@ -58,6 +58,16 @@ extension View {
         #endif
     }
 
+    /// One look for every screen's title bar on the Mac: no grey band, which it
+    /// otherwise draws only when content starts right under it (Settings, the table).
+    func plainTitleBar() -> some View {
+        #if os(macOS)
+        toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
+        #else
+        self
+        #endif
+    }
+
     /// Capitals as typed, for lot numbers.
     func capitalisedCharacters() -> some View {
         #if os(iOS)

@@ -69,22 +69,36 @@ struct LogView: View {
         #if os(macOS)
         if mode == .table {
             VStack(spacing: 0) {
-                HStack {
-                    Picker(t("ios_log_view"), selection: $mode) {
-                        Text(t("ios_log_list")).tag(Mode.list)
-                        Text(t("ios_log_calendar")).tag(Mode.calendar)
-                        Text(t("ios_log_table")).tag(Mode.table)
+                // Laid out as List and Calendar lay out theirs: a label on the left, the control on the right.
+                VStack(spacing: 0) {
+                    HStack {
+                        Text(t("ios_log_view"))
+                        Spacer()
+                        Picker(t("ios_log_view"), selection: $mode) {
+                            Text(t("ios_log_list")).tag(Mode.list)
+                            Text(t("ios_log_calendar")).tag(Mode.calendar)
+                            Text(t("ios_log_table")).tag(Mode.table)
+                        }
+                        .pickerStyle(.segmented).labelsHidden().fixedSize()
                     }
-                    .pickerStyle(.segmented).labelsHidden().fixedSize()
-                    Spacer()
+                    .padding(.vertical, 8)
+                    Divider()
                     let peptideIds = logs.map(\.peptideId).reduce(into: [String]()) { if !$0.contains($1) { $0.append($1) } }
-                    Picker(t("log_filter_by_peptide"), selection: $filter) {
-                        Text(t("log_all_peptides")).tag("")
-                        ForEach(peptideIds, id: \.self) { Text(data.peptide($0)?.name ?? $0).tag($0) }
+                    if peptideIds.count > 1 {
+                        HStack {
+                            Text(t("log_filter_by_peptide"))
+                            Spacer()
+                            Picker(t("log_filter_by_peptide"), selection: $filter) {
+                                Text(t("log_all_peptides")).tag("")
+                                ForEach(peptideIds, id: \.self) { Text(data.peptide($0)?.name ?? $0).tag($0) }
+                            }
+                            .labelsHidden().fixedSize()
+                        }
+                        .padding(.vertical, 8)
                     }
-                    .fixedSize()
                 }
-                .padding(12)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 8)
                 LogTableView(logs: shown, data: data, palette: palette) { editing = LogEdit(id: $0, logId: $0) }
             }
         } else { listOrCalendar(data: data, mine: mine, logs: logs, shown: shown, palette: palette, checkIns: checkIns, missedByDay: missedByDay, days: days) }
