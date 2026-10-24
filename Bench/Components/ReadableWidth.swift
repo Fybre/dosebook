@@ -15,6 +15,9 @@ private struct ReadableWidth: ViewModifier {
     func body(content: Content) -> some View {
         content
             .contentMargins(.horizontal, margin, for: .scrollContent)
+            // The margins must not count towards the minimum size: on the Mac a window
+            // grows to fit its content, the margins grow with the window, and round it went.
+            .frame(minWidth: 0, maxWidth: .infinity)
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
     }
 }

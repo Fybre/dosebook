@@ -174,7 +174,9 @@
     "ios_health_auto": "Bench reads new weights from Apple Health each time you open it. Sync now also fetches them straight away.",
     "ios_now_log_now": "Log now",
     "ios_scan_file": "Choose a file",
-    "ios_chart_axis": "× one dose’s peak"
+    "ios_chart_axis": "× one dose’s peak",
+    "ios_new_window": "New Window",
+    "ios_sync_test_mac": "Test build: stored on this Mac only, with no iCloud. To move to the release app, export a backup under Your data and import it there."
   },
   "de": {
     "more": "Mehr",
@@ -351,7 +353,9 @@
     "ios_health_auto": "Bench liest bei jedem Öffnen neue Gewichte aus Apple Health. „Jetzt synchronisieren“ holt sie sofort.",
     "ios_now_log_now": "Jetzt erfassen",
     "ios_scan_file": "Datei auswählen",
-    "ios_chart_axis": "× Spitze einer Dosis"
+    "ios_chart_axis": "× Spitze einer Dosis",
+    "ios_new_window": "Neues Fenster",
+    "ios_sync_test_mac": "Testversion: nur auf diesem Mac gespeichert, ohne iCloud. Für die endgültige App exportiere unter „Deine Daten“ eine Sicherung und importiere sie dort."
   },
   "sl": {
     "more": "Več",
@@ -532,7 +536,9 @@
     "ios_health_auto": "Bench ob vsakem odprtju prebere nove teže iz Apple Health. »Sinhroniziraj zdaj« jih pridobi takoj.",
     "ios_now_log_now": "Zabeleži zdaj",
     "ios_scan_file": "Izberi datoteko",
-    "ios_chart_axis": "× vrh enega odmerka"
+    "ios_chart_axis": "× vrh enega odmerka",
+    "ios_new_window": "Novo okno",
+    "ios_sync_test_mac": "Preizkusna različica: shranjeno samo na tem Macu, brez iCloud. Za prehod na končno aplikacijo izvozi varnostno kopijo pod Tvoji podatki in jo tam uvozi."
   },
   "pl": {
     "more": "Więcej",
@@ -713,6 +719,8 @@
     "ios_health_auto": "Bench przy każdym otwarciu odczytuje nowe pomiary wagi z Apple Health. „Synchronizuj teraz” pobiera je od razu.",
     "ios_now_log_now": "Zapisz teraz",
     "ios_scan_file": "Wybierz plik",
-    "ios_chart_axis": "× szczyt jednej dawki"
+    "ios_chart_axis": "× szczyt jednej dawki",
+    "ios_new_window": "Nowe okno",
+    "ios_sync_test_mac": "Wersja testowa: dane tylko na tym Macu, bez iCloud. Aby przejść do wersji docelowej, wyeksportuj kopię w sekcji Twoje dane i zaimportuj ją tam."
   }
 }

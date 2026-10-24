@@ -16,7 +16,7 @@ struct BenchApp: App {
     }
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: "main") {
             RootView()
                 .environment(store)
                 .tint(.accentColor)
@@ -38,12 +38,7 @@ struct BenchApp: App {
         #if os(macOS)
         .defaultSize(width: 1280, height: 860)
         #endif
-        .commands {
-            CommandGroup(after: .newItem) {
-                Button(t("log_new_dose")) { NotificationCenter.default.post(name: .benchLogDose, object: nil) }
-                    .keyboardShortcut("n")
-            }
-        }
+        .commands { BenchCommands() }
         #if os(macOS)
         // The Mac's own Settings window, under the app menu and ⌘,.
         Settings {
@@ -52,6 +47,28 @@ struct BenchApp: App {
                 .frame(minWidth: 560, minHeight: 640)
         }
         #endif
+    }
+}
+
+/// ⌘N logs a dose, the thing done most. On the Mac, New Window moves to ⇧⌘N.
+struct BenchCommands: Commands {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some Commands {
+        #if os(macOS)
+        CommandGroup(replacing: .newItem) {
+            logDose
+            Button(t("ios_new_window")) { openWindow(id: "main") }
+                .keyboardShortcut("n", modifiers: [.command, .shift])
+        }
+        #else
+        CommandGroup(after: .newItem) { logDose }
+        #endif
+    }
+
+    private var logDose: some View {
+        Button(t("log_new_dose")) { NotificationCenter.default.post(name: .benchLogDose, object: nil) }
+            .keyboardShortcut("n")
     }
 }
 

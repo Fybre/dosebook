@@ -133,7 +133,11 @@ struct SettingsView: View {
         case .cloud: t("ios_sync_cloud")
         case .local:
             #if LOCAL_ONLY
+            #if os(macOS)
+            t("ios_sync_test_mac")
+            #else
             t("ios_sync_test")
+            #endif
             #else
             t("ios_sync_local")
             #endif
