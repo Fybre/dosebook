@@ -302,7 +302,7 @@ private struct LogRow: View {
                 let amount: String? = l.isSkipped ? nil
                     : l.tablets.map { t("count_tablets", ["n": .string(trim($0, 2))]) }
                     ?? (l.route == .intranasal ? l.presses.map { t("count_presses", ["n": .number($0)]) }
-                        : l.units.map { "\(trim($0, 2)) \(t("stock_marks"))\(l.syringeScale == .u40 ? " (U-40)" : "")" })
+                        : l.units.map { t("ios_units_count", ["n": .string(trim($0, 2))]) + (l.syringeScale == .u40 ? " (U-40)" : "") })
                 if amount != nil || site != nil {
                     HStack(spacing: 10) {
                         if let amount { Text(amount).monospacedDigit() }

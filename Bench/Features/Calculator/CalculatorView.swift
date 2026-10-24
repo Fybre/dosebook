@@ -88,7 +88,7 @@ struct CalculatorView: View {
                     Grid(alignment: .topLeading, horizontalSpacing: 16, verticalSpacing: 14) {
                         GridRow {
                             stat(t("calc_volume"), "\(trim(draw.volumeRoundedMl, 3)) mL", t("calc_volume_hint"), .tangerine)
-                            stat(t("calc_scale_marks", ["scale": .string(scaleName(syringe.scale))]), trim(draw.unitsRounded, 2),
+                            stat(t("ios_scale_units", ["scale": .string(scaleName(syringe.scale))]), trim(draw.unitsRounded, 2),
                                  t("calc_on_the_scale", ["range": .string(syringe.scale == .u100 ? "0 to 100" : "0 to 40")]), .neutral)
                         }
                         GridRow {
@@ -132,7 +132,7 @@ struct CalculatorView: View {
                             HStack(spacing: 10) {
                                 Text("\(trim(s.diluentMl, 2)) mL").font(.subheadline.monospacedDigit()).frame(width: 64, alignment: .leading)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(t("calc_marks_count", ["n": .string(trim(s.units, 2))])).font(.subheadline.monospacedDigit()).foregroundStyle(Tone.tangerine.color)
+                                    Text(t("ios_units_count", ["n": .string(trim(s.units, 2))])).font(.subheadline.monospacedDigit()).foregroundStyle(Tone.tangerine.color)
                                     Text("\(trim(s.concentrationMgPerMl, 3)) mg/mL · \(t("calc_mcg_per_mark_value", ["n": .string(trim(s.mcgPerGraduation, 2))]))")
                                         .font(.caption).foregroundStyle(.secondary)
                                 }

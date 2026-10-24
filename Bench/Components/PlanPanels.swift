@@ -51,7 +51,7 @@ struct DoseMarksText: View {
         }
         let scale = (syringeById(store.data.settings.defaultSyringeId) ?? SYRINGES[2]).scale
         guard let marks = marksForDose(vials, peptideId, doseMcg, scale, nowMs) else { return nil }
-        return t("calc_marks_count", ["n": .string(trim(marks, 2))]) + (scale == .u40 ? " (U-40)" : "")
+        return t("ios_units_count", ["n": .string(trim(marks, 2))]) + (scale == .u40 ? " (U-40)" : "")
     }
 }
 

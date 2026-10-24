@@ -382,7 +382,7 @@ private struct VialRow: View {
             } else if v.state == .reconstituted, v.diluentMl != nil {
                 Text(formatConcentration(st.concentrationMcgPerMl)).monospacedDigit()
                 Text(t("log_ml_left", ["ml": .string(trim(st.remainingMl, 2))])).monospacedDigit()
-                if let marks { Text(t("stock_marks_per", ["marks": .string(trim(marks, 2)), "dose": .string(formatDose(dose))])).monospacedDigit() }
+                if let marks { Text(t("ios_units_per", ["marks": .string(trim(marks, 2)), "dose": .string(formatDose(dose))])).monospacedDigit() }
                 if spray, mcgPerSpray(v) > 0 { Text(t("ios_stock_a_press", ["dose": .string(formatDose(mcgPerSpray(v)))])).monospacedDigit() }
                 if spray { Text(t("stock_presses_left", ["n": .number(spraysRemaining(v))])) }
                 if spray, let at = v.reconstitutedAt { Text(t("stock_filled", ["date": .string(formatDate(at, nowMs: ctx.now))])) }
