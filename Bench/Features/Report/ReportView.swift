@@ -16,7 +16,7 @@ struct ReportView: View {
 
     var body: some View {
         let report = ReportModel(store.data, windowDays: windowDays)
-        List {
+        GroupedList {
             Section {
                 Text(t("report_subtitle")).font(.footnote).foregroundStyle(.secondary)
                 Picker(t("report_title"), selection: $windowDays) {

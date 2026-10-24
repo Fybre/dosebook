@@ -38,6 +38,26 @@ extension View {
         #endif
     }
 
+    /// A row's actions: swiped to on iOS, a right-click menu on the Mac, where rows
+    /// do not swipe.
+    func rowActions<A: View>(@ViewBuilder _ actions: () -> A) -> some View {
+        #if os(iOS)
+        swipeActions(content: actions)
+        #else
+        contextMenu(menuItems: actions)
+        #endif
+    }
+
+    /// For a field already beside its label: the Mac's forms otherwise print the
+    /// field's own title too ("Dose  Dose 0 mcg").
+    func fieldTitleHidden() -> some View {
+        #if os(macOS)
+        labelsHidden()
+        #else
+        self
+        #endif
+    }
+
     /// Capitals as typed, for lot numbers.
     func capitalisedCharacters() -> some View {
         #if os(iOS)
@@ -84,3 +104,46 @@ extension NSColor {
     static var secondarySystemGroupedBackground: NSColor { .controlBackgroundColor }
 }
 #endif
+
+/// A list of sections. One name for the screens' lists, so the Mac can be given
+/// its own look in one place. (A grouped form was tried there: it centres itself in
+/// a narrow column, and the settings screen drew nothing inside one.)
+struct GroupedList<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        #if os(macOS)
+        List { content }.listStyle(.inset)
+        #else
+        List { content }
+        #endif
+    }
+}
+
+/// A section's footer. The Mac's lists give a footer one line and cut the rest off,
+/// so there the same text is shown by `FooterRow` as the section's last row instead.
+struct FooterWrap<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        #if os(macOS)
+        EmptyView()
+        #else
+        content
+        #endif
+    }
+}
+
+/// A section's footer text as its last row, on the Mac only; see `FooterWrap`.
+struct FooterRow<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        #if os(macOS)
+        content
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .listRowSeparator(.hidden)
+        #endif
+    }
+}

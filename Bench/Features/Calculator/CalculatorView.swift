@@ -24,7 +24,7 @@ struct CalculatorView: View {
         let scaleName = { (s: SyringeScale) in s == .u100 ? "U-100" : "U-40" }
 
         ScrollViewReader { proxy in
-        List {
+        GroupedList {
             Section { Text(t("calc_intro")).font(.subheadline).foregroundStyle(.secondary) }
 
             Section(t("calc_which_syringe")) {
@@ -76,7 +76,8 @@ struct CalculatorView: View {
                 AmountRow(label: t("calc_vial_strength"), value: $vialMg, base: .mg, range: 0...100_000)
                 NumberRow(label: t("calc_water_to_add"), value: $diluentMl, suffix: "mL", range: 0...1000)
                 AmountRow(label: t("calc_dose_you_want"), value: $doseMcg, range: 0...100_000_000)
-            } header: { Text(t("calc_vial_and_dose")) } footer: { Text("\(t("calc_peptide_hint")) \(t("calc_water_hint"))") }
+                FooterRow { Text("\(t("calc_peptide_hint")) \(t("calc_water_hint"))") }
+            } header: { Text(t("calc_vial_and_dose")) } footer: { FooterWrap { Text("\(t("calc_peptide_hint")) \(t("calc_water_hint"))") }}
 
             Section {
                 if valid {
@@ -142,7 +143,8 @@ struct CalculatorView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                } header: { Text(t("calc_cleaner_volumes")) } footer: { Text(t("calc_cleaner_desc")) }
+                    FooterRow { Text(t("calc_cleaner_desc")) }
+                } header: { Text(t("calc_cleaner_volumes")) } footer: { FooterWrap { Text(t("calc_cleaner_desc")) }}
             }
 
             Section(t("calc_how_worked_out")) {

@@ -21,7 +21,7 @@ struct WeightTrendView: View {
         let steps = chosen.map { doseSteps(mine.logs, peptideId: $0, now: now) } ?? []
         let perStep = weightDuring(steps, mine.measurements)
         let tones: [Tone] = [.sky, .grape, .tangerine, .mint, .rose, .leaf]
-        List {
+        GroupedList {
             if series.count < 2 || steps.isEmpty {
                 Section { Text(t("ios_trend_empty")).foregroundStyle(.secondary) }
             } else {
@@ -74,7 +74,8 @@ struct WeightTrendView: View {
                             }
                         }
                     }
-                } header: { Text(t("ios_trend_steps")) } footer: { Text(t("ios_trend_note")) }
+                    FooterRow { Text(t("ios_trend_note")) }
+                } header: { Text(t("ios_trend_steps")) } footer: { FooterWrap { Text(t("ios_trend_note")) }}
             }
         }
         .navigationTitle(t("ios_trend_title"))

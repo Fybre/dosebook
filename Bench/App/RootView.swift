@@ -4,9 +4,12 @@ import BenchStore
 
 struct RootView: View {
     @Environment(AppStore.self) private var store
-    @AppStorage("bench.tab") private var tab = "now"
+    /// Per window, so a second window on the Mac or iPad keeps its own screen.
+    @SceneStorage("bench.tab") private var tab = "now"
     @AppStorage("bench.lang") private var langRaw = I18n.lang.rawValue
     @State private var reselects: [String: Int] = [:]
+    /// Bumped by ⌘N in this window; Now opens Log a dose when it changes.
+    @State private var logDoseRequests = 0
     @Environment(\.horizontalSizeClass) private var sizeClass
     /// Shown only in the sidebar; a narrow window has no sidebar, so they go under More.
     private static let sidebarOnly: Set<String> = ["calculator", "library", "labs", "report", "settings", "about"]
@@ -47,10 +50,18 @@ struct RootView: View {
         .defaultAdaptableTabBarPlacement(sizeClass == .regular ? .sidebar : .automatic)
         #endif
         .environment(\.tabReselects, reselects)
+        .onAppear {
+            // `-tab <name>` opens on that screen, for screenshots.
+            let args = ProcessInfo.processInfo.arguments
+            if let i = args.firstIndex(of: "-tab"), i + 1 < args.count { tab = args[i + 1] }
+        }
+        // Forms and sheets as grouped sections on the Mac too, not its two-column default.
+        .formStyle(.grouped)
         .onChange(of: sizeClass, initial: true) { _, size in
             if size == .compact, Self.sidebarOnly.contains(tab) { tab = "more" }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .benchLogDose)) { _ in tab = "now" }
+        .environment(\.logDoseRequests, logDoseRequests)
+        .focusedSceneValue(\.logDose) { tab = "now"; logDoseRequests += 1 }
         // Strings are read when views build, so a new language rebuilds the tree.
         .id(langRaw)
         .onChange(of: langRaw) { _, raw in if let l = Lang(rawValue: raw) { I18n.lang = l } }
@@ -111,6 +122,9 @@ private struct MoreStack: View {
 
 private struct TabReselectsKey: EnvironmentKey { static let defaultValue: [String: Int] = [:] }
 extension EnvironmentValues {
+    /// How many times this window has asked for Log a dose from the menu.
+    @Entry var logDoseRequests = 0
+
     /// How many times each tab has been tapped while already selected.
     var tabReselects: [String: Int] {
         get { self[TabReselectsKey.self] }

@@ -19,7 +19,7 @@ struct LibraryView: View {
         let byCategory = filtered.reduce(into: [(PeptideCategory, [Peptide])]()) { acc, p in
             if let i = acc.firstIndex(where: { $0.0 == p.category }) { acc[i].1.append(p) } else { acc.append((p.category, [p])) }
         }
-        List {
+        GroupedList {
             Section { Text(t("library_subtitle", ["n": .number(Double(peptides.count))])).font(.subheadline).foregroundStyle(.secondary) }
             if filtered.isEmpty {
                 ContentUnavailableView.search(text: query)
@@ -123,11 +123,14 @@ private struct CustomCompoundsSection: View {
                          ? t("library_delete_in_use", ["logs": .string(String(logs)), "protocols": .string(String(protocols)), "name": .string(p.name)])
                          : t("library_delete_safe", ["name": .string(p.name)]))
                 }
-        } header: {
-            Text(t("library_your_own"))
-        } footer: {
+            FooterRow {
             if !data.customPeptides.isEmpty { Text(t("library_stored_on_device")) }
         }
+        } header: {
+            Text(t("library_your_own"))
+        } footer: { FooterWrap {
+            if !data.customPeptides.isEmpty { Text(t("library_stored_on_device")) }
+        }}
     }
 }
 

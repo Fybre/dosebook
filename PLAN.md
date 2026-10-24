@@ -299,7 +299,14 @@ delivery, and Files visibility of Documents/Bench.
   goes to two columns at 1000 pt and wider (plan on the left, how you are doing on the right).
 - Mac: default window 1280×860, the standard Settings window (⌘,), and ⌘N for Log a dose (also
   in the iPad keyboard menu), sent as `Notification.Name.benchLogDose`.
-- Not done yet: Mac tables for Log and Stock, multiple windows, a look at the Mac app on screen
-  (the screen was locked when it was built), widgets.
+- Mac polish done: the Log has a Table view (sortable; double-click edits). Each window keeps its
+  own screen (`@SceneStorage`), and ⌘N (`FocusedValues.logDose`) acts on the front window only;
+  New Window is ⇧⌘N. Section footers become a last row on the Mac (`FooterWrap`/`FooterRow`),
+  since Mac lists cut footers to one line. Swipe actions are a right-click menu there
+  (`rowActions`). Forms and sheets use `.formStyle(.grouped)`; the screens' lists stay plain
+  lists, because a grouped form centres in a narrow column and Settings drew nothing in one.
+  The readable-width cap is iOS only (Mac lists ignore content margins), and the scroll-width
+  pin is iOS only (on the Mac it fed back through the window's size).
+- Not done yet: a Stock table, widgets.
 
 **Later:** widgets.

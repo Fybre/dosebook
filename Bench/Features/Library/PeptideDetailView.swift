@@ -30,7 +30,7 @@ struct PeptideDetailView: View {
         let weekly = p.doseRanges.first?.perWeek ?? 0
         let intervalHours = weekly > 0 ? 7 * 24 / weekly : 0
         return ScrollViewReader { proxy in
-        List {
+        GroupedList {
             Section {
                 VStack(alignment: .leading, spacing: 8) {
                     Pill(text: p.category.label)
@@ -302,7 +302,8 @@ private struct HalfLifeForm: View {
             Section {
                 OptionalNumberRow(label: t("yhl_hours_label"), value: $hours, suffix: "h")
                 TextField(t("yhl_source_label"), text: $note, prompt: Text(t("yhl_source_placeholder")))
-            } footer: { Text(t("yhl_intro", ["name": .string(name)])) }
+                FooterRow { Text(t("yhl_intro", ["name": .string(name)])) }
+            } footer: { FooterWrap { Text(t("yhl_intro", ["name": .string(name)])) }}
         }
         .formChrome(name, confirm: t("yhl_save"), disabled: !((hours ?? 0) > 0)) {
             let trimmed = note.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -361,7 +362,8 @@ private struct NoteForm: View {
         Form {
             Section {
                 TextField(t("note_placeholder"), text: $text, axis: .vertical).lineLimit(5...)
-            } footer: { Text(t("note_intro", ["name": .string(name)])) }
+                FooterRow { Text(t("note_intro", ["name": .string(name)])) }
+            } footer: { FooterWrap { Text(t("note_intro", ["name": .string(name)])) }}
         }
         .formChrome(name, confirm: t("note_save")) { store.mutate { $0.setCompoundNote(peptideId, text: text) } }
         .onAppear { if !loaded { loaded = true; text = initial } }

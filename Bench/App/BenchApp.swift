@@ -44,6 +44,7 @@ struct BenchApp: App {
         Settings {
             NavigationStack { SettingsView() }
                 .environment(store)
+                .formStyle(.grouped)
                 .frame(minWidth: 560, minHeight: 640)
         }
         #endif
@@ -53,6 +54,8 @@ struct BenchApp: App {
 /// ⌘N logs a dose, the thing done most. On the Mac, New Window moves to ⇧⌘N.
 struct BenchCommands: Commands {
     @Environment(\.openWindow) private var openWindow
+    /// The front window's own "log a dose", so ⌘N opens one sheet, not one per window.
+    @FocusedValue(\.logDose) private var logDoseHere
 
     var body: some Commands {
         #if os(macOS)
@@ -67,14 +70,15 @@ struct BenchCommands: Commands {
     }
 
     private var logDose: some View {
-        Button(t("log_new_dose")) { NotificationCenter.default.post(name: .benchLogDose, object: nil) }
+        Button(t("log_new_dose")) { logDoseHere?() }
             .keyboardShortcut("n")
+            .disabled(logDoseHere == nil)
     }
 }
 
-extension Notification.Name {
-    /// "Log a dose" from the menu or ⌘N: Now opens the sheet.
-    static let benchLogDose = Notification.Name("bench.logDose")
+extension FocusedValues {
+    /// Set by each window: go to Now and open Log a dose there.
+    @Entry var logDose: (() -> Void)?
 }
 
 @MainActor
@@ -86,7 +90,6 @@ enum Bootstrap {
     static func makeStore() -> AppStore {
         if let lang = UserDefaults.standard.string(forKey: "bench.lang").flatMap(Lang.init(rawValue:)) { I18n.lang = lang }
         let args = ProcessInfo.processInfo.arguments
-        if let i = args.firstIndex(of: "-tab"), i + 1 < args.count { UserDefaults.standard.set(args[i + 1], forKey: "bench.tab") }
         #if DEBUG
         if let i = args.firstIndex(of: "-seedInjectly"), i + 1 < args.count {
             let store = AppStore(records: try! RecordStore(location: .memory), defaults: UserDefaults(suiteName: "bench-demo")!, rescueURL: nil)

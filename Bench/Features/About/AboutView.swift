@@ -24,7 +24,7 @@ struct AboutView: View {
     @State private var expanded: String? = RELEASES.first?.version
 
     var body: some View {
-        List {
+        GroupedList {
             Section { Text(t("about_subtitle")).font(.subheadline).foregroundStyle(.secondary) }
             Section {
                 Text(t("about_desc"))

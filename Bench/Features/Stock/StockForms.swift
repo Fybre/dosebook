@@ -44,9 +44,12 @@ private struct BottlePicker: View {
                     }
                     Text(t("stock_not_tracked")).tag("")
                 }
-            } footer: {
+                FooterRow {
                 Text(chosen.map { t("stock_ml_left_before", ["ml": .string(trim(bottleRemainingMl($0), 2))]) } ?? untrackedHint)
             }
+            } footer: { FooterWrap {
+                Text(chosen.map { t("stock_ml_left_before", ["ml": .string(trim(bottleRemainingMl($0), 2))]) } ?? untrackedHint)
+            }}
         }
     }
 }
@@ -118,7 +121,8 @@ struct AddVialForm: View {
         Form {
             Section {
                 Button { scanning = true } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
-            } footer: { Text(t("ios_stock_scan_hint")) }
+                FooterRow { Text(t("ios_stock_scan_hint")) }
+            } footer: { FooterWrap { Text(t("ios_stock_scan_hint")) }}
             Section {
                 Picker(t("plan_peptide"), selection: Binding(get: { peptideId }, set: choose)) {
                     ForEach(data.allPeptides) { Text($0.name).tag($0.id) }
@@ -133,7 +137,7 @@ struct AddVialForm: View {
                 NumberRow(label: tablets ? t("stock_how_many_packs") : t("stock_how_many"), value: $count, range: 1...50)
                 TextField(t("stock_source"), text: $supplier, prompt: Text("\(t("stock_source")) (\(t("optional")))"))
                 LabeledContent(t("ios_scan_lot")) {
-                    TextField(t("optional"), text: $lot).multilineTextAlignment(.trailing).capitalisedCharacters()
+                    TextField(t("optional"), text: $lot).multilineTextAlignment(.trailing).capitalisedCharacters().fieldTitleHidden()
                 }
                 Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
                 if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
@@ -146,7 +150,7 @@ struct AddVialForm: View {
                     NumberRow(label: t("stock_water_added"), value: $mixedMl, suffix: "mL", range: 0...100)
                     DatePicker(t("ios_stock_mixed_on"), selection: $mixedOn, in: ...Date(), displayedComponents: .date)
                 }
-            } footer: {
+                FooterRow {
                 VStack(alignment: .leading, spacing: 4) {
                     if tablets { Text(t("stock_pack_holds", ["mg": .string(trim(packMg, 2))])) }
                     else if let sizes = peptide?.vialSizesMg, !sizes.isEmpty {
@@ -159,6 +163,19 @@ struct AddVialForm: View {
                     }
                 }
             }
+            } footer: { FooterWrap {
+                VStack(alignment: .leading, spacing: 4) {
+                    if tablets { Text(t("stock_pack_holds", ["mg": .string(trim(packMg, 2))])) }
+                    else if let sizes = peptide?.vialSizesMg, !sizes.isEmpty {
+                        Text(t("stock_common_sizes", ["sizes": .string(sizes.map { jsNumberString($0) }.joined(separator: ", "))]))
+                    }
+                    if !arrived { Text(t("stock_on_order_hint")) }
+                    if place == .mixed && !tablets {
+                        Text(t("stock_makes_conc", ["conc": .string(trim(mixedMl > 0 ? strengthMg / mixedMl : 0, 3))]))
+                        Text(n > 1 ? t("ios_stock_mixed_hint_many") : t("ios_stock_mixed_hint"))
+                    }
+                }
+            }}
             Section {
                 OptionalNumberRow(label: pricedAsKit ? t("stock_cost_kit") : t("stock_cost_per_vial_label"), value: $cost, suffix: payCurrency)
                 Picker(t("stock_priced_as"), selection: $pricedAsKit) {
@@ -171,7 +188,7 @@ struct AddVialForm: View {
                 if let c = cost, c > 0, payCurrency != currency, let url = converterUrl(c, payCurrency, currency) {
                     Link(t("ios_stock_convert", ["amount": .string(formatMoney(c, payCurrency)), "currency": .string(currency)]), destination: url)
                 }
-            } footer: {
+                FooterRow {
                 VStack(alignment: .leading, spacing: 4) {
                     if let perVial, strengthMg > 0 {
                         Text(t("stock_cost_hint", ["avial": .string(formatMoney(perVial, currency)), "permg": .string(formatMoney(perVial / strengthMg, currency))])
@@ -182,15 +199,33 @@ struct AddVialForm: View {
                     Text(t("stock_paid_in_hint"))
                 }
             }
+            } footer: { FooterWrap {
+                VStack(alignment: .leading, spacing: 4) {
+                    if let perVial, strengthMg > 0 {
+                        Text(t("stock_cost_hint", ["avial": .string(formatMoney(perVial, currency)), "permg": .string(formatMoney(perVial / strengthMg, currency))])
+                             + (n > 1 ? t("stock_cost_all", ["total": .string(formatMoney(perVial * n, currency)), "n": .number(n)]) : ""))
+                    } else {
+                        Text(t("stock_cost_optional"))
+                    }
+                    Text(t("stock_paid_in_hint"))
+                }
+            }}
             Section {
                 OptionalNumberRow(label: t("stock_shipping_order"), value: $shipping, suffix: payCurrency)
-            } footer: {
+                FooterRow {
                 if let s = shipping, s > 0 {
                     Text(t("stock_shipping_split", ["each": .string(formatMoney(s / n, currency)), "vials": .string(t("count_vials", ["n": .number(n)]))]))
                 } else {
                     Text(t("stock_shipping_optional"))
                 }
             }
+            } footer: { FooterWrap {
+                if let s = shipping, s > 0 {
+                    Text(t("stock_shipping_split", ["each": .string(formatMoney(s / n, currency)), "vials": .string(t("count_vials", ["n": .number(n)]))]))
+                } else {
+                    Text(t("stock_shipping_optional"))
+                }
+            }}
         }
         .formChrome(t("stock_new_vial"),
                     confirm: arrived ? t("stock_add_vials", ["vials": .string(what(tablets, n))]) : t("stock_add_vials_on_order", ["vials": .string(what(tablets, n))]),
@@ -288,10 +323,14 @@ struct VialLeftForm: View {
                 } else {
                     AmountRow(label: t("ios_left_title"), value: $leftMcg, base: .mcg, range: 0...cap)
                 }
-            } header: { Text("\(name) · \(jsNumberString(vial.strengthMg)) mg") } footer: {
+                FooterRow {
                 Text(t("ios_left_hint", ["amount": .string(formatDose(min(leftMcg, cap))), "pct": .string(trim(cap > 0 ? min(leftMcg, cap) / cap * 100 : 0, 0))])
                      + (mixed ? " " + t("ios_left_ml", ["ml": .string(trim(min(leftMcg, cap) / conc, 2)), "full": .string(trim(vial.diluentMl ?? 0, 2))]) : ""))
             }
+            } header: { Text("\(name) · \(jsNumberString(vial.strengthMg)) mg") } footer: { FooterWrap {
+                Text(t("ios_left_hint", ["amount": .string(formatDose(min(leftMcg, cap))), "pct": .string(trim(cap > 0 ? min(leftMcg, cap) / cap * 100 : 0, 0))])
+                     + (mixed ? " " + t("ios_left_ml", ["ml": .string(trim(min(leftMcg, cap) / conc, 2)), "full": .string(trim(vial.diluentMl ?? 0, 2))]) : ""))
+            }}
         }
         .formChrome(t("ios_left_title"), confirm: t("save")) {
             store.mutate { $0.setVialRemaining(vial.id, remainingMcg: leftMcg) }
@@ -326,7 +365,8 @@ struct ReconstituteForm: View {
                 Picker(t("stock_diluent"), selection: Binding(get: { diluent }, set: { diluent = $0; bottleId = pickBottle(bottles, $0, ml, now)?.id ?? "" })) {
                     ForEach(DILUENT_CHOICES, id: \.self) { Text(diluentName($0)).tag($0) }
                 }
-            } footer: { Text(t("stock_makes_conc", ["conc": .string(trim(conc, 3))])) }
+                FooterRow { Text(t("stock_makes_conc", ["conc": .string(trim(conc, 3))])) }
+            } footer: { FooterWrap { Text(t("stock_makes_conc", ["conc": .string(trim(conc, 3))])) }}
             BottlePicker(label: t("stock_from_bottle"), optionKey: "stock_bottle_option", bottles: available, untrackedHint: t("stock_untracked_bottle"), bottleId: $bottleId)
             if let chosen, bottleRemainingMl(chosen) < ml - 1e-9 {
                 Text(t("stock_bottle_short", ["has": .string(trim(bottleRemainingMl(chosen), 2)), "want": .string(trim(ml, 2))])).foregroundStyle(Tone.tangerine.color)
@@ -364,7 +404,7 @@ struct TopUpForm: View {
         Form {
             Section {
                 NumberRow(label: t("stock_water_added"), value: $ml, suffix: "mL", range: 0...100)
-            } footer: {
+                FooterRow {
                 if let after {
                     Text(t("stock_becomes", ["before": .string(formatConcentration(vialConcentration(vial))),
                                              "after": .string(formatConcentration(vialConcentration(after))),
@@ -373,6 +413,15 @@ struct TopUpForm: View {
                     Text(t("stock_adding_now"))
                 }
             }
+            } footer: { FooterWrap {
+                if let after {
+                    Text(t("stock_becomes", ["before": .string(formatConcentration(vialConcentration(vial))),
+                                             "after": .string(formatConcentration(vialConcentration(after))),
+                                             "ml": .string(trim(vialRemainingMl(after), 2))]))
+                } else {
+                    Text(t("stock_adding_now"))
+                }
+            }}
             Section { Text(t("stock_topup_note")).font(.footnote).foregroundStyle(.secondary) }
             BottlePicker(label: t("stock_from_bottle"), optionKey: "stock_bottle_option", bottles: available, untrackedHint: t("stock_untracked_bottle"), bottleId: $bottleId)
         }
@@ -408,17 +457,26 @@ struct TransferToSprayForm: View {
             Section { Text(t("stock_transfer_note")).font(.footnote).foregroundStyle(.secondary) }
             Section {
                 NumberRow(label: t("stock_saline_added"), value: $addedMl, suffix: "mL", range: 0...100)
-            } footer: {
+                FooterRow {
                 Text(plan.map { t("stock_bottle_now", ["ml": .string(trim($0.bottle.diluentMl ?? 0, 2)), "conc": .string(formatConcentration(vialConcentration($0.bottle)))]) } ?? t("stock_nothing_to_pour"))
             }
+            } footer: { FooterWrap {
+                Text(plan.map { t("stock_bottle_now", ["ml": .string(trim($0.bottle.diluentMl ?? 0, 2)), "conc": .string(formatConcentration(vialConcentration($0.bottle)))]) } ?? t("stock_nothing_to_pour"))
+            }}
             Section {
                 NumberRow(label: t("stock_one_press"), value: $perSpray, suffix: "mL", range: 0...10)
-            } footer: {
+                FooterRow {
                 VStack(alignment: .leading, spacing: 4) {
                     if perPress > 0 { Text(t("ios_stock_a_press", ["dose": .string(formatDose(perPress))])) }
                     Text(MEASURE_A_PRESS)
                 }
             }
+            } footer: { FooterWrap {
+                VStack(alignment: .leading, spacing: 4) {
+                    if perPress > 0 { Text(t("ios_stock_a_press", ["dose": .string(formatDose(perPress))])) }
+                    Text(MEASURE_A_PRESS)
+                }
+            }}
             Section {
                 Picker(t("stock_what_went_in"), selection: $kind) {
                     ForEach([DiluentKind.saline, .sterile, .bacteriostatic], id: \.self) { Text(diluentName($0)).tag($0) }
@@ -457,9 +515,12 @@ struct TabletSizeForm: View {
             Section {
                 AmountRow(label: t("stock_mg_per_tablet"), value: $mgEach, base: .mg, range: 0...100_000)
                 NumberRow(label: t("stock_tablets_per_pack"), value: $tablets, range: 0...10_000)
-            } footer: {
+                FooterRow {
                 if ok { Text(t("stock_pack_after", ["mg": .string(trim(packMg, 3)), "left": .string(t("count_tablets", ["n": .number(left)]))])) }
             }
+            } footer: { FooterWrap {
+                if ok { Text(t("stock_pack_after", ["mg": .string(trim(packMg, 3)), "left": .string(t("count_tablets", ["n": .number(left)]))])) }
+            }}
         }
         .formChrome(t("stock_set_tablet_size"), confirm: t("save"), disabled: !ok) {
             store.mutate { d in

@@ -30,7 +30,8 @@ struct CustomCompoundForm: View {
                     TextField(t("ccf_aka_placeholder"), text: Binding(get: { draft.aka ?? "" }, set: { draft.aka = $0 }))
                     Text(t("ccf_aka_hint")).font(.caption).foregroundStyle(.secondary)
                 }
-            } header: { Text(t("ccf_compound").prefix(1).uppercased() + t("ccf_compound").dropFirst()) } footer: { Text(t("ccf_category_hint")) }
+                FooterRow { Text(t("ccf_category_hint")) }
+            } header: { Text(t("ccf_compound").prefix(1).uppercased() + t("ccf_compound").dropFirst()) } footer: { FooterWrap { Text(t("ccf_category_hint")) }}
 
             Section(t("ccf_how_you_take")) {
                 ForEach(Route.allCases, id: \.self) { r in
@@ -122,22 +123,29 @@ struct CustomCompoundForm: View {
                         }
                         OptionalAmountRow(label: t("ios_ccf_part_amount"), value: $draft.components[i].mgPerVial, base: .mg)
                     }
-                    .swipeActions {
+                    .rowActions {
                         Button(t("ios_ccf_remove_part"), role: .destructive) { draft.components.remove(at: i) }
                     }
                 }
                 Button { draft.components.append(BlendComponent(name: "")) } label: { Label(t("ios_ccf_add_part"), systemImage: "plus") }
                 if let e = error(.components) { Text(e).font(.caption).foregroundStyle(Tone.rose.color) }
             }
-        } header: {
-            Text(t("ios_ccf_parts")).id("parts")
-        } footer: {
+            FooterRow {
             if !draft.components.isEmpty {
                 // Only whole-blend dosing is offered: it is the one whose syringe marks,
                 // stock and per-part split agree for a blend drawn from one vial.
                 Text(t("ios_ccf_split_hint"))
             }
         }
+        } header: {
+            Text(t("ios_ccf_parts")).id("parts")
+        } footer: { FooterWrap {
+            if !draft.components.isEmpty {
+                // Only whole-blend dosing is offered: it is the one whose syringe marks,
+                // stock and per-part split agree for a blend drawn from one vial.
+                Text(t("ios_ccf_split_hint"))
+            }
+        }}
     }
 
     private func save() {

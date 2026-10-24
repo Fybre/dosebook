@@ -77,7 +77,8 @@ struct LogDoseSheet: View {
                             Text(t("log_protocol_stopped", ["peptide": .string(data.peptide(p.peptideId)?.name ?? p.peptideId), "name": .string(p.name)])).tag(p.id)
                         }
                     }
-                } footer: { Text(protocol_ != nil ? t("log_protocol_sets") : t("log_outside_plan")) }
+                    FooterRow { Text(protocol_ != nil ? t("log_protocol_sets") : t("log_outside_plan")) }
+                } footer: { FooterWrap { Text(protocol_ != nil ? t("log_protocol_sets") : t("log_outside_plan")) }}
             }
 
             Section {
@@ -128,11 +129,16 @@ struct LogDoseSheet: View {
                         Button(siteOverride ? t("log_back_to_pinned") : t("log_use_any_site")) { siteOverride.toggle() }
                     }
                 }
-            } footer: {
+                FooterRow {
                 if hasSite && !skipped {
                     Text(!pinned.isEmpty && !siteOverride ? "Rotating through the \(pinned.count) sites pinned to this protocol." : t("log_green_ring"))
                 }
             }
+            } footer: { FooterWrap {
+                if hasSite && !skipped {
+                    Text(!pinned.isEmpty && !siteOverride ? "Rotating through the \(pinned.count) sites pinned to this protocol." : t("log_green_ring"))
+                }
+            }}
 
             stockSection
             drawSection
@@ -179,7 +185,8 @@ struct LogDoseSheet: View {
             if let e = editing {
                 Section {
                     Button(t("ios_log_delete"), role: .destructive) { confirmDelete = true }
-                } footer: { Text(t("log_delete_returns", ["dose": .string(doseLabel(e.doseMcg, peptide))])) }
+                    FooterRow { Text(t("log_delete_returns", ["dose": .string(doseLabel(e.doseMcg, peptide))])) }
+                } footer: { FooterWrap { Text(t("log_delete_returns", ["dose": .string(doseLabel(e.doseMcg, peptide))])) }}
             }
         }
         .debugAnchor(proxy)
@@ -285,11 +292,16 @@ struct LogDoseSheet: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
-        } footer: {
+            FooterRow {
             if !usable.isEmpty {
                 Text(t("log_vial_hint", ["container": .string(nasal ? t("log_container_bottle") : tablets ? t("log_container_pack") : t("log_container_vial"))]))
             }
         }
+        } footer: { FooterWrap {
+            if !usable.isEmpty {
+                Text(t("log_vial_hint", ["container": .string(nasal ? t("log_container_bottle") : tablets ? t("log_container_pack") : t("log_container_vial"))]))
+            }
+        }}
     }
 
     @ViewBuilder private var drawSection: some View {

@@ -15,7 +15,7 @@ struct SettingsView: View {
         let data = store.data
         let mine = data.mine
         let settings = data.settings
-        List {
+        GroupedList {
             if let message {
                 Section { CalloutText(message.text).font(.footnote).callout(message.tone) }
             }
@@ -52,11 +52,16 @@ struct SettingsView: View {
                 Button { exportingCsv = true } label: { Label(t("settings_doses_csv"), systemImage: "tablecells") }.disabled(mine.logs.isEmpty)
                 NavigationLink { ImportView() } label: { Label(t("import_title"), systemImage: "square.and.arrow.down") }
                 NavigationLink(value: MoreView.Screen.report) { Label(t("settings_report_clinician"), systemImage: "doc.text") }
-            } header: { Text(t("settings_your_data")) } footer: {
+                FooterRow {
                 Text(t("settings_currently_holding", ["doses": .string(t("count_doses", ["n": .number(Double(mine.logs.count))])),
                                                        "protocols": .string(t("count_protocols", ["n": .number(Double(mine.protocols.count))])),
                                                        "vials": .string(t("count_vials", ["n": .number(Double(mine.vials.count))]))]))
             }
+            } header: { Text(t("settings_your_data")) } footer: { FooterWrap {
+                Text(t("settings_currently_holding", ["doses": .string(t("count_doses", ["n": .number(Double(mine.logs.count))])),
+                                                       "protocols": .string(t("count_protocols", ["n": .number(Double(mine.protocols.count))])),
+                                                       "vials": .string(t("count_vials", ["n": .number(Double(mine.vials.count))]))]))
+            }}
 
             Section(t("settings_defaults")) {
                 NavigationLink {
@@ -92,7 +97,8 @@ struct SettingsView: View {
             Section {
                 Toggle(t("ios_early_hours"), isOn: Binding(get: { settings.earlyHoursCountForNightBefore },
                                                           set: { v in store.mutate { $0.settings.earlyHoursCountForNightBefore = v } }))
-            } footer: { Text(t("ios_early_hours_hint")) }
+                FooterRow { Text(t("ios_early_hours_hint")) }
+            } footer: { FooterWrap { Text(t("ios_early_hours_hint")) }}
 
             Section {
                 Text(t("settings_erase_desc")).font(.footnote).foregroundStyle(.secondary)
@@ -213,7 +219,7 @@ private struct ProfilesSection: View {
                         suffix: unit.rawValue, hint: p.weightKg != nil ? t("settings_weight_set") : t("settings_weight_unset"))
                 }
                 .padding(.vertical, 4)
-                .swipeActions {
+                .rowActions {
                     if data.profiles.count > 1 {
                         Button(t("plan_delete_named", ["name": .string(p.name)]), role: .destructive) { deleting = p }
                     }
@@ -225,7 +231,8 @@ private struct ProfilesSection: View {
                     .onSubmit(add)
                 Button(t("profile_add"), action: add).disabled(newName.trimmingCharacters(in: .whitespaces).isEmpty)
             }
-        } header: { Text(t("settings_profiles")) } footer: { Text(t("settings_profiles_note")) }
+            FooterRow { Text(t("settings_profiles_note")) }
+        } header: { Text(t("settings_profiles")) } footer: { FooterWrap { Text(t("settings_profiles_note")) }}
         .confirmationDialog(deleting.map { t("plan_delete_named", ["name": .string($0.name)]) } ?? "",
                             isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible, presenting: deleting) { p in
             Button(t("plan_delete_named", ["name": .string(p.name)]), role: .destructive) { store.mutate { $0.removeProfile(p.id) } }
@@ -262,7 +269,11 @@ private struct RemindersSection: View {
         let reminders = data.settings.reminders ?? DEFAULT_REMINDERS
         let armed = remindersFor(protocols: data.mine.protocols, logs: data.mine.logs, peptides: data.allPeptides, settings: reminders, nowMs: nowMillis())
         Section {
+            #if os(macOS)
+            RichText(t("ios_reminders_intro_mac")).font(.footnote).foregroundStyle(.secondary)
+            #else
             RichText(t("reminders_intro")).font(.footnote).foregroundStyle(.secondary)
+            #endif
             switch state {
             case nil: Text(t("reminders_checking")).font(.footnote).foregroundStyle(.secondary)
             case .available?: CalloutText(t("ios_notify_on")).font(.footnote).callout(.sky)
@@ -293,9 +304,12 @@ private struct RemindersSection: View {
                 ShareLink(item: calendarFile) { Label(t("ios_share_file"), systemImage: "square.and.arrow.up") }
             }
             if let result { Text(result).font(.footnote.weight(.medium)) }
-        } header: { Text(t("reminders_title")) } footer: {
+            FooterRow {
             Text(t("reminders_calendar_note").replacingOccurrences(of: "**", with: "") + (reminders.showCompound ? " " + t("reminders_named_warning") : ""))
         }
+        } header: { Text(t("reminders_title")) } footer: { FooterWrap {
+            Text(t("reminders_calendar_note").replacingOccurrences(of: "**", with: "") + (reminders.showCompound ? " " + t("reminders_named_warning") : ""))
+        }}
         .task { state = await ReminderScheduler.availability() }
     }
 
@@ -435,9 +449,12 @@ private struct BackupsSection: View {
                     Button(t("settings_restore")) { restoring = f }.buttonStyle(.bordered).controlSize(.small)
                 }
             }
-        } header: { Text(t("settings_backups")) } footer: {
+            FooterRow {
             Text(files.isEmpty ? t("settings_no_backups") : t("ios_backups_count", ["n": .number(Double(files.count))]) + " " + t("settings_keep_hint"))
         }
+        } header: { Text(t("settings_backups")) } footer: { FooterWrap {
+            Text(files.isEmpty ? t("settings_no_backups") : t("ios_backups_count", ["n": .number(Double(files.count))]) + " " + t("settings_keep_hint"))
+        }}
         .onAppear { files = BackupFolder.list() }
         .confirmationDialog(t("settings_restore"), isPresented: Binding(get: { restoring != nil }, set: { if !$0 { restoring = nil } }), titleVisibility: .visible, presenting: restoring) { f in
             Button(t("settings_replace_all"), role: .destructive) { restore(f) }

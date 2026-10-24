@@ -25,7 +25,7 @@ struct InjectlyImportView: View {
         let data = store.data
         let preview = previewResults(data)
         let plan = historyPlan(data, preview)
-        List {
+        GroupedList {
             if let done { Section { CalloutText(done).font(.footnote).callout(.sky) } }
             if let error { Section { CalloutText(error).font(.footnote).callout(.rose) } }
             if items.isEmpty && history.isEmpty {
@@ -157,7 +157,8 @@ struct InjectlyImportView: View {
                 }
                 .padding(.vertical, 2)
             }
-        } header: { Text(t("ios_inj_setup")) } footer: { Text(t("ios_inj_setup_hint")) }
+            FooterRow { Text(t("ios_inj_setup_hint")) }
+        } header: { Text(t("ios_inj_setup")) } footer: { FooterWrap { Text(t("ios_inj_setup_hint")) }}
     }
 
     @ViewBuilder private func compoundRows(_ i: Int, _ data: AppData) -> some View {

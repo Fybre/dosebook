@@ -119,7 +119,7 @@ struct DayDetailSheet: View {
         let breakdown = dayBreakdown(mine.protocols, mine.logs, day, nowMs: now, earlyHours: data.settings.earlyHours)
         let progress = dayProgress(mine.protocols, mine.logs, day, earlyHours: data.settings.earlyHours)
         let palette = assignColors(colorSubjects(mine.protocols.filter(\.active), resolve: { data.peptide($0) }, nowMs: now))
-        List {
+        GroupedList {
             if breakdown.protocols.isEmpty {
                 Section { Text(t("ios_day_rest")).foregroundStyle(.secondary) }
             } else {

@@ -176,7 +176,10 @@
     "ios_scan_file": "Choose a file",
     "ios_chart_axis": "× one dose’s peak",
     "ios_new_window": "New Window",
-    "ios_sync_test_mac": "Test build: stored on this Mac only, with no iCloud. To move to the release app, export a backup under Your data and import it there."
+    "ios_sync_test_mac": "Test build: stored on this Mac only, with no iCloud. To move to the release app, export a backup under Your data and import it there.",
+    "ios_reminders_intro_mac": "A reminder at the hour a dose is due, from this Mac itself, so it works with no connection, and **nothing is sent anywhere**. A dose you log early cancels its own reminder. Your phone has its own reminders, set in Bench on the phone.",
+    "ios_log_table": "Table",
+    "ios_col_drawn": "Drawn"
   },
   "de": {
     "more": "Mehr",
@@ -355,7 +358,10 @@
     "ios_scan_file": "Datei auswählen",
     "ios_chart_axis": "× Spitze einer Dosis",
     "ios_new_window": "Neues Fenster",
-    "ios_sync_test_mac": "Testversion: nur auf diesem Mac gespeichert, ohne iCloud. Für die endgültige App exportiere unter „Deine Daten“ eine Sicherung und importiere sie dort."
+    "ios_sync_test_mac": "Testversion: nur auf diesem Mac gespeichert, ohne iCloud. Für die endgültige App exportiere unter „Deine Daten“ eine Sicherung und importiere sie dort.",
+    "ios_reminders_intro_mac": "Eine Erinnerung zur Stunde, in der eine Dosis fällig ist, von diesem Mac selbst, also auch ohne Verbindung, und **es wird nichts irgendwohin gesendet**. Eine früh eingetragene Dosis storniert ihre eigene Erinnerung. Dein Telefon hat eigene Erinnerungen, eingestellt in Bench auf dem Telefon.",
+    "ios_log_table": "Tabelle",
+    "ios_col_drawn": "Aufgezogen"
   },
   "sl": {
     "more": "Več",
@@ -538,7 +544,10 @@
     "ios_scan_file": "Izberi datoteko",
     "ios_chart_axis": "× vrh enega odmerka",
     "ios_new_window": "Novo okno",
-    "ios_sync_test_mac": "Preizkusna različica: shranjeno samo na tem Macu, brez iCloud. Za prehod na končno aplikacijo izvozi varnostno kopijo pod Tvoji podatki in jo tam uvozi."
+    "ios_sync_test_mac": "Preizkusna različica: shranjeno samo na tem Macu, brez iCloud. Za prehod na končno aplikacijo izvozi varnostno kopijo pod Tvoji podatki in jo tam uvozi.",
+    "ios_reminders_intro_mac": "Opomnik ob uri, ko je doza na vrsti, s tega Maca samega, zato deluje tudi brez povezave, in **nikamor se nič ne pošlje**. Doza, ki jo zabeležiš prej, prekliče svoj opomnik. Telefon ima svoje opomnike, nastavljene v Bench na telefonu.",
+    "ios_log_table": "Tabela",
+    "ios_col_drawn": "Odvzeto"
   },
   "pl": {
     "more": "Więcej",
@@ -721,6 +730,9 @@
     "ios_scan_file": "Wybierz plik",
     "ios_chart_axis": "× szczyt jednej dawki",
     "ios_new_window": "Nowe okno",
-    "ios_sync_test_mac": "Wersja testowa: dane tylko na tym Macu, bez iCloud. Aby przejść do wersji docelowej, wyeksportuj kopię w sekcji Twoje dane i zaimportuj ją tam."
+    "ios_sync_test_mac": "Wersja testowa: dane tylko na tym Macu, bez iCloud. Aby przejść do wersji docelowej, wyeksportuj kopię w sekcji Twoje dane i zaimportuj ją tam.",
+    "ios_reminders_intro_mac": "Przypomnienie o godzinie, na którą przypada dawka, z samego tego Maca, więc działa bez połączenia, i **nic nigdzie nie jest wysyłane**. Dawka zapisana wcześniej anuluje własne przypomnienie. Telefon ma własne przypomnienia, ustawiane w Bench na telefonie.",
+    "ios_log_table": "Tabela",
+    "ios_col_drawn": "Pobrano"
   }
 }

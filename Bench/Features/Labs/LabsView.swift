@@ -15,7 +15,7 @@ struct LabsView: View {
             LabCompoundTraits(category: $0.category.rawValue, mechanismClass: ($0.mechanismClass ?? []).map(\.rawValue), c17AlphaAlkylated: $0.c17AlphaAlkylated == true)
         }
         let missing = missingMarkerIds(labs, compounds)
-        List {
+        GroupedList {
             Section { Text(t("labs_subtitle")).font(.subheadline).foregroundStyle(.secondary) }
             Section {
                 VStack(alignment: .leading, spacing: 4) {
@@ -108,7 +108,7 @@ private struct MarkerHistory: View {
                           : v.status == .unknown ? t("labs_no_range") : "") + (r.notes.map { " · \($0)" } ?? ""))
                         .font(.caption).foregroundStyle(.tertiary).lineLimit(1)
                 }
-                .swipeActions {
+                .rowActions {
                     Button(role: .destructive) { store.mutate { $0.removeLab(r.id) } } label: { Label(t("stock_delete"), systemImage: "trash") }
                 }
                 .accessibilityAction(named: t("labs_delete_result_from", ["marker": .string(marker.name), "date": .string(formatDate(r.at))])) {
@@ -149,7 +149,8 @@ private struct AddLabForm: View {
                         }
                     }
                 }
-            } footer: { if let marker { Text(marker.why) } }
+                FooterRow { if let marker { Text(marker.why) } }
+            } footer: { FooterWrap { if let marker { Text(marker.why) } }}
             Section {
                 OptionalNumberRow(label: t("labs_value"), value: $value, suffix: marker?.unit)
                 DatePicker(t("log_when"), selection: $at)
@@ -157,13 +158,17 @@ private struct AddLabForm: View {
             Section {
                 OptionalNumberRow(label: t("labs_your_low"), value: $refLow, suffix: t("labs_optional"))
                 OptionalNumberRow(label: t("labs_your_high"), value: $refHigh, suffix: t("labs_optional"))
-            } footer: {
+                FooterRow {
                 Text(marker?.guideline.map { t("labs_guideline_note", ["marker": .string(marker!.name), "source": .string($0.source)]) } ?? t("labs_copy_interval"))
             }
+            } footer: { FooterWrap {
+                Text(marker?.guideline.map { t("labs_guideline_note", ["marker": .string(marker!.name), "source": .string($0.source)]) } ?? t("labs_copy_interval"))
+            }}
             Section {
                 TextField(t("labs_lab_name"), text: $lab, prompt: Text(t("labs_lab_placeholder")))
                 TextField(t("labs_note"), text: $notes, prompt: Text(t("labs_note_placeholder")))
-            } footer: { Text(t("labs_lab_hint")) }
+                FooterRow { Text(t("labs_lab_hint")) }
+            } footer: { FooterWrap { Text(t("labs_lab_hint")) }}
         }
         .formChrome(t("labs_add_result"), confirm: t("labs_save_result"), disabled: !(value?.isFinite ?? false)) {
             guard let value else { return }

@@ -17,11 +17,40 @@ struct LogView: View {
     @State private var farDown = false
     @AppStorage("bench.log.showMissed") private var showMissed = true
 
-    enum Mode: String { case list, calendar }
+    /// Table is the Mac's alone.
+    enum Mode: String { case list, calendar, table }
     struct LogEdit: Identifiable { var id: String; var logId: String? }
     struct RatingDay: Identifiable { var id: Millis }
 
     var body: some View {
+        content
+        .navigationTitle(t("log_title"))
+        .toolbar {
+            ToolbarItem(placement: .secondaryAction) {
+                Button { pickingDay = true } label: { Label(t("log_rate_another_day"), systemImage: "calendar.badge.plus") }
+            }
+            ToolbarItem(placement: .secondaryAction) {
+                Toggle(isOn: $showMissed) { Label(t("ios_show_missed"), systemImage: "exclamationmark.circle") }
+            }
+            ToolbarItem(placement: .primaryAction) {
+                Button { editing = LogEdit(id: "new", logId: nil) } label: { Label(t("log_new_dose"), systemImage: "plus") }
+            }
+        }
+        .onAppear { now = nowMillis() }
+        .sheet(item: $editing) { e in NavigationStack { LogDoseSheet(defaultPeptideId: nil, editId: e.logId) } }
+        .sheet(item: $ratingDay) { d in NavigationStack { CheckInSheet(dayMs: d.id) } }
+        .sheet(isPresented: $pickingDay) {
+            RateDayPicker { picked in
+                pickingDay = false
+                if let day = ratableDay(picked.millis, nowMs: nowMillis()) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { ratingDay = RatingDay(id: day) }
+                }
+            }
+            .presentationDetents([.medium, .large])
+        }
+    }
+
+    @ViewBuilder private var content: some View {
         let data = store.data
         let mine = data.mine
         let logs = mine.logs
@@ -37,12 +66,44 @@ struct LogView: View {
         let days = Set(logged.map(\.day)).union(missedByDay.keys).sorted(by: >).map { day in
             logged.first { $0.day == day } ?? DiaryDay(day: day, entries: [], checkIn: nil)
         }
+        #if os(macOS)
+        if mode == .table {
+            VStack(spacing: 0) {
+                HStack {
+                    Picker(t("ios_log_view"), selection: $mode) {
+                        Text(t("ios_log_list")).tag(Mode.list)
+                        Text(t("ios_log_calendar")).tag(Mode.calendar)
+                        Text(t("ios_log_table")).tag(Mode.table)
+                    }
+                    .pickerStyle(.segmented).labelsHidden().fixedSize()
+                    Spacer()
+                    let peptideIds = logs.map(\.peptideId).reduce(into: [String]()) { if !$0.contains($1) { $0.append($1) } }
+                    Picker(t("log_filter_by_peptide"), selection: $filter) {
+                        Text(t("log_all_peptides")).tag("")
+                        ForEach(peptideIds, id: \.self) { Text(data.peptide($0)?.name ?? $0).tag($0) }
+                    }
+                    .fixedSize()
+                }
+                .padding(12)
+                LogTableView(logs: shown, data: data, palette: palette) { editing = LogEdit(id: $0, logId: $0) }
+            }
+        } else { listOrCalendar(data: data, mine: mine, logs: logs, shown: shown, palette: palette, checkIns: checkIns, missedByDay: missedByDay, days: days) }
+        #else
+        listOrCalendar(data: data, mine: mine, logs: logs, shown: shown, palette: palette, checkIns: checkIns, missedByDay: missedByDay, days: days)
+        #endif
+    }
+
+    @ViewBuilder private func listOrCalendar(data: AppData, mine: AppData, logs: [DoseLog], shown: [DoseLog], palette: Palette,
+                                             checkIns: [CheckIn], missedByDay: [Millis: [MissedDose]], days: [DiaryDay<DoseLog>]) -> some View {
         ScrollViewReader { proxy in
-        List {
+        GroupedList {
             Section {
                 Picker(t("ios_log_view"), selection: $mode) {
                     Label(t("ios_log_list"), systemImage: "list.bullet").tag(Mode.list)
                     Label(t("ios_log_calendar"), systemImage: "calendar").tag(Mode.calendar)
+                    #if os(macOS)
+                    Label(t("ios_log_table"), systemImage: "tablecells").tag(Mode.table)
+                    #endif
                 }
                 .pickerStyle(.segmented)
                 .listRowBackground(Color.clear)
@@ -111,30 +172,6 @@ struct LogView: View {
         // Tapping the Log tab while already on it goes back to the top.
         .onChange(of: reselects["log"] ?? 0) { _, _ in withAnimation { proxy.scrollTo("top", anchor: .top) } }
         .debugAnchor(proxy)
-        }
-        .navigationTitle(t("log_title"))
-        .toolbar {
-            ToolbarItem(placement: .secondaryAction) {
-                Button { pickingDay = true } label: { Label(t("log_rate_another_day"), systemImage: "calendar.badge.plus") }
-            }
-            ToolbarItem(placement: .secondaryAction) {
-                Toggle(isOn: $showMissed) { Label(t("ios_show_missed"), systemImage: "exclamationmark.circle") }
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Button { editing = LogEdit(id: "new", logId: nil) } label: { Label(t("log_new_dose"), systemImage: "plus") }
-            }
-        }
-        .onAppear { now = nowMillis() }
-        .sheet(item: $editing) { e in NavigationStack { LogDoseSheet(defaultPeptideId: nil, editId: e.logId) } }
-        .sheet(item: $ratingDay) { d in NavigationStack { CheckInSheet(dayMs: d.id) } }
-        .sheet(isPresented: $pickingDay) {
-            RateDayPicker { picked in
-                pickingDay = false
-                if let day = ratableDay(picked.millis, nowMs: nowMillis()) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { ratingDay = RatingDay(id: day) }
-                }
-            }
-            .presentationDetents([.medium, .large])
         }
     }
 

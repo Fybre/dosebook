@@ -43,7 +43,7 @@ struct StockView: View {
         let ctx = RowContext(data: data, now: now)
 
         ScrollViewReader { proxy in
-        List {
+        GroupedList {
             if !vials.isEmpty {
                 Section {
                     HStack(alignment: .top) {
@@ -64,7 +64,8 @@ struct StockView: View {
                              + "." + (spend.mixed ? t("stock_mixed_currency") : ""))
                             .font(.caption).foregroundStyle(.secondary)
                     }
-                } footer: { Text(t("stock_remaining_hint")) }
+                    FooterRow { Text(t("stock_remaining_hint")) }
+                } footer: { FooterWrap { Text(t("stock_remaining_hint")) }}
             }
 
             if settings.waterAtBottom != true { waterShelf(mine, settings) }
@@ -132,7 +133,7 @@ struct StockView: View {
                     ForEach(done) { v in
                         Text("\(data.peptide(v.peptideId)?.name ?? v.peptideId) · \(jsNumberString(v.strengthMg)) mg")
                             .font(.subheadline).foregroundStyle(.secondary)
-                            .swipeActions { Button(t("stock_delete"), role: .destructive) { store.mutate { $0.removeVial(v.id) } } }
+                            .rowActions { Button(t("stock_delete"), role: .destructive) { store.mutate { $0.removeVial(v.id) } } }
                     }
                 }
             }
@@ -220,16 +221,21 @@ struct StockView: View {
                     }
                     .buttonStyle(.bordered).controlSize(.small)
                 }
-                .swipeActions { Button(t("stock_remove_bottle"), role: .destructive) { store.mutate { $0.removeDiluent(b.id) } } }
+                .rowActions { Button(t("stock_remove_bottle"), role: .destructive) { store.mutate { $0.removeDiluent(b.id) } } }
             }
             Button { sheet = .addBottle } label: { Label(t("stock_add_bottle"), systemImage: "plus") }
-        } header: {
-            Text(t("stock_water_section"))
-        } footer: {
+            FooterRow {
             if stock.remainingMl > 0 {
                 Text(t("stock_water_across", ["ml": .string(trim(stock.remainingMl, 1)), "n": .number(Double(stock.bottles))]))
             }
         }
+        } header: {
+            Text(t("stock_water_section"))
+        } footer: { FooterWrap {
+            if stock.remainingMl > 0 {
+                Text(t("stock_water_across", ["ml": .string(trim(stock.remainingMl, 1)), "n": .number(Double(stock.bottles))]))
+            }
+        }}
     }
 }
 

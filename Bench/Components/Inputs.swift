@@ -22,6 +22,7 @@ struct NumberField: View {
                     value = range.map { min(max(n, $0.lowerBound), $0.upperBound) } ?? n
                 }))
                 .decimalKeyboard()
+                .fieldTitleHidden()
                 .multilineTextAlignment(.trailing)
                 .focused($focused)
                 .monospacedDigit()
@@ -155,6 +156,7 @@ struct OptionalNumberField: View {
         HStack(spacing: 6) {
             TextField(title, text: $text)
                 .decimalKeyboard()
+                .fieldTitleHidden()
                 .multilineTextAlignment(.trailing)
                 .monospacedDigit()
                 .onChange(of: text) { _, s in

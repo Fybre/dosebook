@@ -23,7 +23,7 @@ struct ImportView: View {
     private static let types: [UTType] = [.item]
 
     var body: some View {
-        List {
+        GroupedList {
             Section { Text(t("import_intro")).font(.footnote).foregroundStyle(.secondary) }
             if let done { Section { CalloutText(done).font(.footnote).callout(.sky) } }
             if let error {
@@ -43,7 +43,8 @@ struct ImportView: View {
                     Button { picking = true } label: { source(t("ios_src_other"), t("ios_src_other_desc"), "tablecells") }
                     Button { picking = true } label: { source(t("ios_src_backup"), t("ios_src_backup_desc"), "externaldrive") }
                     Button { picking = true } label: { source(t("ios_src_lab"), t("ios_src_lab_desc"), "drop") }
-                } header: { Text(t("ios_import_sources")) } footer: { Text(t("import_extensions")) }
+                    FooterRow { Text(t("import_extensions")) }
+                } header: { Text(t("ios_import_sources")) } footer: { FooterWrap { Text(t("import_extensions")) }}
                 .disabled(busy)
             case .benchExport(let raw)?:
                 benchExport(raw)

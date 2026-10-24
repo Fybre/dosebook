@@ -124,9 +124,12 @@ struct ProtocolForm: View {
                         Text(t("plan_no_published_titration", ["name": .string(peptide?.name ?? t("plan_this_compound"))])).font(.footnote).foregroundStyle(.secondary)
                     }
                 }
-            } header: { Text(t("plan_how_dose_decided")) } footer: {
+                FooterRow {
                 Text(t(planMode == .phases ? "plan_mode_hint_phases" : planMode == .titration ? "plan_mode_hint_titration" : "plan_mode_hint_fixed"))
             }
+            } header: { Text(t("plan_how_dose_decided")) } footer: { FooterWrap {
+                Text(t(planMode == .phases ? "plan_mode_hint_phases" : planMode == .titration ? "plan_mode_hint_titration" : "plan_mode_hint_fixed"))
+            }}
 
             if planMode == .phases {
                 Section(t("plan_week_by_week")) {
@@ -165,7 +168,8 @@ struct ProtocolForm: View {
                     NumberRow(label: t("plan_weeks_off"), value: $cycleOff, range: 0...52)
                     Text(t("ios_plan_weeks_on_hint")).font(.caption).foregroundStyle(.secondary)
                 }
-            } header: { Text(t("plan_how_often")) } footer: { if planMode == .phases { Text(t("plan_how_often_hint")) } }
+                FooterRow { if planMode == .phases { Text(t("plan_how_often_hint")) } }
+            } header: { Text(t("plan_how_often")) } footer: { FooterWrap { if planMode == .phases { Text(t("plan_how_often_hint")) } }}
 
             // Right under the schedule, so changing it shows what it does to the curve.
             Section { ProjectionPreviewView(protocol_: draft, peptide: peptide, resolve: { store.data.peptide($0) }) }
@@ -174,14 +178,18 @@ struct ProtocolForm: View {
                 Section {
                     SiteMapView(logs: [], selected: Set(sites), multi: true, onSelect: toggleSite).frame(maxWidth: .infinity)
                     if !sites.isEmpty { Button(t("plan_clear_sites"), role: .destructive) { sites = [] } }
-                } header: { Text(t("plan_sites_label")) } footer: {
+                    FooterRow {
                     Text(sites.isEmpty ? t("plan_sites_hint_empty") : t("plan_sites_pinned", ["n": .number(Double(sites.count))]))
                 }
+                } header: { Text(t("plan_sites_label")) } footer: { FooterWrap {
+                    Text(sites.isEmpty ? t("plan_sites_hint_empty") : t("plan_sites_pinned", ["n": .number(Double(sites.count))]))
+                }}
             }
 
             Section {
                 TextField(peptide.map { t("plan_name_example", ["name": .string($0.name)]) } ?? t("plan_name_empty"), text: $name)
-            } header: { Text(t("plan_name_it")) } footer: { Text(t("plan_name_hint")) }
+                FooterRow { Text(t("plan_name_hint")) }
+            } header: { Text(t("plan_name_it")) } footer: { FooterWrap { Text(t("plan_name_hint")) }}
 
             if rewritesHistory {
                 Section {

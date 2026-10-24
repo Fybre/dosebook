@@ -18,6 +18,7 @@ struct TodayView: View {
     @State private var logRequest: LogRequest?
     @State private var confirmEarly: String?
     @State private var addingVial: VialFor?
+    @Environment(\.logDoseRequests) private var logDoseRequests
     /// The screen's width: wide enough, and Now goes to two columns.
     @State private var width: CGFloat = 0
     private var wide: Bool { width >= 1000 }
@@ -89,7 +90,7 @@ struct TodayView: View {
             }
         }
         .onReceive(tick) { _ in now = nowMillis() }
-        .onReceive(NotificationCenter.default.publisher(for: .benchLogDose)) { _ in
+        .onChange(of: logDoseRequests) { _, _ in
             if logRequest == nil { logRequest = LogRequest(peptideId: nil) }
         }
         .onAppear {

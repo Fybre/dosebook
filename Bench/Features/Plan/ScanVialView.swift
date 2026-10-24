@@ -63,15 +63,17 @@ struct ScanVialView: View {
                     }
                     AmountRow(label: t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
                     LabeledContent(t("ios_scan_lot")) {
-                        TextField(t("ios_scan_lot"), text: $lot).multilineTextAlignment(.trailing).capitalisedCharacters()
+                        TextField(t("ios_scan_lot"), text: $lot).multilineTextAlignment(.trailing).capitalisedCharacters().fieldTitleHidden()
                     }
                     Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
                     if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
-                } header: { Text(t("ios_scan_found")) } footer: { Text(t("ios_scan_check")) }
+                    FooterRow { Text(t("ios_scan_check")) }
+                } header: { Text(t("ios_scan_found")) } footer: { FooterWrap { Text(t("ios_scan_check")) }}
                 if onScanned == nil {
                     Section {
                         Toggle(t("ios_scan_add_stock"), isOn: $addToStock)
-                    } footer: { Text(t("ios_scan_add_stock_hint")) }
+                        FooterRow { Text(t("ios_scan_add_stock_hint")) }
+                    } footer: { FooterWrap { Text(t("ios_scan_add_stock_hint")) }}
                 }
                 Section {
                     DisclosureGroup(t("ios_scan_raw")) {
