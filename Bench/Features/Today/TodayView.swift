@@ -148,7 +148,7 @@ struct TodayView: View {
             }
             HStack {
                 if options.count < 2 {
-                    Button { log(track, site: options.first?.site) } label: { Label(t("now_logged"), systemImage: "checkmark") }
+                    Button { log(track, site: options.first?.site) } label: { Label(t("ios_now_log_now"), systemImage: "plus") }
                         .buttonStyle(.borderedProminent)
                 } else {
                     Menu {
@@ -164,7 +164,7 @@ struct TodayView: View {
                         }
                         Button(t("now_site_all")) { logRequest = LogRequest(peptideId: track.protocol_.peptideId, anySite: true) }
                     } label: {
-                        Label(t("now_logged"), systemImage: "checkmark")
+                        Label(t("ios_now_log_now"), systemImage: "plus")
                     } primaryAction: {
                         log(track, site: options[0].site)
                     }
@@ -198,7 +198,7 @@ struct TodayView: View {
                             Text(doseLabel(row.track.targetMcg, row.track.peptide)).font(.footnote.monospacedDigit())
                             Spacer()
                             if confirmEarly != key {
-                                Button { confirmEarly = key } label: { Image(systemName: "checkmark.circle") }
+                                Button { confirmEarly = key } label: { Image(systemName: "plus.circle") }
                                     .accessibilityLabel(t("now_log_ahead_title", ["time": .string(formatTime(row.at))]))
                             }
                         }

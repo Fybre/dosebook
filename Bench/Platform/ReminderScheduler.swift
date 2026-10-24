@@ -21,7 +21,7 @@ enum ReminderScheduler {
     /// "Logged" and "Snooze" on every dose reminder. Neither names the compound,
     /// so a discreet reminder stays discreet.
     static func registerActions() {
-        let log = UNNotificationAction(identifier: logAction, title: t("now_logged"), options: [], icon: UNNotificationActionIcon(systemImageName: "checkmark"))
+        let log = UNNotificationAction(identifier: logAction, title: t("ios_now_log_now"), options: [], icon: UNNotificationActionIcon(systemImageName: "plus"))
         let snooze = UNNotificationAction(identifier: snoozeAction, title: t("ios_snooze_15"), options: [], icon: UNNotificationActionIcon(systemImageName: "clock"))
         UNUserNotificationCenter.current().setNotificationCategories([UNNotificationCategory(identifier: category, actions: [log, snooze], intentIdentifiers: [])])
     }
