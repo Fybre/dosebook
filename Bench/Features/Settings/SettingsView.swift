@@ -99,6 +99,8 @@ struct SettingsView: View {
                 }
             }
 
+            NowPanelsSection()
+
             LockSection()
 
             Section {
@@ -524,5 +526,25 @@ private struct LockSection: View {
             if failed { Text(t("ios_lock_failed")).font(.footnote).foregroundStyle(Tone.tangerine.color) }
             FooterRow { Text(t("ios_lock_hint")) }
         } header: { Text(t("ios_lock_title")) } footer: { FooterWrap { Text(t("ios_lock_hint")) }}
+    }
+}
+
+// MARK: - Now screen
+
+private struct NowPanelsSection: View {
+    @AppStorage(NowPanels.key) private var hiddenRaw = ""
+
+    var body: some View {
+        let hidden = NowPanels.hidden(hiddenRaw)
+        Section {
+            ForEach(NowPanel.allCases) { panel in
+                Toggle(isOn: Binding(get: { !hidden.contains(panel) }, set: { on in
+                    var next = hidden
+                    if on { next.remove(panel) } else { next.insert(panel) }
+                    hiddenRaw = NowPanels.raw(next)
+                })) { Label(panel.title, systemImage: panel.symbol) }
+            }
+            FooterRow { Text(t("ios_panels_hint")) }
+        } header: { Text(t("ios_panels_title")) } footer: { FooterWrap { Text(t("ios_panels_hint")) }}
     }
 }

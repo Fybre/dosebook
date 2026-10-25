@@ -279,7 +279,13 @@
     "ios_widget_nothing": "Nothing scheduled",
     "ios_widget_open": "Open Bench to set up",
     "ios_widget_today": "Today",
-    "ios_widget_paused": "Paused"
+    "ios_widget_paused": "Paused",
+    "ios_panels_title": "Now screen",
+    "ios_panels_hint": "Choose what shows on Now. Doses that are due or overdue, the pause banner and backup warnings always show. This is kept on this device, so a phone and an iPad can differ.",
+    "ios_panel_today": "Today’s ring and week",
+    "ios_panel_interactions": "Interaction check",
+    "ios_panel_checkin": "How you feel",
+    "ios_panel_trends": "Trends"
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -561,7 +567,13 @@
     "ios_widget_nothing": "Nichts geplant",
     "ios_widget_open": "Bench öffnen zum Einrichten",
     "ios_widget_today": "Heute",
-    "ios_widget_paused": "Pausiert"
+    "ios_widget_paused": "Pausiert",
+    "ios_panels_title": "Jetzt-Bildschirm",
+    "ios_panels_hint": "Wähle, was auf „Jetzt“ erscheint. Fällige oder überfällige Dosen, der Pausenhinweis und Sicherungswarnungen erscheinen immer. Gilt nur für dieses Gerät, Telefon und iPad können sich also unterscheiden.",
+    "ios_panel_today": "Heute: Ring und Woche",
+    "ios_panel_interactions": "Wechselwirkungen",
+    "ios_panel_checkin": "Befinden",
+    "ios_panel_trends": "Trends"
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -849,7 +861,13 @@
     "ios_widget_nothing": "Nič ni načrtovano",
     "ios_widget_open": "Odpri Bench za nastavitev",
     "ios_widget_today": "Danes",
-    "ios_widget_paused": "Ustavljeno"
+    "ios_widget_paused": "Ustavljeno",
+    "ios_panels_title": "Zaslon Zdaj",
+    "ios_panels_hint": "Izberi, kaj se prikaže na zaslonu Zdaj. Odmerki, ki so na vrsti ali zamujeni, obvestilo o premoru in opozorila o varnostnih kopijah se vedno prikažejo. Velja za to napravo, zato se telefon in iPad lahko razlikujeta.",
+    "ios_panel_today": "Današnji obroč in teden",
+    "ios_panel_interactions": "Preverjanje interakcij",
+    "ios_panel_checkin": "Počutje",
+    "ios_panel_trends": "Trendi"
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -1137,6 +1155,12 @@
     "ios_widget_nothing": "Nic nie zaplanowano",
     "ios_widget_open": "Otwórz Bench, aby skonfigurować",
     "ios_widget_today": "Dziś",
-    "ios_widget_paused": "Wstrzymane"
+    "ios_widget_paused": "Wstrzymane",
+    "ios_panels_title": "Ekran Teraz",
+    "ios_panels_hint": "Wybierz, co pokazywać na ekranie Teraz. Dawki należne lub spóźnione, informacja o wstrzymaniu i ostrzeżenia o kopiach zawsze się pokazują. Ustawienie dotyczy tego urządzenia, więc telefon i iPad mogą się różnić.",
+    "ios_panel_today": "Dzisiejszy pierścień i tydzień",
+    "ios_panel_interactions": "Kontrola interakcji",
+    "ios_panel_checkin": "Samopoczucie",
+    "ios_panel_trends": "Trendy"
   }
 }

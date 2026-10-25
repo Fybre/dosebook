@@ -19,6 +19,7 @@ struct TodayView: View {
     @State private var logRequest: LogRequest?
     @State private var confirmEarly: String?
     @State private var addingVial: VialFor?
+    @AppStorage(NowPanels.key) private var hiddenRaw = ""
     @Environment(\.logDoseRequests) private var logDoseRequests
     /// The last ⌘N request this screen has opened a sheet for.
     @State private var answeredLogDose = 0
@@ -35,13 +36,14 @@ struct TodayView: View {
         let tracks = TodayModel.tracks(data, now: now, palette: palette)
         let series = TodayModel.series(tracks, palette: palette)
         let attention = tracks.filter { $0.due.state == .overdue || $0.due.state == .dueNow }
+        let hidden = NowPanels.hidden(hiddenRaw)
         ScrollViewReader { proxy in
         ScrollView {
             let columns = wide ? AnyLayout(HStackLayout(alignment: .top, spacing: 20)) : AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
             columns {
             // Today and the plan on the left; how you are doing on the right.
             VStack(alignment: .leading, spacing: 16) {
-                TodayCard(protocols: mine.protocols, logs: mine.logs, now: now, earlyHours: data.settings.earlyHours)
+                if !hidden.contains(.today) { TodayCard(protocols: mine.protocols, logs: mine.logs, now: now, earlyHours: data.settings.earlyHours) }
                 RescueNotice()
                 BackupNagCard(now: now)
                 PauseBanner(now: now)
@@ -50,11 +52,11 @@ struct TodayView: View {
                 if mine.protocols.isEmpty {
                     HistoryWithoutPlanCard(now: now)
                 } else {
-                    if active.count >= 2 { StackWarningsView(compact: true, nowMs: now).card() }
+                    if active.count >= 2, !hidden.contains(.interactions) { StackWarningsView(compact: true, nowMs: now).card() }
                     if let q = lastQuickLog { quickLogNote(q) }
                     ForEach(attention) { attentionRow($0, logs: mine.logs) }
-                    laterToday(tracks, logs: mine.logs, attention: attention)
-                    if !series.isEmpty {
+                    if !hidden.contains(.laterToday) { laterToday(tracks, logs: mine.logs, attention: attention) }
+                    if !series.isEmpty, !hidden.contains(.chart) {
                         PkChartView(series: series, now: now,
                                     weights: data.settings.plotWeightOnChart == true ? mine.measurements : [],
                                     weightUnit: data.settings.weightUnit, describeVial: { describeVial($0, data) })
@@ -62,17 +64,19 @@ struct TodayView: View {
                             .id("chart")
                         notes(tracks, data: data)
                     }
-                    Text(t("now_active_protocols").uppercased()).font(.caption.bold()).foregroundStyle(.secondary).id("protocols")
-                    ForEach(tracks) { protocolCard($0, data: data) }
+                    if !hidden.contains(.protocols) {
+                        Text(t("now_active_protocols").uppercased()).font(.caption.bold()).foregroundStyle(.secondary).id("protocols")
+                        ForEach(tracks) { protocolCard($0, data: data) }
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             VStack(alignment: .leading, spacing: 16) {
-                WeightCard(now: now).id("cards")
-                CheckInCard(now: now)
-                LabsCard()
-                if !mine.protocols.isEmpty { InsightsView(tracks: tracks, logs: mine.logs, now: now) }
-                worthSorting(tracks, data: data)
+                if !hidden.contains(.weight) { WeightCard(now: now).id("cards") }
+                if !hidden.contains(.checkIn) { CheckInCard(now: now) }
+                if !hidden.contains(.bloodwork) { LabsCard() }
+                if !mine.protocols.isEmpty, !hidden.contains(.trends) { InsightsView(tracks: tracks, logs: mine.logs, now: now) }
+                if !hidden.contains(.worthSorting) { worthSorting(tracks, data: data) }
             }
             .frame(maxWidth: wide ? 420 : .infinity, alignment: .leading)
             }
