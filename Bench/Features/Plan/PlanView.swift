@@ -170,6 +170,12 @@ struct ProtocolCard: View {
 struct UpcomingView: View {
     @Environment(AppStore.self) private var store
     var nowMs: Millis
+    @State private var showAll = false
+    /// Wide enough for "11:00 PM" at the user's text size, so it never breaks.
+    @ScaledMetric(relativeTo: .caption) private var timeWidth: CGFloat = 70
+
+    /// The days shown before "show more".
+    private static let firstDays = 3
 
     private struct Row: Identifiable { var id: String; var at: Millis; var protocolId: String; var peptideId: String; var name: String; var route: Route; var doseMcg: Double }
 
@@ -184,28 +190,58 @@ struct UpcomingView: View {
             }
         }.sorted { $0.at < $1.at }
         let days = Dictionary(grouping: rows) { startOfLocalDay($0.at) }.sorted { $0.key < $1.key }
+        let shown = showAll ? days : Array(days.prefix(Self.firstDays))
         if !days.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 CardHeader(title: t("plan_next_two_weeks"))
-                ForEach(days, id: \.key) { day, rows in
-                    HStack(alignment: .top, spacing: 10) {
-                        Text("\(formatWeekday(day)) \(formatDate(day))").font(.caption).foregroundStyle(.secondary).frame(width: 76, alignment: .leading)
-                        VStack(alignment: .leading, spacing: 3) {
-                            ForEach(rows) { r in
-                                let tone = palette.byProtocol[r.protocolId]
-                                HStack(spacing: 6) {
-                                    Text(formatTime(r.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                ForEach(Array(shown.enumerated()), id: \.element.key) { index, entry in
+                    if index > 0 { Divider() }
+                    dayBlock(entry.key, entry.value, data: data, palette: palette)
+                }
+                if days.count > Self.firstDays {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) { showAll.toggle() }
+                    } label: {
+                        Text(showAll ? t("ios_upcoming_fewer") : t("ios_upcoming_more", ["days": .string(t("count_days", ["n": .number(Double(days.count - Self.firstDays))]))]))
+                            .font(.footnote.weight(.medium))
+                    }
+                    .padding(.top, 2)
+                }
+            }
+            .card()
+        }
+    }
+
+    /// A day: its heading, then each time with what is taken at it.
+    private func dayBlock(_ day: Millis, _ rows: [Row], data: AppData, palette: Palette) -> some View {
+        // Doses at the same moment share one time.
+        let times = Dictionary(grouping: rows) { $0.at }.sorted { $0.key < $1.key }
+        return VStack(alignment: .leading, spacing: 8) {
+            Text("\(formatWeekday(day)) \(formatDate(day))").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            ForEach(times, id: \.key) { at, group in
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Text(formatTime(at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                        .lineLimit(1).fixedSize().frame(width: timeWidth, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(group) { r in
+                            let tone = palette.byProtocol[r.protocolId]
+                            let peptide = data.peptide(r.peptideId)
+                            VStack(alignment: .leading, spacing: 1) {
+                                HStack(alignment: .firstTextBaseline, spacing: 6) {
                                     if let tone { Circle().fill(tone.color).frame(width: 7, height: 7) }
                                     Text(r.name).font(.footnote.weight(.medium)).foregroundStyle(tone?.color ?? .primary)
-                                    Text(doseLabel(r.doseMcg, data.peptide(r.peptideId))).font(.footnote.monospacedDigit())
-                                    DoseMarksText(peptideId: r.peptideId, doseMcg: r.doseMcg, route: r.route, nowMs: nowMs).font(.caption).foregroundStyle(.secondary)
                                 }
+                                HStack(spacing: 6) {
+                                    Text(doseLabel(r.doseMcg, peptide, resolve: { data.peptide($0) })).monospacedDigit()
+                                    DoseMarksText(peptideId: r.peptideId, doseMcg: r.doseMcg, route: r.route, nowMs: nowMs)
+                                }
+                                .font(.caption).foregroundStyle(.secondary)
+                                .padding(.leading, tone == nil ? 0 : 13)
                             }
                         }
                     }
                 }
             }
-            .card()
         }
     }
 }

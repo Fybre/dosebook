@@ -285,7 +285,9 @@
     "ios_panel_today": "Today’s ring and week",
     "ios_panel_interactions": "Interaction check",
     "ios_panel_checkin": "How you feel",
-    "ios_panel_trends": "Trends"
+    "ios_panel_trends": "Trends",
+    "ios_upcoming_more": "Show {days} more",
+    "ios_upcoming_fewer": "Show fewer"
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -573,7 +575,9 @@
     "ios_panel_today": "Heute: Ring und Woche",
     "ios_panel_interactions": "Wechselwirkungen",
     "ios_panel_checkin": "Befinden",
-    "ios_panel_trends": "Trends"
+    "ios_panel_trends": "Trends",
+    "ios_upcoming_more": "{days} weitere zeigen",
+    "ios_upcoming_fewer": "Weniger zeigen"
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -867,7 +871,9 @@
     "ios_panel_today": "Današnji obroč in teden",
     "ios_panel_interactions": "Preverjanje interakcij",
     "ios_panel_checkin": "Počutje",
-    "ios_panel_trends": "Trendi"
+    "ios_panel_trends": "Trendi",
+    "ios_upcoming_more": "Pokaži še {days}",
+    "ios_upcoming_fewer": "Pokaži manj"
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -1161,6 +1167,8 @@
     "ios_panel_today": "Dzisiejszy pierścień i tydzień",
     "ios_panel_interactions": "Kontrola interakcji",
     "ios_panel_checkin": "Samopoczucie",
-    "ios_panel_trends": "Trendy"
+    "ios_panel_trends": "Trendy",
+    "ios_upcoming_more": "Pokaż jeszcze {days}",
+    "ios_upcoming_fewer": "Pokaż mniej"
   }
 }
