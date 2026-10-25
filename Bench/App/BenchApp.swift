@@ -13,6 +13,8 @@ struct BenchApp: App {
         _store = State(initialValue: store)
         // Before launch finishes, so a button tapped on a reminder reaches the store.
         NotificationHandler.shared.install(store)
+        // Locked before anything is drawn, when the lock is on.
+        AppLock.shared.launch()
     }
 
     var body: some Scene {
@@ -25,6 +27,12 @@ struct BenchApp: App {
                 .onChange(of: store.data.settings.theme, initial: true) { _, theme in theme.apply() }
                 .onReceive(NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)) { _ in
                     store.reload()
+                }
+                #if os(macOS)
+                .appLockCover()
+                #endif
+                .onChange(of: scenePhase, initial: true) { _, phase in
+                    AppLock.shared.phaseChanged(phase)
                 }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active {

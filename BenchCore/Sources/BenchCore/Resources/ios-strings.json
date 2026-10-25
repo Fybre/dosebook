@@ -257,7 +257,19 @@
     "ios_goal_reached": "You are at your goal.",
     "ios_goal_on_track": "At {rate} {unit}/wk, the last month’s trend reaches it around {date}. A trend, not a promise.",
     "ios_goal_not_heading": "The last month’s trend is not heading towards it ({rate} {unit}/wk).",
-    "ios_goal_slow": "At the last month’s pace it is more than two years away."
+    "ios_goal_slow": "At the last month’s pace it is more than two years away.",
+    "ios_lock_reason": "Unlock Bench",
+    "ios_lock_locked": "Bench is locked",
+    "ios_lock_unlock": "Unlock",
+    "ios_lock_title": "Privacy",
+    "ios_lock_toggle": "Lock Bench",
+    "ios_lock_after": "Ask again",
+    "ios_lock_now": "Every time",
+    "ios_lock_1m": "After 1 minute",
+    "ios_lock_5m": "After 5 minutes",
+    "ios_lock_hint": "Asks for Face ID, Touch ID or the device passcode when Bench opens, and shows a blank screen in the app switcher. It belongs to this device. Widgets and Shortcuts you add work without it, and notifications can still be answered.",
+    "ios_lock_unavailable": "Set a passcode on this device first; the lock uses it.",
+    "ios_lock_failed": "It was not turned on, because it could not be unlocked just now."
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -517,7 +529,19 @@
     "ios_goal_reached": "Du hast dein Ziel erreicht.",
     "ios_goal_on_track": "Bei {rate} {unit}/Woche erreicht der Verlauf des letzten Monats es etwa am {date}. Ein Verlauf, kein Versprechen.",
     "ios_goal_not_heading": "Der Verlauf des letzten Monats geht nicht in diese Richtung ({rate} {unit}/Woche).",
-    "ios_goal_slow": "In der Geschwindigkeit des letzten Monats dauert es mehr als zwei Jahre."
+    "ios_goal_slow": "In der Geschwindigkeit des letzten Monats dauert es mehr als zwei Jahre.",
+    "ios_lock_reason": "Bench entsperren",
+    "ios_lock_locked": "Bench ist gesperrt",
+    "ios_lock_unlock": "Entsperren",
+    "ios_lock_title": "Datenschutz",
+    "ios_lock_toggle": "Bench sperren",
+    "ios_lock_after": "Erneut fragen",
+    "ios_lock_now": "Jedes Mal",
+    "ios_lock_1m": "Nach 1 Minute",
+    "ios_lock_5m": "Nach 5 Minuten",
+    "ios_lock_hint": "Fragt beim Öffnen nach Face ID, Touch ID oder dem Gerätecode und zeigt im App-Umschalter einen leeren Bildschirm. Gilt nur für dieses Gerät. Widgets und Kurzbefehle, die du hinzufügst, funktionieren ohne; Mitteilungen lassen sich weiter beantworten.",
+    "ios_lock_unavailable": "Richte zuerst einen Gerätecode ein; die Sperre nutzt ihn.",
+    "ios_lock_failed": "Nicht eingeschaltet, weil das Entsperren eben nicht gelang."
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -783,7 +807,19 @@
     "ios_goal_reached": "Cilj je dosežen.",
     "ios_goal_on_track": "Pri {rate} {unit}/teden trend zadnjega meseca doseže cilj okoli {date}. Trend, ne obljuba.",
     "ios_goal_not_heading": "Trend zadnjega meseca ne gre proti cilju ({rate} {unit}/teden).",
-    "ios_goal_slow": "Pri tempu zadnjega meseca je več kot dve leti stran."
+    "ios_goal_slow": "Pri tempu zadnjega meseca je več kot dve leti stran.",
+    "ios_lock_reason": "Odkleni Bench",
+    "ios_lock_locked": "Bench je zaklenjen",
+    "ios_lock_unlock": "Odkleni",
+    "ios_lock_title": "Zasebnost",
+    "ios_lock_toggle": "Zakleni Bench",
+    "ios_lock_after": "Ponovno vprašaj",
+    "ios_lock_now": "Vsakič",
+    "ios_lock_1m": "Po 1 minuti",
+    "ios_lock_5m": "Po 5 minutah",
+    "ios_lock_hint": "Ob odprtju zahteva Face ID, Touch ID ali kodo naprave in v preklopniku aplikacij prikaže prazen zaslon. Velja za to napravo. Pripomočki in bližnjice, ki jih dodaš, delujejo brez tega, na obvestila pa lahko še vedno odgovoriš.",
+    "ios_lock_unavailable": "Najprej nastavi kodo na tej napravi; zaklep jo uporablja.",
+    "ios_lock_failed": "Ni vklopljeno, ker odklepanje pravkar ni uspelo."
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -1049,6 +1085,18 @@
     "ios_goal_reached": "Cel osiągnięty.",
     "ios_goal_on_track": "Przy {rate} {unit}/tydz. trend z ostatniego miesiąca osiągnie cel około {date}. Trend, nie obietnica.",
     "ios_goal_not_heading": "Trend z ostatniego miesiąca nie zmierza w tę stronę ({rate} {unit}/tydz.).",
-    "ios_goal_slow": "W tempie z ostatniego miesiąca to ponad dwa lata."
+    "ios_goal_slow": "W tempie z ostatniego miesiąca to ponad dwa lata.",
+    "ios_lock_reason": "Odblokuj Bench",
+    "ios_lock_locked": "Bench jest zablokowany",
+    "ios_lock_unlock": "Odblokuj",
+    "ios_lock_title": "Prywatność",
+    "ios_lock_toggle": "Zablokuj Bench",
+    "ios_lock_after": "Pytaj ponownie",
+    "ios_lock_now": "Za każdym razem",
+    "ios_lock_1m": "Po 1 minucie",
+    "ios_lock_5m": "Po 5 minutach",
+    "ios_lock_hint": "Przy otwarciu prosi o Face ID, Touch ID lub kod urządzenia i pokazuje pusty ekran w przełączniku aplikacji. Dotyczy tego urządzenia. Widżety i Skróty, które dodasz, działają bez tego, a na powiadomienia nadal można odpowiadać.",
+    "ios_lock_unavailable": "Najpierw ustaw kod na tym urządzeniu; blokada z niego korzysta.",
+    "ios_lock_failed": "Nie włączono, bo odblokowanie właśnie się nie udało."
   }
 }

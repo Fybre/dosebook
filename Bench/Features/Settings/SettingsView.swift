@@ -99,6 +99,8 @@ struct SettingsView: View {
                 }
             }
 
+            LockSection()
+
             Section {
                 Toggle(t("ios_early_hours"), isOn: Binding(get: { settings.earlyHoursCountForNightBefore },
                                                           set: { v in store.mutate { $0.settings.earlyHoursCountForNightBefore = v } }))
@@ -489,5 +491,38 @@ private struct BackupsSection: View {
             note = t("settings_backup_not_bench")
         }
         restoring = nil
+    }
+}
+
+// MARK: - Lock
+
+private struct LockSection: View {
+    @AppStorage(AppLock.enabledKey) private var enabled = false
+    @AppStorage(AppLock.delayKey) private var delay = 0.0
+    @State private var failed = false
+
+    var body: some View {
+        Section {
+            Toggle(t("ios_lock_toggle"), isOn: Binding(get: { enabled }, set: { on in
+                if on {
+                    // Only once it has been unlocked, so it cannot be set up to fail.
+                    Task { failed = !(await AppLock.shared.turnOn()) }
+                } else {
+                    failed = false
+                    AppLock.shared.turnOff()
+                }
+            }))
+            .disabled(!AppLock.available && !enabled)
+            if enabled {
+                Picker(t("ios_lock_after"), selection: $delay) {
+                    Text(t("ios_lock_now")).tag(0.0)
+                    Text(t("ios_lock_1m")).tag(60.0)
+                    Text(t("ios_lock_5m")).tag(300.0)
+                }
+            }
+            if !AppLock.available && !enabled { Text(t("ios_lock_unavailable")).font(.footnote).foregroundStyle(Tone.tangerine.color) }
+            if failed { Text(t("ios_lock_failed")).font(.footnote).foregroundStyle(Tone.tangerine.color) }
+            FooterRow { Text(t("ios_lock_hint")) }
+        } header: { Text(t("ios_lock_title")) } footer: { FooterWrap { Text(t("ios_lock_hint")) }}
     }
 }
