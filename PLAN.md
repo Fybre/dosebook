@@ -307,6 +307,16 @@ delivery, and Files visibility of Documents/Bench.
   lists, because a grouped form centres in a narrow column and Settings drew nothing in one.
   The readable-width cap is iOS only (Mac lists ignore content margins), and the scroll-width
   pin is iOS only (on the Mac it fed back through the window's size).
-- Not done yet: a Stock table, widgets.
+- Widgets and Shortcuts (written, **switched off**): `Shared/` (snapshot, pending-log folder,
+  `LogDoseIntent`, `LogNextDoseIntent`) and `Widgets/` (the Next dose widget: small, medium and
+  Lock Screen faces, with a Log button). The app writes `widget-snapshot.json` into an App Group
+  (`WidgetSync`) and applies doses logged from outside (`applyPending`). They need
+  `group.me.fybre.bench.test` registered on the Apple account, which Xcode here cannot do (no
+  signed-in account) and which is permanent, so BenchTest neither embeds the widget nor holds the
+  entitlement; without a group the shared code does nothing. To turn on: register the group,
+  add `- target: BenchWidgets` and the `application-groups` entitlement to BenchTest in
+  project.yml. `-widgetPreview` draws every face in the app.
+- Also done: pause everything, weight goal, app lock (Settings > Privacy).
+- Not done yet: a Stock table.
 
 **Later:** widgets.

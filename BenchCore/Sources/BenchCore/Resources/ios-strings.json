@@ -269,7 +269,17 @@
     "ios_lock_5m": "After 5 minutes",
     "ios_lock_hint": "Asks for Face ID, Touch ID or the device passcode when Bench opens, and shows a blank screen in the app switcher. It belongs to this device. Widgets and Shortcuts you add work without it, and notifications can still be answered.",
     "ios_lock_unavailable": "Set a passcode on this device first; the lock uses it.",
-    "ios_lock_failed": "It was not turned on, because it could not be unlocked just now."
+    "ios_lock_failed": "It was not turned on, because it could not be unlocked just now.",
+    "ios_widget_due_now": "Due now",
+    "ios_widget_overdue": "Overdue",
+    "ios_widget_next": "Next",
+    "ios_widget_log": "Log",
+    "ios_widget_a_dose": "A dose",
+    "ios_widget_all_done": "All done today",
+    "ios_widget_nothing": "Nothing scheduled",
+    "ios_widget_open": "Open Bench to set up",
+    "ios_widget_today": "Today",
+    "ios_widget_paused": "Paused"
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -541,7 +551,17 @@
     "ios_lock_5m": "Nach 5 Minuten",
     "ios_lock_hint": "Fragt beim Öffnen nach Face ID, Touch ID oder dem Gerätecode und zeigt im App-Umschalter einen leeren Bildschirm. Gilt nur für dieses Gerät. Widgets und Kurzbefehle, die du hinzufügst, funktionieren ohne; Mitteilungen lassen sich weiter beantworten.",
     "ios_lock_unavailable": "Richte zuerst einen Gerätecode ein; die Sperre nutzt ihn.",
-    "ios_lock_failed": "Nicht eingeschaltet, weil das Entsperren eben nicht gelang."
+    "ios_lock_failed": "Nicht eingeschaltet, weil das Entsperren eben nicht gelang.",
+    "ios_widget_due_now": "Jetzt fällig",
+    "ios_widget_overdue": "Überfällig",
+    "ios_widget_next": "Nächste",
+    "ios_widget_log": "Erfassen",
+    "ios_widget_a_dose": "Eine Dosis",
+    "ios_widget_all_done": "Heute alles erledigt",
+    "ios_widget_nothing": "Nichts geplant",
+    "ios_widget_open": "Bench öffnen zum Einrichten",
+    "ios_widget_today": "Heute",
+    "ios_widget_paused": "Pausiert"
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -819,7 +839,17 @@
     "ios_lock_5m": "Po 5 minutah",
     "ios_lock_hint": "Ob odprtju zahteva Face ID, Touch ID ali kodo naprave in v preklopniku aplikacij prikaže prazen zaslon. Velja za to napravo. Pripomočki in bližnjice, ki jih dodaš, delujejo brez tega, na obvestila pa lahko še vedno odgovoriš.",
     "ios_lock_unavailable": "Najprej nastavi kodo na tej napravi; zaklep jo uporablja.",
-    "ios_lock_failed": "Ni vklopljeno, ker odklepanje pravkar ni uspelo."
+    "ios_lock_failed": "Ni vklopljeno, ker odklepanje pravkar ni uspelo.",
+    "ios_widget_due_now": "Zdaj na vrsti",
+    "ios_widget_overdue": "Zamujeno",
+    "ios_widget_next": "Naslednji",
+    "ios_widget_log": "Zabeleži",
+    "ios_widget_a_dose": "Odmerek",
+    "ios_widget_all_done": "Danes vse opravljeno",
+    "ios_widget_nothing": "Nič ni načrtovano",
+    "ios_widget_open": "Odpri Bench za nastavitev",
+    "ios_widget_today": "Danes",
+    "ios_widget_paused": "Ustavljeno"
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -1097,6 +1127,16 @@
     "ios_lock_5m": "Po 5 minutach",
     "ios_lock_hint": "Przy otwarciu prosi o Face ID, Touch ID lub kod urządzenia i pokazuje pusty ekran w przełączniku aplikacji. Dotyczy tego urządzenia. Widżety i Skróty, które dodasz, działają bez tego, a na powiadomienia nadal można odpowiadać.",
     "ios_lock_unavailable": "Najpierw ustaw kod na tym urządzeniu; blokada z niego korzysta.",
-    "ios_lock_failed": "Nie włączono, bo odblokowanie właśnie się nie udało."
+    "ios_lock_failed": "Nie włączono, bo odblokowanie właśnie się nie udało.",
+    "ios_widget_due_now": "Teraz",
+    "ios_widget_overdue": "Spóźniona",
+    "ios_widget_next": "Następna",
+    "ios_widget_log": "Zapisz",
+    "ios_widget_a_dose": "Dawka",
+    "ios_widget_all_done": "Wszystko na dziś zrobione",
+    "ios_widget_nothing": "Nic nie zaplanowano",
+    "ios_widget_open": "Otwórz Bench, aby skonfigurować",
+    "ios_widget_today": "Dziś",
+    "ios_widget_paused": "Wstrzymane"
   }
 }

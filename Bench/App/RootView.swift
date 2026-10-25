@@ -78,7 +78,10 @@ struct RootView: View {
         .id(langRaw)
         .onChange(of: langRaw) { _, raw in if let l = Lang(rawValue: raw) { I18n.lang = l } }
         // Reminders follow the plan: re-armed whenever the records change.
-        .task(id: store.data) { await ReminderScheduler.rearm(store.data) }
+        .task(id: store.data) {
+            WidgetSync.update(store.data)
+            await ReminderScheduler.rearm(store.data)
+        }
     }
 }
 

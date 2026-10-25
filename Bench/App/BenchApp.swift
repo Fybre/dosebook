@@ -15,11 +15,20 @@ struct BenchApp: App {
         NotificationHandler.shared.install(store)
         // Locked before anything is drawn, when the lock is on.
         AppLock.shared.launch()
+        // Doses logged from a widget or Shortcut, recorded as soon as the app can.
+        LogInbox.apply = { [store] in WidgetSync.applyPending(store) }
+        WidgetSync.applyPending(store)
     }
 
     var body: some Scene {
         WindowGroup(id: "main") {
-            RootView()
+            Group {
+                #if DEBUG && os(iOS)
+                if ProcessInfo.processInfo.arguments.contains("-widgetPreview") { WidgetPreviewScreen() } else { RootView() }
+                #else
+                RootView()
+                #endif
+            }
                 .environment(store)
                 .tint(.accentColor)
                 // Applied to the windows rather than with preferredColorScheme, which
@@ -37,6 +46,7 @@ struct BenchApp: App {
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active {
                         store.reload(); BackupFolder.runIfDue(store)
+                        WidgetSync.applyPending(store)
                         // New weigh-ins from Apple Health each time Bench comes to the front.
                         Task { _ = try? await HealthKitAdapter.pullWeight(into: store) }
                     }

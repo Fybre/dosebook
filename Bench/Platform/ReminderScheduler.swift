@@ -11,7 +11,7 @@ enum ReminderScheduler {
 
     /// iOS keeps at most 64 pending; leave room for anything else.
     static let limit = 60
-    private static let prefix = "bench.dose."
+    private static let prefix = REMINDER_ID_PREFIX
     /// Snoozed copies live apart, so re-arming from the plan does not cancel them.
     private static let snoozePrefix = "bench.snooze."
     static let category = "bench.dose"
