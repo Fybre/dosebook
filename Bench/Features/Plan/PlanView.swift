@@ -30,6 +30,11 @@ struct PlanView: View {
             VStack(alignment: .leading, spacing: 14) {
                 Text(t("plan_subtitle")).font(.subheadline).foregroundStyle(.secondary)
                 PauseBanner(now: now)
+                // Beside each protocol's own pause: all of them at once.
+                if currentPause(protocols, now) == nil, protocols.contains(where: \.active) {
+                    Button { pausing = true } label: { Label(t("ios_pause_title"), systemImage: "pause.circle") }
+                        .buttonStyle(.bordered)
+                }
                 if protocols.isEmpty {
                     ContentUnavailableView {
                         Label(t("plan_no_protocols"), systemImage: "checklist")
@@ -62,10 +67,6 @@ struct PlanView: View {
                 Menu {
                     Button { editing = .new } label: { Label(t("plan_new_protocol"), systemImage: "square.and.pencil") }
                     Button { editing = .scan } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
-                    if currentPause(protocols, now) == nil, protocols.contains(where: \.active) {
-                        Divider()
-                        Button { pausing = true } label: { Label(t("ios_pause_title"), systemImage: "pause.circle") }
-                    }
                 } label: { Label(t("plan_new_protocol"), systemImage: "plus") }
             }
         }
