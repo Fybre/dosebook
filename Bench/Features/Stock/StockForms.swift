@@ -88,9 +88,11 @@ struct AddVialForm: View {
     /// Editing keeps the compound, profile, order and dose-history links intact.
     var editingVial: Vial?
 
+    @Environment(\.dismiss) private var dismiss
     @State private var scanning = false
     @State private var addingCompound = false
     @State private var loaded = false
+    @State private var saveFailed = false
     @State private var peptideId = ""
     @State private var strengthMg: Double = 10
     @State private var count: Double = 1
@@ -121,7 +123,9 @@ struct AddVialForm: View {
     private var spray: Bool { editingVial.map(isSpray) ?? false }
     private var capacity: Double { (tablets ? packStrengthMg(strengthMg, tabletsPerPack) : strengthMg) * 1000 }
     private var mixed: Bool { state == .reconstituted && !tablets }
-    private var remaining: Double { capacity * (partiallyUsed ? fractionLeft : 1) }
+    /// Only a mixed vial or an opened pack can be part used; a sealed one is full.
+    private var canBePartUsed: Bool { state == .reconstituted }
+    private var remaining: Double { capacity * (partiallyUsed && canBePartUsed ? fractionLeft : 1) }
     private var n: Int { max(1, min(50, Int(count.isFinite ? count : 1))) }
     private var valid: Bool {
         !peptideId.isEmpty && capacity.isFinite && capacity > 0 &&
@@ -133,6 +137,9 @@ struct AddVialForm: View {
 
     var body: some View {
         Form {
+            if saveFailed {
+                Section { CalloutText(t("ios_vial_save_failed")).font(.footnote).callout(.rose) }
+            }
             if editingVial == nil {
                 Section {
                     Button { scanning = true } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
@@ -182,7 +189,7 @@ struct AddVialForm: View {
                                  untrackedHint: t("stock_untracked_bottle"), bottleId: $bottleId)
                 }
             }
-            if state != .onOrder {
+            if canBePartUsed {
                 Section(t("ios_left_title")) {
                     Toggle(t("ios_stock_partially_used"), isOn: $partiallyUsed)
                     if partiallyUsed {
@@ -230,7 +237,8 @@ struct AddVialForm: View {
                 }
             }
         }
-        .formChrome(t(editingVial == nil ? "stock_new_vial" : "ios_vial_edit"), confirm: t("save"), disabled: !valid, action: save)
+        // Closes only once saved: a draft that does not hold together stays open with a message.
+        .formChrome(t(editingVial == nil ? "stock_new_vial" : "ios_vial_edit"), confirm: t("save"), disabled: !valid, dismissAfter: false, action: save)
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choose($0.id) }) } }
         .sheet(isPresented: $scanning) { NavigationStack { ScanVialView(onScanned: apply) } }
         .onChange(of: diluent) { bottleId = "" }
@@ -267,13 +275,13 @@ struct AddVialForm: View {
     private func save() {
         guard valid else { return }
         let v = draft()
-        store.mutate { d in
+        let saved: Bool = store.mutate { d in
             if mixed && !spray {
                 d.settings.reconstitutionPreferences[d.activeProfileId + ":" + peptideId] =
                     ReconstitutionPreference(diluentMl: ml, diluent: diluent, syringeId: syringeId)
             }
             if editingVial != nil {
-                d.editVialDetails(v, fromBottleId: bottleId.isEmpty ? nil : bottleId)
+                return d.editVialDetails(v, fromBottleId: bottleId.isEmpty ? nil : bottleId)
             } else {
                 let before = Set(d.vials.map(\.id))
                 var sealed = v
@@ -287,8 +295,10 @@ struct AddVialForm: View {
                     var first = v; first.id = added.id
                     d.editVialDetails(first, fromBottleId: bottleId.isEmpty ? nil : bottleId)
                 }
+                return true
             }
         }
+        if saved { dismiss() } else { saveFailed = true }
     }
 
     private func load() {

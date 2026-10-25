@@ -257,15 +257,17 @@ public extension AppData {
 
     /// Correct one stock record without rewriting dose history or drawing water twice.
     /// Identity and delivery links belong to the existing record, including newly added batches.
-    mutating func editVialDetails(_ draft: Vial, fromBottleId: String? = nil) {
+    /// False, with nothing changed, when the record is not found or the draft does not hold together.
+    @discardableResult
+    mutating func editVialDetails(_ draft: Vial, fromBottleId: String? = nil) -> Bool {
         guard let index = vials.firstIndex(where: { $0.id == draft.id && $0.profileId == activeProfileId }),
               draft.strengthMg.isFinite, draft.strengthMg > 0,
               (draft.drawnMcg ?? 0).isFinite, (draft.drawnMcg ?? 0) >= 0,
-              (draft.drawnMcg ?? 0) <= vialCapacityMcg(draft) else { return }
+              (draft.drawnMcg ?? 0) <= vialCapacityMcg(draft) else { return false }
         let old = vials[index]
         let startsMixing = old.state != .reconstituted && draft.state == .reconstituted && !isPack(draft)
         if draft.state == .reconstituted && !isPack(draft) {
-            guard let ml = draft.diluentMl, ml.isFinite, ml > 0 else { return }
+            guard let ml = draft.diluentMl, ml.isFinite, ml > 0 else { return false }
         }
         var updated = draft
         updated.id = old.id; updated.profileId = old.profileId
@@ -283,6 +285,7 @@ public extension AppData {
         if startsMixing, let bottle = fromBottleId, let ml = updated.diluentMl {
             diluents = drawFromBottle(diluents, bottle, ml, updated.reconstitutedAt ?? nowMillis())
         }
+        return true
     }
 
     /// Several vials added together share an order (a delivery); one vial with no postage does not.

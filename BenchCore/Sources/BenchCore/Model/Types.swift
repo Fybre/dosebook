@@ -1021,8 +1021,6 @@ public struct Settings: Extensible {
     public var weekStartsOn: Int = 1
     public var currency: String = defaultCurrency()
     public var weightUnit: WeightUnit = .kg
-    public var stockSort: StockSort = .dateAdded
-    public var reconstitutionPreferences: [String: ReconstitutionPreference] = [:]
     public var groupIdenticalVials: Bool?
     public var waterAtBottom: Bool?
     public var backupEnabled: Bool = true
@@ -1038,7 +1036,7 @@ public struct Settings: Extensible {
 
     enum CodingKeys: String, CodingKey, CaseIterable {
         case theme, doseUnit, defaultSyringeId, disclaimerAcceptedAt, budWarningDays, lowStockDoses
-        case reconstitutionPreferences, stockSort, weekStartsOn, currency, weightUnit, groupIdenticalVials, waterAtBottom, backupEnabled
+        case weekStartsOn, currency, weightUnit, groupIdenticalVials, waterAtBottom, backupEnabled
         case backupIntervalHours, backupKeep, lastBackupAt, dataChangedAt, backupNagDismissedAt
         case reminders, plotWeightOnChart
     }
@@ -1063,8 +1061,6 @@ public struct Settings: Extensible {
         weekStartsOn = v(.weekStartsOn, d.weekStartsOn)
         currency = v(.currency, d.currency)
         weightUnit = v(.weightUnit, d.weightUnit)
-        stockSort = v(.stockSort, d.stockSort)
-        reconstitutionPreferences = v(.reconstitutionPreferences, [:])
         groupIdenticalVials = o(.groupIdenticalVials)
         waterAtBottom = o(.waterAtBottom)
         backupEnabled = v(.backupEnabled, d.backupEnabled)
@@ -1096,6 +1092,31 @@ extension Settings {
 
     /// The hours after midnight that count toward the night before; 0 when off.
     public var earlyHours: Double { earlyHoursCountForNightBefore ? EARLY_HOURS_CUTOFF : 0 }
+
+    /// iOS only, in `extra`: how Stock is ordered. Earlier test builds kept it at
+    /// the top level, where it now arrives in `extra` under its old name; it is read
+    /// from there too, and moves across the next time it is set.
+    public var stockSort: StockSort {
+        get { (extra["iosStockSort"] ?? extra["stockSort"])?.stringValue.flatMap(StockSort.init(rawValue:)) ?? .dateAdded }
+        set {
+            extra.removeValue(forKey: "stockSort")
+            if newValue == .dateAdded { extra.removeValue(forKey: "iosStockSort") } else { extra["iosStockSort"] = .string(newValue.rawValue) }
+        }
+    }
+
+    /// iOS only, in `extra`: the water, diluent and syringe last used to mix each
+    /// compound, keyed "profileId:peptideId". Read from its old top-level name too.
+    public var reconstitutionPreferences: [String: ReconstitutionPreference] {
+        get {
+            let raw = extra["iosReconstitutionPreferences"] ?? extra["reconstitutionPreferences"]
+            return raw.flatMap { try? $0.decode([String: ReconstitutionPreference].self) } ?? [:]
+        }
+        set {
+            extra.removeValue(forKey: "reconstitutionPreferences")
+            if newValue.isEmpty { extra.removeValue(forKey: "iosReconstitutionPreferences") }
+            else { extra["iosReconstitutionPreferences"] = try? JSONValue.from(newValue) }
+        }
+    }
 }
 
 // MARK: - Labs

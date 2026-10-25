@@ -554,5 +554,19 @@ private func stockOf(_ mcg: Double) -> Stock {
         #expect(loaded.settings.reconstitutionPreferences == data.settings.reconstitutionPreferences)
         #expect(loaded.settings.stockSort == .newestFirst)
         #expect(try JSONDecoder().decode(Settings.self, from: Data("{}".utf8)).reconstitutionPreferences.isEmpty)
+ 
+        // Kept in `extra`, so the web app carries them through without knowing them.
+        let json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(data)) as? [String: Any]
+        let settings = json?["settings"] as? [String: Any]
+        #expect(settings?["iosStockSort"] as? String == "newestFirst" && settings?["iosReconstitutionPreferences"] != nil)
+    }
+
+    @Test func olderTopLevelKeysAreStillRead() throws {
+        let old = #"{"settings":{"stockSort":"alphabetical","reconstitutionPreferences":{"me:kpv":{"diluentMl":3,"diluent":"bacteriostatic","syringeId":"u100-1"}}}}"#
+        var loaded = try AppData.load(Data(old.utf8))
+        #expect(loaded.settings.stockSort == .alphabetical)
+        #expect(loaded.settings.reconstitutionPreferences["me:kpv"]?.diluentMl == 3)
+        loaded.settings.stockSort = .newestFirst
+        #expect(loaded.settings.extra["stockSort"] == nil && loaded.settings.stockSort == .newestFirst)
     }
 }
