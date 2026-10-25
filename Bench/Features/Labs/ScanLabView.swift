@@ -152,7 +152,10 @@ struct ScanLabView: View {
                     TextField(t("labs_lab_name"), text: $lab)
                     Text(t("ios_lab_scan_review")).font(.footnote).foregroundStyle(.secondary)
                 }
-                ForEach($rows.filter { $0.wrappedValue.pageID == pageID }) { $row in
+                // Every row by identity, showing this page's: a filtered array of bindings
+                // points at positions, and removing a page could leave one pointing past the end.
+                ForEach($rows) { $row in
+                    if row.pageID == pageID {
                     Section(row.candidate.markerName) {
                         Text(row.candidate.source).font(.caption.monospaced()).textSelection(.enabled)
                         if duplicate(row) {
@@ -173,6 +176,7 @@ struct ScanLabView: View {
                     .onChange(of: row.value) { row.checked = false }
                     .onChange(of: row.low) { row.checked = false }
                     .onChange(of: row.high) { row.checked = false }
+                    }
                 }
                 Section {
                     Text(t("ios_lab_all_pages")).font(.footnote).foregroundStyle(.secondary)
