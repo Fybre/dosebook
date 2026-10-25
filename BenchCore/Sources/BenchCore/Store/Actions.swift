@@ -22,14 +22,19 @@ public extension AppData {
 
     var activeProfile: Profile { profiles.first { $0.id == activeProfileId } ?? profiles.first ?? DEFAULT_PROFILE }
 
-    /// Built-in library plus your own compounds, yours winning, by name.
+    /// Built-in library plus your own compounds, yours winning, by name. A library
+    /// blend carries your vial's amounts where you have given them.
     var allPeptides: [Peptide] {
         let mine = Set(customPeptides.map(\.id))
-        return (Library.peptides.filter { !mine.contains($0.id) } + customPeptides)
+        let amounts = blendAmounts
+        return (Library.peptides.filter { !mine.contains($0.id) }.map { withBlendAmounts($0, amounts[$0.id]) } + customPeptides)
             .sorted { $0.name.localizedCompare($1.name) == .orderedAscending }
     }
 
-    func peptide(_ id: String) -> Peptide? { findPeptide(id, custom: customPeptides) }
+    func peptide(_ id: String) -> Peptide? {
+        if let mine = customPeptides.first(where: { $0.id == id }) { return mine }
+        return Library.byId[id].map { withBlendAmounts($0, blendAmounts[id]) }
+    }
 
     /// Everything belonging to the active profile.
     var mine: AppData {

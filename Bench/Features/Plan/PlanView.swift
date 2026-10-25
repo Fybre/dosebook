@@ -110,6 +110,7 @@ struct ProtocolCard: View {
                         }
                     }
                     Text(p.name).font(.subheadline).foregroundStyle(.secondary)
+                    if let contents = blendContents(peptide) { Text(contents).font(.caption).foregroundStyle(.secondary) }
                 }
                 Spacer()
                 Menu {

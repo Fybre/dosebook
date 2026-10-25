@@ -351,6 +351,7 @@ private struct VialRow: View {
                     if st.expired { Pill(text: t("stock_past_date"), tone: .rose) }
                     else if budSoon { Pill(text: t("stock_use_soon"), tone: .tangerine) }
                 }
+                if let contents = blendContents(data.peptide(v.peptideId)) { Text(contents).font(.caption).foregroundStyle(.secondary) }
                 details(v, st, spray: spray, pack: pack, marks: marks, dose: dose, many: many, strengthTotal: strengthTotal, expiresAt: expiresAt, budSoon: budSoon)
                     .font(.caption).foregroundStyle(.secondary)
 

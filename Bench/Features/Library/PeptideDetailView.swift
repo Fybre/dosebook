@@ -243,6 +243,7 @@ private struct BlendPanel: View {
 
     var body: some View {
         Section(t("pep_whats_in_it")) {
+            BlendAmountsPrompt(peptideId: blend.id)
             ForEach(blend.components ?? [], id: \.name) { c in
                 HStack(spacing: 12) {
                     Text(c.mgPerVial.map { "\(jsNumberString($0)) mg" } ?? "n/a").font(.subheadline.monospacedDigit()).foregroundStyle(Tone.tangerine.color).frame(width: 64, alignment: .leading)

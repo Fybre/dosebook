@@ -309,6 +309,7 @@ struct TodayView: View {
                         NavigationLink(value: track.protocol_.peptideId) { Text(track.name).font(.headline) }.buttonStyle(.plain)
                         if let snap = track.snap { Pill(text: t(CURVE_KEY[snap.phase]!), tone: snap.phase == .cleared ? .neutral : .sky) }
                     }
+                    if let contents = blendContents(track.peptide) { Text(contents).font(.caption).foregroundStyle(.secondary) }
                     if (track.due.state == .scheduled || track.due.state == .upcoming), let at = track.due.at {
                         Text(t("now_next_at", ["when": .string(relativeTime(at, nowMs: now))])).font(.caption).foregroundStyle(.secondary)
                     }

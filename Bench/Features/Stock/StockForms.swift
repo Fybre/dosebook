@@ -140,6 +140,7 @@ struct AddVialForm: View {
                         ForEach(store.data.allPeptides) { Text($0.name).tag($0.id) }
                     }
                     Button { addingCompound = true } label: { Label(t("add_compound_inline"), systemImage: "plus") }
+                BlendAmountsPrompt(peptideId: peptideId)
                 }
             } else {
                 Section { Text(store.data.peptide(peptideId)?.name ?? peptideId).font(.headline) }

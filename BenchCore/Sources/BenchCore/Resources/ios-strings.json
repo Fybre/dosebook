@@ -12,7 +12,6 @@
     "ios_lab_all_pages": "Save includes verified results from all pages.",
     "ios_lab_multipage_intro": "Add photos of every page of one report. Photos stay on this device and are not saved. Select a page to review its results; tap the photo to zoom.",
     "ios_lab_page_date": "This page has a different date. Import one collection date at a time; remove pages from other reports and check the date below.",
-
     "ios_stock_percent_left": "{percent}% left",
     "ios_vial_edit": "Edit vial",
     "ios_vial_edit_one": "Edit one vial",
@@ -20,17 +19,14 @@
     "ios_vial_purchase": "Purchase & label details",
     "ios_vial_batch_open": "Only the first vial or pack will be opened; the rest stay sealed.",
     "ios_vial_correct_mix": "These fields correct the original mixing details. Use Add diluent from the vial’s More menu to record a top-up.",
-
     "ios_recon_summary": "Dose summary",
     "ios_recon_no_protocol": "No active injection protocol for this compound in the current profile. Add or activate one in Plan to see units and dose counts.",
     "ios_recon_doses": "{count} full doses remaining at {units} {scale} units each",
     "ios_recon_no_dose": "No dose is set for the current phase.",
     "ios_recon_current_dose": "Based on today’s dose and the amount remaining. Each protocol is shown separately; counts are not combined and will change if the dose changes.",
-
     "ios_stock_sort": "Sort stock",
     "ios_stock_sort_alpha": "Alphabetical (A–Z)",
     "ios_stock_sort_date": "Date added (oldest first)",
-
     "ios_stock_already_reconstituted": "Already reconstituted",
     "ios_stock_reconstitute_next": "Add the stock, then enter the mixing details and any amount already used on the reconstitution screen.",
     "ios_stock_reconstitute_one": "One vial will be reconstituted; the other vials in this batch stay sealed.",
@@ -38,7 +34,6 @@
     "ios_stock_added_for_reconstitution": "Stock added. Save the mixing details below to finish. If you cancel, the new stock stays sealed.",
     "ios_stock_partially_used": "Already partially used",
     "ios_stock_partial_hint": "Enter the original amount of diluent above and the amount remaining here. Past use adjusts stock without adding dose logs. Leave the bottle untracked if that water has already been accounted for.",
-
     "ios_lab_scan_title": "Import bloodwork photo",
     "ios_lab_scan_intro": "Photograph one page of your result, or choose a photo. Text is read on this iPhone; the photo is not uploaded or saved. Keep the page flat, well lit and in focus.",
     "ios_lab_scan_photo": "View original photo",
@@ -50,7 +45,6 @@
     "ios_lab_scan_camera_denied": "Allow camera access in Settings to photograph your result.",
     "ios_lab_scan_unreadable": "Could not load that photo. Please choose another image or take a new photo.",
     "ios_lab_scan_empty": "No supported blood markers were recognised. Try a clearer photo, correct the text above, or enter the results manually.",
-
     "more": "More",
     "ios_sync_title": "iCloud",
     "ios_sync_cloud": "Syncing through your iCloud account. Every device signed in to it sees the same records.",
@@ -234,7 +228,14 @@
     "ios_units_count_one": "{n} unit",
     "ios_units_count_other": "{n} units",
     "ios_units_per": "{marks} units per {dose}",
-    "ios_scale_units": "{scale} units"
+    "ios_scale_units": "{scale} units",
+    "ios_blend_amounts_title": "What is in your vial",
+    "ios_blend_amounts_hint": "{name} is sold in different strengths, so the library does not say how much of each part it holds. With the amounts on your vial’s label, doses show what you get of each part, and your vials’ strength follows. Kept with your data.",
+    "ios_blend_amounts_clear": "Forget these amounts",
+    "ios_blend_amounts_ask": "{name} holds {parts}, but how much of each varies by seller. Add the amounts on your vial so doses show what you get of each.",
+    "ios_blend_amounts_set": "Set the amounts in your vial",
+    "ios_blend_amounts_yours": "Your vial: {contents}",
+    "ios_blend_amounts_change": "Change"
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -249,7 +250,6 @@
     "ios_lab_all_pages": "Gespeichert werden bestätigte Ergebnisse aller Seiten.",
     "ios_lab_multipage_intro": "Füge Fotos aller Seiten eines Befunds hinzu. Fotos bleiben auf diesem Gerät und werden nicht gespeichert. Wähle eine Seite zum Prüfen; tippe auf das Foto zum Vergrößern.",
     "ios_lab_page_date": "Diese Seite hat ein anderes Datum. Importiere nur ein Entnahmedatum auf einmal. Entferne Seiten anderer Befunde und prüfe das Datum unten.",
-
     "ios_stock_percent_left": "{percent}% übrig",
     "ios_vial_edit": "Fläschchen bearbeiten",
     "ios_vial_edit_one": "Ein Fläschchen bearbeiten",
@@ -257,17 +257,14 @@
     "ios_vial_purchase": "Kauf- und Etikettdetails",
     "ios_vial_batch_open": "Nur das erste Fläschchen oder die erste Packung wird geöffnet; der Rest bleibt versiegelt.",
     "ios_vial_correct_mix": "Diese Felder korrigieren die ursprünglichen Mischdetails. Verwende Verdünner hinzufügen im Mehr-Menü des Fläschchens, um ein Nachfüllen zu erfassen.",
-
     "ios_recon_summary": "Dosisübersicht",
     "ios_recon_no_protocol": "Für diesen Wirkstoff gibt es im aktuellen Profil kein aktives Injektionsprotokoll. Füge unter Plan eines hinzu oder aktiviere es, um Einheiten und Dosisanzahl zu sehen.",
     "ios_recon_doses": "{count} volle Dosen verbleiben, jeweils {units} {scale}-Einheiten",
     "ios_recon_no_dose": "Für die aktuelle Phase ist keine Dosis festgelegt.",
     "ios_recon_current_dose": "Basierend auf der heutigen Dosis und der Restmenge. Jedes Protokoll wird einzeln angezeigt; die Anzahlen werden nicht kombiniert und ändern sich bei Dosisänderungen.",
-
     "ios_stock_sort": "Bestand sortieren",
     "ios_stock_sort_alpha": "Alphabetisch (A–Z)",
     "ios_stock_sort_date": "Hinzugefügt (älteste zuerst)",
-
     "ios_stock_already_reconstituted": "Bereits rekonstituiert",
     "ios_stock_reconstitute_next": "Füge den Bestand hinzu und gib anschließend auf dem Rekonstitutionsbildschirm die Mischdetails und die bereits verbrauchte Menge ein.",
     "ios_stock_reconstitute_one": "Ein Fläschchen wird rekonstituiert; die übrigen Fläschchen dieser Charge bleiben versiegelt.",
@@ -275,7 +272,6 @@
     "ios_stock_added_for_reconstitution": "Bestand hinzugefügt. Speichere unten die Mischdetails. Wenn du abbrichst, bleibt der neue Bestand versiegelt.",
     "ios_stock_partially_used": "Bereits teilweise verbraucht",
     "ios_stock_partial_hint": "Gib oben die ursprüngliche Verdünnermenge und hier die Restmenge ein. Früherer Verbrauch ändert den Bestand, ohne Dosisprotokolle hinzuzufügen. Wähle keine erfasste Flasche, wenn dieses Wasser bereits berücksichtigt wurde.",
-
     "ios_lab_scan_title": "Blutwerte aus Foto importieren",
     "ios_lab_scan_intro": "Fotografiere eine Seite deines Befunds oder wähle ein Foto. Der Text wird auf diesem iPhone gelesen; das Foto wird weder hochgeladen noch gespeichert. Halte die Seite flach, gut beleuchtet und scharf.",
     "ios_lab_scan_photo": "Originalfoto anzeigen",
@@ -287,7 +283,6 @@
     "ios_lab_scan_camera_denied": "Erlaube den Kamerazugriff in den Einstellungen, um deinen Befund zu fotografieren.",
     "ios_lab_scan_unreadable": "Dieses Foto konnte nicht geladen werden. Wähle ein anderes Bild oder mache ein neues Foto.",
     "ios_lab_scan_empty": "Keine unterstützten Blutmarker erkannt. Versuche ein schärferes Foto, korrigiere den Text oben oder gib die Werte von Hand ein.",
-
     "more": "Mehr",
     "ios_sync_title": "iCloud",
     "ios_sync_cloud": "Synchronisiert über deinen iCloud-Account. Jedes damit angemeldete Gerät sieht dieselben Einträge.",
@@ -471,7 +466,14 @@
     "ios_units_count_one": "{n} Einheit",
     "ios_units_count_other": "{n} Einheiten",
     "ios_units_per": "{marks} Einheiten pro {dose}",
-    "ios_scale_units": "{scale}-Einheiten"
+    "ios_scale_units": "{scale}-Einheiten",
+    "ios_blend_amounts_title": "Was in deiner Ampulle ist",
+    "ios_blend_amounts_hint": "{name} wird in verschiedenen Stärken verkauft, daher nennt die Bibliothek keine Mengen je Bestandteil. Mit den Mengen vom Etikett deiner Ampulle zeigen Dosen, was du von jedem Teil bekommst, und die Stärke deiner Ampullen passt sich an. Wird mit deinen Daten gespeichert.",
+    "ios_blend_amounts_clear": "Diese Mengen vergessen",
+    "ios_blend_amounts_ask": "{name} enthält {parts}, aber die Mengen hängen vom Verkäufer ab. Trage die Mengen deiner Ampulle ein, damit Dosen zeigen, was du von jedem bekommst.",
+    "ios_blend_amounts_set": "Mengen deiner Ampulle eintragen",
+    "ios_blend_amounts_yours": "Deine Ampulle: {contents}",
+    "ios_blend_amounts_change": "Ändern"
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -486,7 +488,6 @@
     "ios_lab_all_pages": "Shranjeni bodo preverjeni rezultati z vseh strani.",
     "ios_lab_multipage_intro": "Dodaj fotografije vseh strani enega izvida. Fotografije ostanejo na tej napravi in se ne shranijo. Izberi stran za pregled rezultatov; tapni fotografijo za povečavo.",
     "ios_lab_page_date": "Ta stran ima drug datum. Uvažaj le en datum odvzema naenkrat; odstrani strani drugih izvidov in preveri spodnji datum.",
-
     "ios_stock_percent_left": "{percent}% preostalo",
     "ios_vial_edit": "Uredi vialo",
     "ios_vial_edit_one": "Uredi eno vialo",
@@ -494,17 +495,14 @@
     "ios_vial_purchase": "Podatki o nakupu in etiketi",
     "ios_vial_batch_open": "Odprta bo le prva viala ali pakiranje; ostalo ostane zaprto.",
     "ios_vial_correct_mix": "Ta polja popravljajo prvotne podatke o mešanju. Za dodajanje razredčila uporabi možnost Dodaj razredčilo v meniju Več pri viali.",
-
     "ios_recon_summary": "Povzetek odmerkov",
     "ios_recon_no_protocol": "Za to učinkovino v trenutnem profilu ni aktivnega protokola injiciranja. Dodaj ali aktiviraj ga v načrtu za prikaz enot in števila odmerkov.",
     "ios_recon_doses": "Preostali polni odmerki: {count}, po {units} enot {scale}",
     "ios_recon_no_dose": "Za trenutno fazo odmerek ni določen.",
     "ios_recon_current_dose": "Na podlagi današnjega odmerka in preostale količine. Vsak protokol je prikazan posebej; števila niso sešteta in se spremenijo ob spremembi odmerka.",
-
     "ios_stock_sort": "Razvrsti zalogo",
     "ios_stock_sort_alpha": "Po abecedi (A–Ž)",
     "ios_stock_sort_date": "Datum dodajanja (najstarejše najprej)",
-
     "ios_stock_already_reconstituted": "Že rekonstituirano",
     "ios_stock_reconstitute_next": "Dodaj zalogo, nato na zaslonu za rekonstitucijo vnesi podatke o mešanju in že porabljeni količini.",
     "ios_stock_reconstitute_one": "Rekonstituirana bo ena viala; druge viale v tej seriji ostanejo zaprte.",
@@ -512,7 +510,6 @@
     "ios_stock_added_for_reconstitution": "Zaloga je dodana. Za dokončanje shrani spodnje podatke o mešanju. Če prekličeš, nova zaloga ostane zaprta.",
     "ios_stock_partially_used": "Že delno porabljeno",
     "ios_stock_partial_hint": "Zgoraj vnesi prvotno količino razredčila, tukaj pa preostalo količino. Pretekla poraba prilagodi zalogo brez dodajanja zapisov odmerkov. Ne izberi spremljane stekleničke, če je bila ta voda že upoštevana.",
-
     "ios_lab_scan_title": "Uvozi krvne izvide s fotografije",
     "ios_lab_scan_intro": "Fotografiraj eno stran izvida ali izberi fotografijo. Besedilo se prebere na tem iPhonu; fotografija se ne naloži in ne shrani. Stran naj bo ravna, dobro osvetljena in izostrena.",
     "ios_lab_scan_photo": "Prikaži izvirno fotografijo",
@@ -524,7 +521,6 @@
     "ios_lab_scan_camera_denied": "V nastavitvah dovoli dostop do kamere za fotografiranje izvida.",
     "ios_lab_scan_unreadable": "Fotografije ni bilo mogoče naložiti. Izberi drugo sliko ali posnemi novo fotografijo.",
     "ios_lab_scan_empty": "Ni prepoznanih podprtih krvnih označevalcev. Poskusi z ostrejšo fotografijo, popravi zgornje besedilo ali rezultate vnesi ročno.",
-
     "more": "Več",
     "ios_sync_title": "iCloud",
     "ios_sync_cloud": "Sinhronizacija prek tvojega računa iCloud. Vse naprave, prijavljene vanj, vidijo iste zapise.",
@@ -714,7 +710,14 @@
     "ios_units_count_two": "{n} enoti",
     "ios_units_count_few": "{n} enote",
     "ios_units_per": "{marks} enot za {dose}",
-    "ios_scale_units": "Enote {scale}"
+    "ios_scale_units": "Enote {scale}",
+    "ios_blend_amounts_title": "Kaj je v tvoji viali",
+    "ios_blend_amounts_hint": "{name} se prodaja v različnih jakostih, zato knjižnica ne pove, koliko je posameznega dela. Z količinami z etikete tvoje viale odmerki pokažejo, koliko dobiš vsakega dela, jakost vial pa se prilagodi. Shranjeno s tvojimi podatki.",
+    "ios_blend_amounts_clear": "Pozabi te količine",
+    "ios_blend_amounts_ask": "{name} vsebuje {parts}, količine pa so odvisne od prodajalca. Dodaj količine s svoje viale, da odmerki pokažejo, koliko dobiš vsakega.",
+    "ios_blend_amounts_set": "Nastavi količine v svoji viali",
+    "ios_blend_amounts_yours": "Tvoja viala: {contents}",
+    "ios_blend_amounts_change": "Spremeni"
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -729,7 +732,6 @@
     "ios_lab_all_pages": "Zapis obejmuje sprawdzone wyniki ze wszystkich stron.",
     "ios_lab_multipage_intro": "Dodaj zdjęcia wszystkich stron jednego wyniku. Zdjęcia pozostają na urządzeniu i nie są zapisywane. Wybierz stronę do sprawdzenia; dotknij zdjęcia, aby powiększyć.",
     "ios_lab_page_date": "Ta strona ma inną datę. Importuj jedną datę pobrania naraz; usuń strony innych wyników i sprawdź datę poniżej.",
-
     "ios_stock_percent_left": "Pozostało {percent}%",
     "ios_vial_edit": "Edytuj fiolkę",
     "ios_vial_edit_one": "Edytuj jedną fiolkę",
@@ -737,17 +739,14 @@
     "ios_vial_purchase": "Szczegóły zakupu i etykiety",
     "ios_vial_batch_open": "Otwarta zostanie tylko pierwsza fiolka lub opakowanie; pozostałe pozostaną zamknięte.",
     "ios_vial_correct_mix": "Te pola poprawiają pierwotne szczegóły przygotowania. Aby zapisać dolanie rozpuszczalnika, wybierz Dodaj rozpuszczalnik w menu Więcej fiolki.",
-
     "ios_recon_summary": "Podsumowanie dawek",
     "ios_recon_no_protocol": "W bieżącym profilu nie ma aktywnego protokołu iniekcji dla tej substancji. Dodaj lub aktywuj go w Planie, aby zobaczyć jednostki i liczbę dawek.",
     "ios_recon_doses": "Pozostało {count} pełnych dawek po {units} jednostek {scale}",
     "ios_recon_no_dose": "Nie ustawiono dawki dla bieżącej fazy.",
     "ios_recon_current_dose": "Na podstawie dzisiejszej dawki i pozostałej ilości. Każdy protokół jest pokazany osobno; liczby nie są sumowane i zmienią się wraz ze zmianą dawki.",
-
     "ios_stock_sort": "Sortuj zapas",
     "ios_stock_sort_alpha": "Alfabetycznie (A–Z)",
     "ios_stock_sort_date": "Data dodania (od najstarszych)",
-
     "ios_stock_already_reconstituted": "Już rozpuszczona",
     "ios_stock_reconstitute_next": "Dodaj zapas, a następnie na ekranie rozpuszczania wpisz szczegóły przygotowania i już zużytą ilość.",
     "ios_stock_reconstitute_one": "Jedna fiolka zostanie rozpuszczona; pozostałe fiolki z tej partii pozostaną zamknięte.",
@@ -755,7 +754,6 @@
     "ios_stock_added_for_reconstitution": "Zapas dodany. Zapisz poniższe szczegóły przygotowania, aby zakończyć. Jeśli anulujesz, nowy zapas pozostanie zamknięty.",
     "ios_stock_partially_used": "Już częściowo zużyta",
     "ios_stock_partial_hint": "Powyżej wpisz pierwotną ilość rozpuszczalnika, a tutaj pozostałą ilość. Wcześniejsze zużycie zmienia zapas bez dodawania zapisów dawek. Nie wybieraj śledzonej butelki, jeśli ta woda została już uwzględniona.",
-
     "ios_lab_scan_title": "Importuj wyniki krwi ze zdjęcia",
     "ios_lab_scan_intro": "Zrób zdjęcie jednej strony wyniku lub wybierz zdjęcie. Tekst jest odczytywany na tym iPhonie; zdjęcie nie jest wysyłane ani zapisywane. Strona powinna być płaska, dobrze oświetlona i ostra.",
     "ios_lab_scan_photo": "Pokaż oryginalne zdjęcie",
@@ -767,7 +765,6 @@
     "ios_lab_scan_camera_denied": "Zezwól na dostęp do aparatu w Ustawieniach, aby sfotografować wynik.",
     "ios_lab_scan_unreadable": "Nie udało się wczytać tego zdjęcia. Wybierz inne lub zrób nowe.",
     "ios_lab_scan_empty": "Nie rozpoznano obsługiwanych markerów krwi. Spróbuj wyraźniejszego zdjęcia, popraw tekst powyżej lub wpisz wyniki ręcznie.",
-
     "more": "Więcej",
     "ios_sync_title": "iCloud",
     "ios_sync_cloud": "Synchronizacja przez Twoje konto iCloud. Każde zalogowane na nie urządzenie widzi te same wpisy.",
@@ -957,6 +954,13 @@
     "ios_units_count_few": "{n} jednostki",
     "ios_units_count_many": "{n} jednostek",
     "ios_units_per": "{marks} jednostek na {dose}",
-    "ios_scale_units": "Jednostki {scale}"
+    "ios_scale_units": "Jednostki {scale}",
+    "ios_blend_amounts_title": "Co jest w Twojej fiolce",
+    "ios_blend_amounts_hint": "{name} jest sprzedawany w różnych mocach, więc biblioteka nie podaje ilości każdego składnika. Z ilościami z etykiety Twojej fiolki dawki pokażą, ile dostajesz każdego składnika, a moc fiolek się dopasuje. Zapisywane z Twoimi danymi.",
+    "ios_blend_amounts_clear": "Zapomnij te ilości",
+    "ios_blend_amounts_ask": "{name} zawiera {parts}, ale ilości zależą od sprzedawcy. Dodaj ilości ze swojej fiolki, aby dawki pokazywały, ile dostajesz każdego.",
+    "ios_blend_amounts_set": "Ustaw ilości w swojej fiolce",
+    "ios_blend_amounts_yours": "Twoja fiolka: {contents}",
+    "ios_blend_amounts_change": "Zmień"
   }
 }

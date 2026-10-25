@@ -97,6 +97,7 @@ struct ProtocolForm: View {
                     ForEach(peptides) { Text($0.name).tag($0.id) }
                 }
                 Button { addingCompound = true } label: { Label(t("add_compound_inline"), systemImage: "plus") }
+                BlendAmountsPrompt(peptideId: peptideId)
                 if routes.count > 1 {
                     Picker(t("plan_route"), selection: $route) { ForEach(routes, id: \.self) { Text($0.label).tag($0) } }
                     Text(route == .intranasal ? t("plan_route_hint_nasal") : t("plan_route_hint")).font(.caption).foregroundStyle(.secondary)
