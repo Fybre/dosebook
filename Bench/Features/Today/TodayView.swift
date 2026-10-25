@@ -66,7 +66,7 @@ struct TodayView: View {
                     }
                     if !hidden.contains(.protocols) {
                         Text(t("now_active_protocols").uppercased()).font(.caption.bold()).foregroundStyle(.secondary).id("protocols")
-                        ForEach(tracks) { protocolCard($0, data: data) }
+                        ForEach(tracks) { protocolCard($0, data: data).id("proto-\($0.protocol_.peptideId)") }
                     }
                 }
             }
@@ -121,6 +121,30 @@ struct TodayView: View {
             NavigationStack { LogDoseSheet(defaultPeptideId: req.peptideId, anySite: req.anySite) }
         }
         .sheet(item: $addingVial) { v in NavigationStack { AddVialForm(startingPeptideId: v.peptideId, alreadyMixed: v.mixed) } }
+    }
+
+    /// A part of a blend: its status, level and, if it has one, its timeline, as a single compound's card shows.
+    private func partLevelBlock(_ part: PartLevel, tone: Tone) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Text(part.name).font(.footnote.weight(.semibold))
+                Pill(text: t(CURVE_KEY[part.snap.phase]!), tone: part.snap.phase == .cleared ? .neutral : .sky)
+            }
+            ProgressView(value: min(1, part.snap.level)).tint(tone.color)
+            HStack {
+                Text(t("now_percent_of_peak", ["pct": .string(jsToFixed(part.snap.percentOfPeak, 0))])).font(.footnote.weight(.semibold)).monospacedDigit()
+                Text(t("curve_\(part.snap.phase.rawValue)_detail")).font(.footnote).foregroundStyle(.secondary)
+            }
+            if let phase = part.phase {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(phase.label).font(.footnote)
+                    if let next = phase.hoursToNext { Text(t("now_phase_shifts", ["in": .string(formatDuration(next))])).font(.caption2).opacity(0.75) }
+                }
+                .foregroundStyle(tone.color)
+                .padding(10).frame(maxWidth: .infinity, alignment: .leading)
+                .background(tone.color.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+            }
+        }
     }
 
     private func answerLogDoseRequest() {
@@ -352,6 +376,7 @@ struct TodayView: View {
                 Text(t("now_one_dose_delivers", ["dose": .string(formatDose(track.targetMcg))])).font(.caption).foregroundStyle(.secondary)
                 BlendBreakdownView(blend: peptide, doseMcg: track.targetMcg, resolve: { data.peptide($0) }, dosesPerWeek: protocolDosesPerWeek(track.protocol_, now))
             }
+            ForEach(track.partLevels) { part in partLevelBlock(part, tone: track.tone) }
             if let phase = track.phase {
                 VStack(alignment: .leading, spacing: 4) {
                     Label(t("now_right_now_since", ["since": .string(formatDuration(hoursSince(track.lastLoggedAt, now) ?? 0))]), systemImage: "sparkles").font(.caption.bold())
@@ -368,7 +393,8 @@ struct TodayView: View {
                     + Text(" " + (track.lastLoggedAt.map { relativeTime($0, nowMs: now) } ?? t("now_never")))
                     + Text(track.lastLog.flatMap { l in l.site.flatMap { routeHasSite(l.route) ? " · " + siteLabel($0) : nil } } ?? "")
                 Text(t("library_half_life")).foregroundStyle(.secondary)
-                    + Text(" " + (!track.blendParts.isEmpty ? t("now_per_component")
+                    + Text(" " + (!track.partLevels.isEmpty ? track.partLevels.map { "\($0.name) \(formatHalfLife($0.halfLifeHours))" }.joined(separator: " · ")
+                                  : !track.blendParts.isEmpty ? t("now_per_component")
                                   : yours.map { t("now_half_life_yours", ["hours": .string(formatHalfLife($0)), "marker": .string(t("now_your_figure"))]) }
                                   ?? formatHalfLife(track.peptide?.halfLifeHours)))
                 stockLine(track, low: low)

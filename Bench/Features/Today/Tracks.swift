@@ -11,6 +11,8 @@ struct Track: Identifiable {
     var due: DueStatus
     var stock: Stock
     var snap: LevelSnapshot?
+    /// For a blend: where each part of it is, as `snap` is for a single compound.
+    var partLevels: [PartLevel] = []
     var blendParts: [ComponentDose]
     var curve: Curve?
     var lastLog: DoseLog?
@@ -21,6 +23,15 @@ struct Track: Identifiable {
     var tone: Tone
     var id: String { protocol_.id }
     var name: String { peptide?.name ?? protocol_.peptideId }
+}
+
+/// One part of a blend at one instant: its level, and its timeline phase if it has one.
+struct PartLevel: Identifiable {
+    var name: String
+    var snap: LevelSnapshot
+    var phase: TimelinePhase?
+    var halfLifeHours: Double
+    var id: String { name }
 }
 
 /// A line on the levels chart: a compound, or one component of a blend.
@@ -51,8 +62,17 @@ enum TodayModel {
             let parts = peptide.map { isBlend($0) ? decomposeDose($0, target, resolve: { data.peptide($0) }, dosesPerWeek: protocolDosesPerWeek(p, now)) : [] } ?? []
             let curve = peptide.flatMap { curveFor($0, yours: data.halfLifeOverrides[$0.id]) }
             let snap = curve.flatMap { isMeasuredInPeople($0.basis) ? snapshot(now, doses, $0.params, reference) : nil }
+            // Each part of a blend on its own curve, as the chart draws them.
+            let partLevels: [PartLevel] = modellableComponents(parts).compactMap { part in
+                guard let pp = part.peptide, let curve = curveFor(pp, yours: data.halfLifeOverrides[pp.id]), isMeasuredInPeople(curve.basis) else { return nil }
+                let scaled = doses.map { DoseEvent(at: $0.at, amountMcg: $0.amountMcg * part.fraction, vialId: $0.vialId) }
+                return PartLevel(name: part.name,
+                                 snap: snapshot(now, scaled, curve.params, part.mcg > 0 ? part.mcg : 1),
+                                 phase: hoursSince(lastLog?.at, now).flatMap { timelinePhaseAt(pp, $0) },
+                                 halfLifeHours: curve.params.halfLifeHours)
+            }
             return Track(protocol_: p, peptide: peptide, doses: doses, targetMcg: target, referenceMcg: reference, due: due,
-                         stock: stock, snap: snap, blendParts: parts, curve: curve, lastLog: lastLog, lastLoggedAt: lastLog?.at,
+                         stock: stock, snap: snap, partLevels: partLevels, blendParts: parts, curve: curve, lastLog: lastLog, lastLoggedAt: lastLog?.at,
                          phase: peptide.flatMap { timelinePhaseAt($0, hoursSince(lastLog?.at, now) ?? -1) },
                          supplyDays: daysOfSupplyForProtocol(stock, p, now),
                          perDay: dosesPerDoseDay(phaseSpanAt(p, now)?.schedule ?? p.schedule),
