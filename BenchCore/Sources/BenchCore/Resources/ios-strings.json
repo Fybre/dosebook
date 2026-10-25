@@ -236,7 +236,16 @@
     "ios_blend_amounts_set": "Set the amounts in your vial",
     "ios_blend_amounts_yours": "Your vial: {contents}",
     "ios_blend_amounts_change": "Change",
-    "ios_vial_save_failed": "That could not be saved. Check the strength, the water added and how much is left."
+    "ios_vial_save_failed": "That could not be saved. Check the strength, the water added and how much is left.",
+    "ios_pause_title": "Pause everything",
+    "ios_pause_start": "Pause",
+    "ios_pause_until_resumed": "Until I resume",
+    "ios_pause_resume_on": "Resume on",
+    "ios_pause_hint": "{protocols} running stop for now: no doses are due, none show as missed, and reminders stop. Nothing is deleted, and doses already logged stay. Doses that would have fallen in the pause are not made up.",
+    "ios_pause_until": "Paused until {date}",
+    "ios_pause_open": "Paused until you resume",
+    "ios_pause_banner_hint": "No doses are due and nothing counts as missed. Reminders are off.",
+    "ios_pause_resume": "Resume now"
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -475,7 +484,16 @@
     "ios_blend_amounts_set": "Mengen deiner Ampulle eintragen",
     "ios_blend_amounts_yours": "Deine Ampulle: {contents}",
     "ios_blend_amounts_change": "Ändern",
-    "ios_vial_save_failed": "Das konnte nicht gespeichert werden. Prüfe Stärke, zugegebenes Wasser und Restmenge."
+    "ios_vial_save_failed": "Das konnte nicht gespeichert werden. Prüfe Stärke, zugegebenes Wasser und Restmenge.",
+    "ios_pause_title": "Alles pausieren",
+    "ios_pause_start": "Pausieren",
+    "ios_pause_until_resumed": "Bis ich fortsetze",
+    "ios_pause_resume_on": "Fortsetzen am",
+    "ios_pause_hint": "{protocols} laufend, pausieren jetzt: keine Dosis ist fällig, keine gilt als verpasst, Erinnerungen stoppen. Nichts wird gelöscht, bereits erfasste Dosen bleiben. Dosen, die in die Pause gefallen wären, werden nicht nachgeholt.",
+    "ios_pause_until": "Pausiert bis {date}",
+    "ios_pause_open": "Pausiert, bis du fortsetzt",
+    "ios_pause_banner_hint": "Keine Dosis ist fällig und nichts gilt als verpasst. Erinnerungen sind aus.",
+    "ios_pause_resume": "Jetzt fortsetzen"
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -720,7 +738,16 @@
     "ios_blend_amounts_set": "Nastavi količine v svoji viali",
     "ios_blend_amounts_yours": "Tvoja viala: {contents}",
     "ios_blend_amounts_change": "Spremeni",
-    "ios_vial_save_failed": "Tega ni bilo mogoče shraniti. Preveri jakost, dodano vodo in preostanek."
+    "ios_vial_save_failed": "Tega ni bilo mogoče shraniti. Preveri jakost, dodano vodo in preostanek.",
+    "ios_pause_title": "Začasno ustavi vse",
+    "ios_pause_start": "Ustavi",
+    "ios_pause_until_resumed": "Dokler ne nadaljujem",
+    "ios_pause_resume_on": "Nadaljuj dne",
+    "ios_pause_hint": "{protocols} v teku se zdaj ustavijo: nobenega odmerka ni treba vzeti, nobeden ni zamujen, opomniki prenehajo. Nič se ne izbriše, že zabeleženi odmerki ostanejo. Odmerki, ki bi padli v premor, se ne nadomeščajo.",
+    "ios_pause_until": "Ustavljeno do {date}",
+    "ios_pause_open": "Ustavljeno, dokler ne nadaljuješ",
+    "ios_pause_banner_hint": "Nobenega odmerka ni treba vzeti in nič ni zamujeno. Opomniki so izklopljeni.",
+    "ios_pause_resume": "Nadaljuj zdaj"
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -965,6 +992,15 @@
     "ios_blend_amounts_set": "Ustaw ilości w swojej fiolce",
     "ios_blend_amounts_yours": "Twoja fiolka: {contents}",
     "ios_blend_amounts_change": "Zmień",
-    "ios_vial_save_failed": "Nie udało się zapisać. Sprawdź moc, dodaną wodę i pozostałą ilość."
+    "ios_vial_save_failed": "Nie udało się zapisać. Sprawdź moc, dodaną wodę i pozostałą ilość.",
+    "ios_pause_title": "Wstrzymaj wszystko",
+    "ios_pause_start": "Wstrzymaj",
+    "ios_pause_until_resumed": "Do wznowienia",
+    "ios_pause_resume_on": "Wznów dnia",
+    "ios_pause_hint": "{protocols} w toku wstrzymane: żadna dawka nie jest należna, żadna nie jest pominięta, przypomnienia ustają. Nic nie jest usuwane, zapisane dawki zostają. Dawki, które wypadłyby w czasie przerwy, nie są nadrabiane.",
+    "ios_pause_until": "Wstrzymane do {date}",
+    "ios_pause_open": "Wstrzymane do wznowienia",
+    "ios_pause_banner_hint": "Żadna dawka nie jest należna i nic nie jest pominięte. Przypomnienia wyłączone.",
+    "ios_pause_resume": "Wznów teraz"
   }
 }

@@ -20,6 +20,7 @@ struct PlanView: View {
 
     /// The page's visible width, for `pageWidth`.
     @State private var width: CGFloat = 0
+    @State private var pausing = false
 
     var body: some View {
         let now = nowMillis()
@@ -28,6 +29,7 @@ struct PlanView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 Text(t("plan_subtitle")).font(.subheadline).foregroundStyle(.secondary)
+                PauseBanner(now: now)
                 if protocols.isEmpty {
                     ContentUnavailableView {
                         Label(t("plan_no_protocols"), systemImage: "checklist")
@@ -60,6 +62,10 @@ struct PlanView: View {
                 Menu {
                     Button { editing = .new } label: { Label(t("plan_new_protocol"), systemImage: "square.and.pencil") }
                     Button { editing = .scan } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
+                    if currentPause(protocols, now) == nil, protocols.contains(where: \.active) {
+                        Divider()
+                        Button { pausing = true } label: { Label(t("ios_pause_title"), systemImage: "pause.circle") }
+                    }
                 } label: { Label(t("plan_new_protocol"), systemImage: "plus") }
             }
         }
@@ -71,6 +77,7 @@ struct PlanView: View {
             if editing == nil, let i = args.firstIndex(of: "-newProtocol"), i + 1 < args.count { editing = .startingWith(args[i + 1]) }
         }
         #endif
+        .sheet(isPresented: $pausing) { NavigationStack { PauseSheet() } }
         .sheet(item: $editing) { target in
             NavigationStack {
                 switch target {
@@ -104,7 +111,7 @@ struct ProtocolCard: View {
                     HStack(spacing: 6) {
                         NavigationLink(value: p.peptideId) { Text(peptide?.name ?? p.peptideId).font(.headline) }
                             .buttonStyle(.plain)
-                        if !p.active { Pill(text: t("plan_paused")) }
+                        if !p.active || isPaused(p, nowMs) { Pill(text: t("plan_paused")) }
                         if let bands, let current {
                             Pill(text: "\(p.phases?.isEmpty == false ? t("plan_week_band") : t("plan_step")) \(current.index + 1) \(t("plan_of")) \(bands.count)", tone: .sky)
                         }

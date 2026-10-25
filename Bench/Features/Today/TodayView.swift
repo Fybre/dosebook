@@ -44,6 +44,7 @@ struct TodayView: View {
                 TodayCard(protocols: mine.protocols, logs: mine.logs, now: now, earlyHours: data.settings.earlyHours)
                 RescueNotice()
                 BackupNagCard(now: now)
+                PauseBanner(now: now)
                 RemindersTipCard()
                 noVialCards(tracks, data: data)
                 if mine.protocols.isEmpty {

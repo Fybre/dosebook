@@ -321,8 +321,14 @@ public func phaseSpanAt(_ p: DoseProtocol, _ atMs: Millis) -> PhaseSpan? {
     return spans.last
 }
 
-/// Scheduled dose times for a protocol, phase by phase, sorted.
+/// Scheduled dose times for a protocol, phase by phase, sorted. Doses that fall in a
+/// pause (see `Pause.swift`) are not scheduled.
 public func protocolDoseTimesBetween(_ p: DoseProtocol, _ fromMs: Millis, _ toMs: Millis) -> [Millis] {
+    let all = unpausedDoseTimesBetween(p, fromMs, toMs)
+    return p.extra["iosPauses"] == nil ? all : all.filter { !isPaused(p, $0) }
+}
+
+private func unpausedDoseTimesBetween(_ p: DoseProtocol, _ fromMs: Millis, _ toMs: Millis) -> [Millis] {
     var out: [Millis] = []
     for span in phaseSpans(p) {
         let lo = max(fromMs, span.from)
@@ -334,8 +340,21 @@ public func protocolDoseTimesBetween(_ p: DoseProtocol, _ fromMs: Millis, _ toMs
     return out
 }
 
-/// The next scheduled dose for a protocol at or after `fromMs`.
+/// The next scheduled dose for a protocol at or after `fromMs`, past any pause.
 public func protocolNextDoseTime(_ p: DoseProtocol, _ fromMs: Millis) -> Millis? {
+    guard p.extra["iosPauses"] != nil else { return unpausedNextDoseTime(p, fromMs) }
+    let windows = p.pauses
+    var cursor = fromMs
+    for _ in 0..<200 {
+        guard let t = unpausedNextDoseTime(p, cursor) else { return nil }
+        guard let w = windows.first(where: { $0.contains(t) }) else { return t }
+        guard let until = w.until else { return nil }
+        cursor = max(until, t + 1)
+    }
+    return nil
+}
+
+private func unpausedNextDoseTime(_ p: DoseProtocol, _ fromMs: Millis) -> Millis? {
     for span in phaseSpans(p) {
         if span.to < fromMs { continue }
         let limit = min(p.endedAt ?? .infinity, span.to)
@@ -347,8 +366,20 @@ public func protocolNextDoseTime(_ p: DoseProtocol, _ fromMs: Millis) -> Millis?
     return nil
 }
 
-/// The most recent scheduled dose for a protocol at or before `fromMs`.
+/// The most recent scheduled dose for a protocol at or before `fromMs`, before any pause.
 public func protocolPreviousDoseTime(_ p: DoseProtocol, _ fromMs: Millis) -> Millis? {
+    guard p.extra["iosPauses"] != nil else { return unpausedPreviousDoseTime(p, fromMs) }
+    let windows = p.pauses
+    var cursor = fromMs
+    for _ in 0..<200 {
+        guard let t = unpausedPreviousDoseTime(p, cursor) else { return nil }
+        guard let w = windows.first(where: { $0.contains(t) }) else { return t }
+        cursor = w.from - 1
+    }
+    return nil
+}
+
+private func unpausedPreviousDoseTime(_ p: DoseProtocol, _ fromMs: Millis) -> Millis? {
     let spans = phaseSpans(p)
     for span in spans.reversed() {
         if span.from > fromMs { continue }
@@ -507,7 +538,7 @@ func earlyWindowMs(_ gapMs: Double?, _ capMs: Double) -> Double {
 public func dueStatus(_ p: DoseProtocol, _ nowMs: Millis, _ options: DueOptions = DueOptions()) -> DueStatus {
     let lastLoggedAt = options.lastLoggedAt
     let graceHours = options.graceHours
-    if !p.active { return DueStatus(state: .none, at: nil, hoursAway: 0, label: .paused) }
+    if !p.active || isPaused(p, nowMs) { return DueStatus(state: .none, at: nil, hoursAway: 0, label: .paused) }
 
     let grace = graceHours * HOUR_MS
     let tolerance = options.toleranceHours * HOUR_MS
