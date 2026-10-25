@@ -41,17 +41,7 @@ struct DoseMarksText: View {
     }
 
     private var text: String? {
-        let vials = store.data.mine.vials
-        if route == .intranasal {
-            guard let bottle = pickVialForDose(vials, peptideId, doseMcg, nowMs, .spray), mcgPerSpray(bottle) > 0 else { return nil }
-            return t("count_presses", ["n": .number(spraysForDose(bottle, doseMcg))])
-        }
-        if let pack = pickVialForDose(vials, peptideId, doseMcg, nowMs, .pack), mcgPerTablet(pack) > 0 {
-            return t("count_tablets", ["n": .string(trim(tabletsForDose(pack, doseMcg), 2))])
-        }
-        let scale = (syringeById(store.data.settings.defaultSyringeId) ?? SYRINGES[2]).scale
-        guard let marks = marksForDose(vials, peptideId, doseMcg, scale, nowMs) else { return nil }
-        return t("ios_units_count", ["n": .string(trim(marks, 2))]) + (scale == .u40 ? " (U-40)" : "")
+        drawAmountText(store.data, peptideId: peptideId, doseMcg: doseMcg, route: route, nowMs: nowMs)
     }
 }
 

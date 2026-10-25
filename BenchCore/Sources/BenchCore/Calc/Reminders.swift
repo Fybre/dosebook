@@ -32,17 +32,24 @@ public func reminderId(_ key: String) -> Int {
 }
 
 /// Discreet by default: "Bench" / "A dose is due." names nothing on a lock screen.
-private func reminderText(_ p: DoseProtocol, _ peptide: Peptide?, _ doseMcg: Double, _ settings: RemindersSettings) -> (String, String) {
+///
+/// `draw` is what to draw for the dose ("10 units"). It rides along only when the
+/// reminder is allowed to name the compound: a number on a lock screen is still
+/// something to read, so the discreet text stays exactly as it was.
+private func reminderText(_ p: DoseProtocol, _ peptide: Peptide?, _ doseMcg: Double, _ settings: RemindersSettings, draw: String? = nil) -> (String, String) {
     guard settings.showCompound else { return ("Bench", "A dose is due.") }
     let trimmed = p.name.trimmingCharacters(in: .whitespaces)
     let label = !trimmed.isEmpty ? trimmed : (peptide?.name ?? "Dose")
-    return (label, "\(doseLabel(doseMcg, peptide)) due.")
+    return (label, "\(doseLabel(doseMcg, peptide)) due." + (draw.map { " \($0)." } ?? ""))
 }
 
 /// Every reminder that should be armed, soonest first. Goes through
 /// `unloggedDoseTimes`, so a notification and the Today screen cannot disagree.
+///
+/// `drawText` says what to draw for a protocol's dose at a time: (protocol, dose time, dose in mcg).
 public func remindersFor(protocols: [DoseProtocol], logs: [DoseLog], peptides: [Peptide], settings: RemindersSettings,
-                         nowMs: Millis, horizonDays: Double = REMINDER_HORIZON_DAYS) -> [Reminder] {
+                         nowMs: Millis, horizonDays: Double = REMINDER_HORIZON_DAYS,
+                         drawText: ((DoseProtocol, Millis, Double) -> String?)? = nil) -> [Reminder] {
     guard settings.enabled else { return [] }
     let until = nowMs + horizonDays * DAY_MS
     let lead = max(0, settings.leadMinutes) * 60_000
@@ -56,7 +63,8 @@ public func remindersFor(protocols: [DoseProtocol], logs: [DoseLog], peptides: [
             let at = doseAt - lead
             if at <= nowMs { continue }
             let key = "\(p.id):\(jsNumberString(doseAt))"
-            let (title, body) = reminderText(p, byId[p.peptideId], scheduledDoseMcg(p, doseAt), settings)
+            let dose = scheduledDoseMcg(p, doseAt)
+            let (title, body) = reminderText(p, byId[p.peptideId], dose, settings, draw: drawText?(p, doseAt, dose))
             out.append(Reminder(id: reminderId(key), key: key, at: at, doseAt: doseAt, protocolId: p.id, title: title, body: body))
         }
     }

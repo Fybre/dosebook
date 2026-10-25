@@ -276,7 +276,9 @@ private struct RemindersSection: View {
     var body: some View {
         let data = store.data
         let reminders = data.settings.reminders ?? DEFAULT_REMINDERS
-        let armed = remindersFor(protocols: data.mine.protocols, logs: data.mine.logs, peptides: data.allPeptides, settings: reminders, nowMs: nowMillis())
+        let armed = remindersFor(protocols: data.mine.protocols, logs: data.mine.logs, peptides: data.allPeptides, settings: reminders, nowMs: nowMillis()) { p, at, mcg in
+            drawAmountText(data, peptideId: p.peptideId, doseMcg: mcg, route: p.route, nowMs: at)
+        }
         Section {
             #if os(macOS)
             RichText(t("ios_reminders_intro_mac")).font(.footnote).foregroundStyle(.secondary)

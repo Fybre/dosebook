@@ -46,7 +46,10 @@ enum ReminderScheduler {
         let settings = data.settings.reminders ?? DEFAULT_REMINDERS
         guard settings.enabled, await availability() == .available else { return }
         let mine = data.mine
-        let due = remindersFor(protocols: mine.protocols, logs: mine.logs, peptides: data.allPeptides, settings: settings, nowMs: now)
+        let due = remindersFor(protocols: mine.protocols, logs: mine.logs, peptides: data.allPeptides, settings: settings, nowMs: now) { p, at, mcg in
+            // From the vials on the shelf as they are when the reminders are armed; re-armed on every change.
+            drawAmountText(data, peptideId: p.peptideId, doseMcg: mcg, route: p.route, nowMs: at)
+        }
         for r in due.prefix(limit) {
             let content = UNMutableNotificationContent()
             content.title = r.title

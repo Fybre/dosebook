@@ -176,3 +176,37 @@ struct ReminderFixture {
         #expect(accent.replacingOccurrences(of: "\r\n ", with: "") == "SUMMARY:" + String(repeating: "é", count: 80))
     }
 }
+
+@Suite struct ReminderDrawTests {
+    @Test func theAmountToDrawJoinsTheNamedTextOnly() {
+        var d = AppData()
+        d.addProtocol(makeProtocol(peptideId: "bpc-157", startedAt: local(2026, 7, 1), doseMcg: 250,
+                                   schedule: Schedule(kind: .daily, timesOfDay: ["08:00"])))
+        let draw: (DoseProtocol, Millis, Double) -> String? = { _, _, _ in "10 units" }
+        let now = local(2026, 7, 6, 12)
+        let named = remindersFor(protocols: d.protocols, logs: [], peptides: d.allPeptides,
+                                 settings: RemindersSettings(enabled: true, showCompound: true), nowMs: now, drawText: draw)
+        #expect(named.first?.body == "250 mcg due. 10 units.")
+        // Discreet stays discreet, whatever there is to draw.
+        let quiet = remindersFor(protocols: d.protocols, logs: [], peptides: d.allPeptides,
+                                 settings: RemindersSettings(enabled: true, showCompound: false), nowMs: now, drawText: draw)
+        #expect(quiet.first?.title == "Bench" && quiet.first?.body == "A dose is due.")
+        // Nothing to draw from: the text is as it was.
+        let none = remindersFor(protocols: d.protocols, logs: [], peptides: d.allPeptides,
+                                settings: RemindersSettings(enabled: true, showCompound: true), nowMs: now, drawText: { _, _, _ in nil })
+        #expect(none.first?.body == "250 mcg due.")
+    }
+
+    @Test func drawAmountFollowsTheVialOnTheShelf() {
+        var d = AppData()
+        let pid = d.addProtocol(makeProtocol(peptideId: "bpc-157", startedAt: local(2026, 7, 1), doseMcg: 250,
+                                             schedule: Schedule(kind: .daily, timesOfDay: ["08:00"])))
+        let at = local(2026, 7, 6, 8)
+        #expect(drawAmountText(d, peptideId: "bpc-157", doseMcg: 250, route: .subcutaneous, nowMs: at) == nil)
+        let v = d.addVial(Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 5, state: .sealed))
+        d.reconstituteVial(v, diluentMl: 2, diluent: .bacteriostatic, at: local(2026, 7, 5))
+        // 5 mg in 2 mL is 2500 mcg/mL: 250 mcg is 0.1 mL, ten units on a U-100 barrel.
+        #expect(drawAmountText(d, peptideId: "bpc-157", doseMcg: 250, route: .subcutaneous, nowMs: at) == "10 units")
+        _ = pid
+    }
+}
