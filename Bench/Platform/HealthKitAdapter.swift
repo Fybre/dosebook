@@ -67,19 +67,23 @@ enum HealthKitAdapter {
         }
     }
 
-    /// Sleep and resting heart rate for the last month, onto each day's vitals.
     private static var pulling = false
 
-    /// New weigh-ins since the newest stored reading (or the last year), added
-    /// and linked by their Health record id. Nil when Health is not connected or
-    /// another pull is under way. Read-only, as everything here is.
+    /// New weigh-ins since the newest one already brought in from Health (or the
+    /// last year), added and linked by their Health record id. Nil when Health is
+    /// not connected or another pull is under way. Read-only, as everything here is.
+    ///
+    /// From the newest Health reading, not the newest of any: a weight typed in at
+    /// 8:00 would otherwise hide a scale's 7:00 reading that reached Health at 9:00.
     @discardableResult
     static func pullWeight(into store: AppStore, now: Millis = nowMillis()) async throws -> PullPlan? {
-        guard !pulling, await availability() == .asked else { return nil }
+        // Claimed before the first await, so two pulls started together cannot both pass.
+        guard !pulling else { return nil }
         pulling = true
         defer { pulling = false }
+        guard await availability() == .asked else { return nil }
         let measurements = store.data.mine.measurements
-        let newest = measurements.map(\.at).max() ?? 0
+        let newest = measurements.filter { $0.externalId?.hasPrefix("hk:") == true }.map(\.at).max() ?? 0
         let since = newest > 0 ? newest : now - 365 * DAY_MS
         let plan = planPull(measurements, try await readWeight(since: since))
         if !plan.toAdd.isEmpty || !plan.toLink.isEmpty {
@@ -93,6 +97,7 @@ enum HealthKitAdapter {
         return plan
     }
 
+    /// Sleep and resting heart rate for the last month, onto each day's vitals.
     static func pullVitals(into store: AppStore, now: Millis = nowMillis()) async {
         guard await availability() == .asked else { return }
         let since = now - 30 * DAY_MS

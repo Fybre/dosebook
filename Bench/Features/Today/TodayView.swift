@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 import BenchCore
 import BenchStore
 
@@ -19,6 +20,8 @@ struct TodayView: View {
     @State private var confirmEarly: String?
     @State private var addingVial: VialFor?
     @Environment(\.logDoseRequests) private var logDoseRequests
+    /// The last ⌘N request this screen has opened a sheet for.
+    @State private var answeredLogDose = 0
     /// The screen's width: wide enough, and Now goes to two columns.
     @State private var width: CGFloat = 0
     private var wide: Bool { width >= 1000 }
@@ -96,11 +99,12 @@ struct TodayView: View {
             if lastQuickLog?.id == q.id { lastQuickLog = nil }
         }
         .onChange(of: store.data.activeProfileId) { lastQuickLog = nil }
-        .onChange(of: logDoseRequests) { _, _ in
-            if logRequest == nil { logRequest = LogRequest(peptideId: nil) }
-        }
+        .onChange(of: logDoseRequests) { _, _ in answerLogDoseRequest() }
         .onAppear {
             now = nowMillis()
+            // ⌘N from another screen brings Now up for the first time: the request
+            // came before this view did, so no change is seen; answer it here.
+            answerLogDoseRequest()
             #if DEBUG
             if let i = ProcessInfo.processInfo.arguments.firstIndex(of: "-log"), logRequest == nil {
                 let rest = ProcessInfo.processInfo.arguments.dropFirst(i + 1).first
@@ -112,6 +116,12 @@ struct TodayView: View {
             NavigationStack { LogDoseSheet(defaultPeptideId: req.peptideId, anySite: req.anySite) }
         }
         .sheet(item: $addingVial) { v in NavigationStack { AddVialForm(startingPeptideId: v.peptideId, alreadyMixed: v.mixed) } }
+    }
+
+    private func answerLogDoseRequest() {
+        guard logDoseRequests > answeredLogDose else { return }
+        answeredLogDose = logDoseRequests
+        if logRequest == nil { logRequest = LogRequest(peptideId: nil) }
     }
 
     // MARK: Pieces

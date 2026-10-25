@@ -70,15 +70,23 @@ struct BenchCommands: Commands {
     }
 
     private var logDose: some View {
-        Button(t("log_new_dose")) { logDoseHere?() }
+        Button(t("log_new_dose")) { logDoseHere?.run() }
             .keyboardShortcut("n")
             .disabled(logDoseHere == nil)
     }
 }
 
+/// A window's "log a dose". Always equal to itself: what it does never changes
+/// (it writes through the window's state), so a new closure each update must not
+/// make the menu rebuild.
+struct LogDoseAction: Equatable {
+    let run: () -> Void
+    static func == (_: LogDoseAction, _: LogDoseAction) -> Bool { true }
+}
+
 extension FocusedValues {
     /// Set by each window: go to Now and open Log a dose there.
-    @Entry var logDose: (() -> Void)?
+    @Entry var logDose: LogDoseAction?
 }
 
 @MainActor

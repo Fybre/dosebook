@@ -127,7 +127,7 @@ targets:
         CFBundleDisplayName: Bench Test
         CFBundleName: Bench Test
         LSApplicationCategoryType: public.app-category.healthcare-fitness
-        NSCameraUsageDescription: "Bench reads a vial's label to fill in the compound, strength, lot and expiry. The photo is read on this Mac and not kept."
+        NSCameraUsageDescription: "Bench reads vial labels and bloodwork results from photos. Photos are read on this Mac and not kept."
         ITSAppUsesNonExemptEncryption: false
     settings:
       base:

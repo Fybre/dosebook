@@ -19,8 +19,11 @@ public func missedDoses(_ protocols: [DoseProtocol], _ logs: [DoseLog], fromMs: 
     var day = startOfLocalDay(nowMs)
     let first = startOfLocalDay(fromMs)
     let byId = Dictionary(protocols.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+    // Only the logs that can fall on a day looked at: years of history would
+    // otherwise be filtered again for every one of them.
+    let window = logs.filter { $0.at >= first && $0.at <= endOfLocalDay(nowMs) + earlyHours * HOUR_MS }
     while day >= first {
-        let missed = dayBreakdown(protocols, logs, day, nowMs: nowMs, earlyHours: earlyHours).protocols.flatMap { pd in
+        let missed = dayBreakdown(protocols, window, day, nowMs: nowMs, earlyHours: earlyHours).protocols.flatMap { pd in
             pd.slots.filter { $0.slot == .missed }.map { s in
                 MissedDose(protocolId: pd.protocolId, peptideId: pd.peptideId, at: s.at,
                            doseMcg: byId[pd.protocolId].map { scheduledDoseMcg($0, s.at) } ?? 0)

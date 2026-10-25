@@ -73,7 +73,7 @@ struct RootView: View {
             if size == .compact, Self.sidebarOnly.contains(tab) { tab = "more" }
         }
         .environment(\.logDoseRequests, logDoseRequests)
-        .focusedSceneValue(\.logDose) { tab = "now"; logDoseRequests += 1 }
+        .focusedSceneValue(\.logDose, LogDoseAction { tab = "now"; logDoseRequests += 1 })
         // Strings are read when views build, so a new language rebuilds the tree.
         .id(langRaw)
         .onChange(of: langRaw) { _, raw in if let l = Lang(rawValue: raw) { I18n.lang = l } }
