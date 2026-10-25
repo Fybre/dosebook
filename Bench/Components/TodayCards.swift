@@ -207,12 +207,17 @@ struct WeightCard: View {
                     ForEach(doses.filter { $0 >= series.first!.at }, id: \.self) { d in
                         RuleMark(x: .value("dose", Date(millis: d))).foregroundStyle(Color.accentColor.opacity(0.15))
                     }
+                    if let goal = data.settings.weightGoal {
+                        RuleMark(y: .value("goal", toDisplayWeight(goal.kg, unit)))
+                            .foregroundStyle(Tone.sky.color).lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                    }
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
                 .frame(height: 120)
                 .contentShape(Rectangle())
                 .onTapGesture { trend = true }
             }
+            if !series.isEmpty { WeightGoalRow(now: now) }
         }
         .card()
         .sheet(isPresented: $adding) { NavigationStack { WeightEntry() } }

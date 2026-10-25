@@ -245,7 +245,19 @@
     "ios_pause_until": "Paused until {date}",
     "ios_pause_open": "Paused until you resume",
     "ios_pause_banner_hint": "No doses are due and nothing counts as missed. Reminders are off.",
-    "ios_pause_resume": "Resume now"
+    "ios_pause_resume": "Resume now",
+    "ios_goal_set": "Set a weight goal",
+    "ios_goal_title": "Weight goal",
+    "ios_goal_target": "Target",
+    "ios_goal_change": "Change",
+    "ios_goal_remove": "Remove goal",
+    "ios_goal_line": "Goal {goal} {unit}",
+    "ios_goal_sheet_hint": "A line to see your trend against. Bench does not suggest what a target should be; that is for you, and whoever looks after your health.",
+    "ios_goal_needs_data": "A projection needs three weigh-ins spread over a week or more in the last month.",
+    "ios_goal_reached": "You are at your goal.",
+    "ios_goal_on_track": "At {rate} {unit}/wk, the last month’s trend reaches it around {date}. A trend, not a promise.",
+    "ios_goal_not_heading": "The last month’s trend is not heading towards it ({rate} {unit}/wk).",
+    "ios_goal_slow": "At the last month’s pace it is more than two years away."
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -493,7 +505,19 @@
     "ios_pause_until": "Pausiert bis {date}",
     "ios_pause_open": "Pausiert, bis du fortsetzt",
     "ios_pause_banner_hint": "Keine Dosis ist fällig und nichts gilt als verpasst. Erinnerungen sind aus.",
-    "ios_pause_resume": "Jetzt fortsetzen"
+    "ios_pause_resume": "Jetzt fortsetzen",
+    "ios_goal_set": "Gewichtsziel festlegen",
+    "ios_goal_title": "Gewichtsziel",
+    "ios_goal_target": "Ziel",
+    "ios_goal_change": "Ändern",
+    "ios_goal_remove": "Ziel entfernen",
+    "ios_goal_line": "Ziel {goal} {unit}",
+    "ios_goal_sheet_hint": "Eine Linie, an der du deinen Verlauf misst. Bench schlägt kein Ziel vor; das ist deine Sache und die deiner Ärztin oder deines Arztes.",
+    "ios_goal_needs_data": "Für eine Prognose braucht es drei Wägungen, verteilt über eine Woche oder mehr im letzten Monat.",
+    "ios_goal_reached": "Du hast dein Ziel erreicht.",
+    "ios_goal_on_track": "Bei {rate} {unit}/Woche erreicht der Verlauf des letzten Monats es etwa am {date}. Ein Verlauf, kein Versprechen.",
+    "ios_goal_not_heading": "Der Verlauf des letzten Monats geht nicht in diese Richtung ({rate} {unit}/Woche).",
+    "ios_goal_slow": "In der Geschwindigkeit des letzten Monats dauert es mehr als zwei Jahre."
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -747,7 +771,19 @@
     "ios_pause_until": "Ustavljeno do {date}",
     "ios_pause_open": "Ustavljeno, dokler ne nadaljuješ",
     "ios_pause_banner_hint": "Nobenega odmerka ni treba vzeti in nič ni zamujeno. Opomniki so izklopljeni.",
-    "ios_pause_resume": "Nadaljuj zdaj"
+    "ios_pause_resume": "Nadaljuj zdaj",
+    "ios_goal_set": "Nastavi ciljno težo",
+    "ios_goal_title": "Ciljna teža",
+    "ios_goal_target": "Cilj",
+    "ios_goal_change": "Spremeni",
+    "ios_goal_remove": "Odstrani cilj",
+    "ios_goal_line": "Cilj {goal} {unit}",
+    "ios_goal_sheet_hint": "Črta, ob kateri vidiš svoj trend. Bench ne predlaga cilja; to je stvar tebe in tistega, ki skrbi za tvoje zdravje.",
+    "ios_goal_needs_data": "Napoved potrebuje tri tehtanja, razporejena čez teden ali več v zadnjem mesecu.",
+    "ios_goal_reached": "Cilj je dosežen.",
+    "ios_goal_on_track": "Pri {rate} {unit}/teden trend zadnjega meseca doseže cilj okoli {date}. Trend, ne obljuba.",
+    "ios_goal_not_heading": "Trend zadnjega meseca ne gre proti cilju ({rate} {unit}/teden).",
+    "ios_goal_slow": "Pri tempu zadnjega meseca je več kot dve leti stran."
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -1001,6 +1037,18 @@
     "ios_pause_until": "Wstrzymane do {date}",
     "ios_pause_open": "Wstrzymane do wznowienia",
     "ios_pause_banner_hint": "Żadna dawka nie jest należna i nic nie jest pominięte. Przypomnienia wyłączone.",
-    "ios_pause_resume": "Wznów teraz"
+    "ios_pause_resume": "Wznów teraz",
+    "ios_goal_set": "Ustaw cel wagi",
+    "ios_goal_title": "Cel wagi",
+    "ios_goal_target": "Cel",
+    "ios_goal_change": "Zmień",
+    "ios_goal_remove": "Usuń cel",
+    "ios_goal_line": "Cel {goal} {unit}",
+    "ios_goal_sheet_hint": "Linia, względem której widzisz swój trend. Bench nie sugeruje, jaki powinien być cel; to sprawa Twoja i osoby dbającej o Twoje zdrowie.",
+    "ios_goal_needs_data": "Prognoza wymaga trzech pomiarów rozłożonych na tydzień lub dłużej w ostatnim miesiącu.",
+    "ios_goal_reached": "Cel osiągnięty.",
+    "ios_goal_on_track": "Przy {rate} {unit}/tydz. trend z ostatniego miesiąca osiągnie cel około {date}. Trend, nie obietnica.",
+    "ios_goal_not_heading": "Trend z ostatniego miesiąca nie zmierza w tę stronę ({rate} {unit}/tydz.).",
+    "ios_goal_slow": "W tempie z ostatniego miesiąca to ponad dwa lata."
   }
 }

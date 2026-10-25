@@ -38,6 +38,10 @@ struct WeightTrendView: View {
                                     Text(formatDose(s.doseMcg)).font(.system(size: 9, weight: .semibold)).foregroundStyle(tones[i % tones.count].color)
                                 }
                         }
+                        if let goal = data.settings.weightGoal {
+                            RuleMark(y: .value("goal", toDisplayWeight(goal.kg, unit)))
+                                .foregroundStyle(Tone.sky.color).lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                        }
                         ForEach(Array(series.enumerated()), id: \.offset) { _, p in
                             LineMark(x: .value("t", Date(millis: p.at)), y: .value("w", toDisplayWeight(p.kg, unit))).foregroundStyle(Color.primary)
                             PointMark(x: .value("t", Date(millis: p.at)), y: .value("w", toDisplayWeight(p.kg, unit))).foregroundStyle(Color.primary).symbolSize(14)
