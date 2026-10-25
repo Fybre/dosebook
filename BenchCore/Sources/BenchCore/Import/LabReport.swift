@@ -157,3 +157,11 @@ public func parseLabReport(_ lines: [String]) -> LabReport {
     }
     return LabReport(candidates: candidates, collectedAt: findCollectedAt(lines), lab: findLabName(lines))
 }
+
+/// Import duplicates are the same marker/value on the same local collection day.
+/// Callers supply only the active profile's results.
+public func isDuplicateLab(markerId: String, value: Double, at: Millis, existing: [LabResult]) -> Bool {
+    existing.contains {
+        $0.markerId == markerId && $0.value == value && startOfLocalDay($0.at) == startOfLocalDay(at)
+    }
+}

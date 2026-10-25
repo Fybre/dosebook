@@ -14,7 +14,7 @@ struct LogRequest: Identifiable {
 struct TodayView: View {
     @Environment(AppStore.self) private var store
     @State private var now = nowMillis()
-    @State private var lastQuickLog: (id: String, name: String)?
+    @State private var lastQuickLog: (id: String, name: String, dose: String, at: Millis)?
     @State private var logRequest: LogRequest?
     @State private var confirmEarly: String?
     @State private var addingVial: VialFor?
@@ -89,6 +89,13 @@ struct TodayView: View {
             }
         }
         .onReceive(tick) { _ in now = nowMillis() }
+        .task(id: lastQuickLog?.id) {
+            guard let q = lastQuickLog else { return }
+            do { try await Task.sleep(for: .milliseconds(max(0, q.at + 15_000 - nowMillis()))) }
+            catch { return }
+            if lastQuickLog?.id == q.id { lastQuickLog = nil }
+        }
+        .onChange(of: store.data.activeProfileId) { lastQuickLog = nil }
         .onChange(of: logDoseRequests) { _, _ in
             if logRequest == nil { logRequest = LogRequest(peptideId: nil) }
         }
@@ -116,25 +123,47 @@ struct TodayView: View {
         return "\(t("now_vial_label", ["name": .string(name)])) \(conc.isFinite ? formatConcentration(conc) : t("now_not_reconstituted"))"
     }
 
-    private func quickLogNote(_ q: (id: String, name: String)) -> some View {
-        HStack {
-            Image(systemName: "checkmark").foregroundStyle(Tone.leaf.color)
-            Text(t("now_quick_logged_note", ["name": .string(q.name)])).font(.subheadline)
-            Spacer()
-            Button(t("now_undo")) { store.mutate { $0.removeLog(q.id) }; lastQuickLog = nil }
-            Button { lastQuickLog = nil } label: { Image(systemName: "xmark") }.accessibilityLabel(t("dismiss"))
+    private func quickLogNote(_ q: (id: String, name: String, dose: String, at: Millis)) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Label {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(t("now_quick_logged_note", ["name": .string(q.name)])).font(.subheadline)
+                        Text("\(q.dose) · \(formatTime(q.at))").font(.caption).foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "checkmark").foregroundStyle(Tone.leaf.color)
+                }
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                Button { lastQuickLog = nil } label: {
+                    Image(systemName: "xmark")
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel(t("dismiss"))
+            }
+            Button {
+                store.mutate { $0.removeLog(q.id) }
+                lastQuickLog = nil
+            } label: {
+                Text(t("now_undo"))
+                    .frame(minWidth: 72, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.bordered)
         }
-        .buttonStyle(.borderless)
         .card()
     }
 
     private func log(_ track: Track, site: InjectionSite?) {
         let p = track.protocol_
+        let loggedAt = nowMillis()
         let id = store.mutate { d in
-            d.addLog(DoseLog(id: "", profileId: "", protocolId: p.id, peptideId: p.peptideId, at: nowMillis(), doseMcg: track.targetMcg,
+            d.addLog(DoseLog(id: "", profileId: "", protocolId: p.id, peptideId: p.peptideId, at: loggedAt, doseMcg: track.targetMcg,
                              route: p.route, site: routeHasSite(p.route) ? site : nil))
         }
-        lastQuickLog = (id, track.name)
+        lastQuickLog = (id, track.name, doseLabel(track.targetMcg, track.peptide), loggedAt)
         now = nowMillis()
     }
 
@@ -198,12 +227,13 @@ struct TodayView: View {
         let rows = tracks.flatMap { track in
             unloggedDoseTimes(track.protocol_, logsForProtocol(track.protocol_, logs), now, endOfLocalDay(now))
                 .filter { !shown.contains("\(track.id):\($0)") }
-                .map { (track: track, at: $0) }
+                .map { (track: track, at: $0, key: "\(track.id):\($0)") }
         }.sorted { $0.at < $1.at }
         if !rows.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 CardHeader(title: t("now_later_today")).padding(.bottom, 8)
-                ForEach(rows, id: \.at) { row in
+                // Keyed by protocol and time: two doses due at the same minute are two rows.
+                ForEach(rows, id: \.key) { row in
                     let key = "\(row.track.id):\(row.at)"
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(spacing: 6) {
@@ -326,6 +356,18 @@ struct TodayView: View {
                                   : yours.map { t("now_half_life_yours", ["hours": .string(formatHalfLife($0)), "marker": .string(t("now_your_figure"))]) }
                                   ?? formatHalfLife(track.peptide?.halfLifeHours)))
                 stockLine(track, low: low)
+                if track.targetMcg > 0 {
+                    switch supplyOutlook(track.stock, track.protocol_, now) {
+                    case .runsOut(let at): Text(t("stock_runs_out_line", ["date": .string(formatDate(at, nowMs: now))]))
+                    case .beyondHorizon: Text(t("stock_over_a_year"))
+                    case .unknown: EmptyView()
+                    }
+                    if low {
+                        Button { addingVial = VialFor(peptideId: track.protocol_.peptideId) } label: {
+                            Label(t("stock_add_vial"), systemImage: "plus")
+                        }.buttonStyle(.bordered)
+                    }
+                }
                 if track.stock.needsReconstitution {
                     Text(t("now_record_reconstitution")).foregroundStyle(Tone.tangerine.color)
                 }

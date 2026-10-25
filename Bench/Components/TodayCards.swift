@@ -200,7 +200,7 @@ struct WeightCard: View {
                 }
                 let doses = data.mine.logs.filter { !$0.isSkipped }.map(\.at)
                 Chart {
-                    ForEach(series, id: \.at) { p in
+                    ForEach(Array(series.enumerated()), id: \.offset) { _, p in
                         LineMark(x: .value("t", Date(millis: p.at)), y: .value("w", toDisplayWeight(p.kg, unit))).foregroundStyle(Tone.leaf.color)
                         PointMark(x: .value("t", Date(millis: p.at)), y: .value("w", toDisplayWeight(p.kg, unit))).foregroundStyle(Tone.leaf.color).symbolSize(16)
                     }

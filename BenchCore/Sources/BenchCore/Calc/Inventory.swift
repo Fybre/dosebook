@@ -308,3 +308,18 @@ public func diluentAfterTopUp(_ v: Vial, _ addedMl: Double) -> Double? {
     guard remainingMl > 0 else { return nil }
     return vialCapacityMcg(v) * ((remainingMl + addedMl) / remainingMcg)
 }
+
+/// Display order only; does not change stock consumption or the oldest vial in a group.
+/// Acquisition dates are the stored dates available for existing stock; undated imports go last.
+public func sortedStockVials(_ vials: [Vial], by sort: StockSort, name: (String) -> String) -> [Vial] {
+    vials.stableSorted { a, b in
+        switch sort {
+        case .alphabetical:
+            return name(a.peptideId).localizedStandardCompare(name(b.peptideId)) == .orderedAscending
+        case .dateAdded:
+            return (a.acquiredAt ?? .infinity) < (b.acquiredAt ?? .infinity)
+        case .newestFirst:
+            return (a.acquiredAt ?? -.infinity) > (b.acquiredAt ?? -.infinity)
+        }
+    }
+}

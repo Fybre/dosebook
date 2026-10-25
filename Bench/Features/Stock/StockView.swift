@@ -7,14 +7,17 @@ struct StockView: View {
     @Environment(AppStore.self) private var store
     @State private var sheet: StockSheet?
     @State private var deleting: Vial?
+    @State private var finishing: Vial?
     @State private var now = nowMillis()
+    @State private var search = ""
 
     enum StockSheet: Identifiable {
-        case add, scan, left(Vial), reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), addBottle, useBottle(DiluentBottle)
+        case add, scan, edit(Vial), left(Vial), reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), addBottle, useBottle(DiluentBottle)
         var id: String {
             switch self {
             case .add: "add"
             case .scan: "scan"
+            case .edit(let v): "edit" + v.id
             case .left(let v): "l" + v.id
             case .reconstitute(let v): "r" + v.id
             case .topUp(let v): "t" + v.id
@@ -29,8 +32,13 @@ struct StockView: View {
     var body: some View {
         let data = store.data
         let mine = data.mine
-        let vials = mine.vials
         let settings = data.settings
+        let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        let matching = mine.vials.filter { v in
+            query.isEmpty || [data.peptide(v.peptideId)?.name ?? v.peptideId, v.supplier ?? "", v.lot ?? ""]
+                .contains { $0.localizedStandardContains(query) }
+        }
+        let vials = sortedStockVials(matching, by: settings.stockSort) { data.peptide($0)?.name ?? $0 }
         let currency = settings.currency
         // Paid for and not here: kept out of every stock figure, counted in Spent.
         let onOrder = vials.filter { $0.state == .onOrder }
@@ -68,9 +76,11 @@ struct StockView: View {
                 } footer: { FooterWrap { Text(t("stock_remaining_hint")) }}
             }
 
-            if settings.waterAtBottom != true { waterShelf(mine, settings) }
+            if query.isEmpty && settings.waterAtBottom != true { waterShelf(mine, settings) }
 
-            if vials.isEmpty {
+            if vials.isEmpty && !query.isEmpty {
+                ContentUnavailableView.search(text: query)
+            } else if vials.isEmpty {
                 ContentUnavailableView {
                     Label(t("stock_no_vials"), systemImage: "testtube.2")
                 } description: { Text(t("stock_empty_desc")) } actions: {
@@ -87,7 +97,7 @@ struct StockView: View {
                                 let at = nowMillis()
                                 store.mutate { d in for v in g.vials { d.updateVial(v.id) { $0.state = .sealed; $0.acquiredAt = at } } }
                             },
-                        ], onDelete: { deleting = g.vials[0] })
+                        ], onEdit: { sheet = .edit(g.vials[0]) }, onDelete: { deleting = g.vials[0] })
                     }
                 }
             }
@@ -96,14 +106,13 @@ struct StockView: View {
                 Section {
                     ForEach(open) { v in
                         var actions: [VialAction] = []
-                        if !isPack(v) { actions.append(.init(t("ios_left_title"), "slider.horizontal.3") { sheet = .left(v) }) }
                         if !isPack(v) { actions.append(.init(t("stock_add_diluent"), "drop") { sheet = .topUp(v) }) }
                         if !isSpray(v) && !isPack(v) { actions.append(.init(t("stock_to_spray"), "humidifier") { sheet = .transfer(v) }) }
                         if isPack(v) || data.peptide(v.peptideId)?.preparation == .tablet {
                             actions.append(.init(t("stock_set_tablet_size"), nil) { sheet = .tabletSize([v]) })
                         }
-                        actions.append(.init(t("stock_mark_empty"), nil) { store.mutate { $0.updateVial(v.id) { $0.state = .finished } } })
-                        return VialRow(vial: v, group: nil, ctx: ctx, actions: actions, onDelete: { deleting = v })
+                        actions.append(.init(t("stock_mark_empty"), nil) { finishing = v })
+                        return VialRow(vial: v, group: nil, ctx: ctx, actions: actions, onEdit: { sheet = .edit(v) }, onDelete: { deleting = v })
                     }
                 } header: { Text(t("stock_open")).id("open") }
             }
@@ -123,7 +132,7 @@ struct StockView: View {
                         if isPack(v) || data.peptide(v.peptideId)?.preparation == .tablet {
                             actions.append(.init(t("stock_set_tablet_size"), nil) { sheet = .tabletSize(g?.vials ?? [v]) })
                         }
-                        return VialRow(vial: v, group: g, ctx: ctx, actions: actions, onDelete: { deleting = v })
+                        return VialRow(vial: v, group: g, ctx: ctx, actions: actions, onEdit: { sheet = .edit(v) }, onDelete: { deleting = v })
                     }
                 } header: { Text(t("stock_sealed")).id("sealed") }
             }
@@ -138,7 +147,7 @@ struct StockView: View {
                 }
             }
 
-            if settings.waterAtBottom == true { waterShelf(mine, settings) }
+            if query.isEmpty && settings.waterAtBottom == true { waterShelf(mine, settings) }
 
             Section {
                 VStack(alignment: .leading, spacing: 6) {
@@ -151,7 +160,19 @@ struct StockView: View {
         .debugAnchor(proxy)
         }
         .navigationTitle(t("stock_title"))
+        .searchable(text: $search, prompt: Text(t("ios_stock_search")))
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Picker(t("ios_stock_sort"), selection: Binding(get: { settings.stockSort }, set: { value in
+                        store.mutate { $0.settings.stockSort = value }
+                    })) {
+                        Text(t("ios_stock_sort_alpha")).tag(StockSort.alphabetical)
+                        Text(t("ios_stock_sort_date")).tag(StockSort.dateAdded)
+                        Text(t("ios_stock_sort_newest")).tag(StockSort.newestFirst)
+                    }
+                } label: { Label(t("ios_stock_sort"), systemImage: "arrow.up.arrow.down") }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button { sheet = .add } label: { Label(t("stock_add_vial"), systemImage: "square.and.pencil") }
@@ -173,14 +194,21 @@ struct StockView: View {
                 switch s {
                 case .add: AddVialForm()
                 case .scan: AddVialForm(scanFirst: true)
-                case .left(let v): VialLeftForm(vial: v)
-                case .reconstitute(let v): ReconstituteForm(vial: v)
+                case .edit(let v): AddVialForm(editingVial: v)
+                case .left(let v): AddVialForm(editingVial: v)
+                case .reconstitute(let v): AddVialForm(alreadyMixed: true, editingVial: v)
                 case .topUp(let v): TopUpForm(vial: v)
                 case .transfer(let v): TransferToSprayForm(vial: v)
                 case .tabletSize(let vs): TabletSizeForm(vials: vs)
                 case .addBottle: AddBottleForm()
                 case .useBottle(let b): UseElsewhereForm(bottle: b)
                 }
+            }
+        }
+        .confirmationDialog(t("stock_mark_empty"), isPresented: Binding(get: { finishing != nil }, set: { if !$0 { finishing = nil } }), titleVisibility: .visible) {
+            Button(t("stock_mark_empty")) {
+                if let v = finishing { store.mutate { $0.updateVial(v.id) { $0.state = .finished } } }
+                finishing = nil
             }
         }
         // Never the whole group: one tap, one vial, the oldest of them.
@@ -288,6 +316,7 @@ private struct VialRow: View {
     var group: VialGroup?
     var ctx: RowContext
     var actions: [VialAction]
+    var onEdit: () -> Void
     var onDelete: () -> Void
 
     var body: some View {
@@ -325,6 +354,23 @@ private struct VialRow: View {
                 details(v, st, spray: spray, pack: pack, marks: marks, dose: dose, many: many, strengthTotal: strengthTotal, expiresAt: expiresAt, budSoon: budSoon)
                     .font(.caption).foregroundStyle(.secondary)
 
+                if (v.state == .sealed || v.state == .reconstituted), strengthTotal.isFinite, strengthTotal > 0, remainingMcg.isFinite {
+                    let fraction = min(1, max(0, remainingMcg / (strengthTotal * 1000)))
+                    let percent = t("ios_stock_percent_left", ["percent": .string(trim(fraction * 100, 0))])
+                    HStack(spacing: 12) {
+                        ProgressView(value: fraction)
+                            .progressViewStyle(.linear)
+                            .tint(Color.accentColor)
+                            .accessibilityLabel(t("stock_remaining"))
+                            .accessibilityValue(percent)
+                        Text(percent)
+                            .font(.caption).monospacedDigit().foregroundStyle(.secondary)
+                            .fixedSize()
+                            .accessibilityHidden(true)
+                    }
+                    .padding(.vertical, 6)
+                }
+
                 if dose > 0 && v.state != .onOrder {
                     let n = (remainingMcg / dose).rounded(.down)
                     let times = ctx.timesPerDay(v.peptideId)
@@ -348,22 +394,27 @@ private struct VialRow: View {
                     ].compactMap { $0 }
                     Text(parts.joined(separator: " · ")).font(.caption2).foregroundStyle(.tertiary)
                 }
-                FlowLayout(spacing: 6) {
-                    ForEach(actions.indices, id: \.self) { i in
-                        let a = actions[i]
-                        if a.prominent {
-                            Button(action: a.run) { actionLabel(a) }.buttonStyle(.borderedProminent)
-                        } else {
-                            Button(action: a.run) { actionLabel(a) }.buttonStyle(.bordered)
-                        }
-                    }
-                    Button(role: .destructive, action: onDelete) {
-                        Text(many ? t("stock_delete_one") : t("stock_delete")).fixedSize()
+                HStack(spacing: 16) {
+                    Button(action: onEdit) {
+                        Text(t(many ? "ios_vial_edit_one" : "ios_vial_edit"))
+                            .frame(minHeight: 32)
                     }
                     .buttonStyle(.bordered)
-                    .tint(.red)
+                    Menu {
+                        ForEach(actions.indices, id: \.self) { i in
+                            let a = actions[i]
+                            Button(action: a.run) { actionLabel(a) }
+                        }
+                        Divider()
+                        Button(role: .destructive, action: onDelete) {
+                            Label(t(many ? "stock_delete_one" : "stock_delete"), systemImage: "trash")
+                        }
+                    } label: {
+                        Label(t("more"), systemImage: "ellipsis")
+                            .frame(minHeight: 32)
+                    }
+                    .menuStyle(.borderlessButton)
                 }
-                .controlSize(.small)
                 .padding(.top, 4)
             }
         }

@@ -58,6 +58,7 @@ private struct FormChrome: ViewModifier {
     var title: String
     var confirm: String
     var disabled: Bool
+    var dismissAfter: Bool
     var action: () -> Void
     @Environment(\.dismiss) private var dismiss
     func body(content: Content) -> some View {
@@ -66,14 +67,14 @@ private struct FormChrome: ViewModifier {
             .inlineTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
-                ToolbarItem(placement: .confirmationAction) { Button(confirm) { action(); dismiss() }.disabled(disabled) }
+                ToolbarItem(placement: .confirmationAction) { Button(confirm) { action(); if dismissAfter { dismiss() } }.disabled(disabled) }
             }
     }
 }
 
 extension View {
-    func formChrome(_ title: String, confirm: String, disabled: Bool = false, action: @escaping () -> Void) -> some View {
-        modifier(FormChrome(title: title, confirm: confirm, disabled: disabled, action: action))
+    func formChrome(_ title: String, confirm: String, disabled: Bool = false, dismissAfter: Bool = true, action: @escaping () -> Void) -> some View {
+        modifier(FormChrome(title: title, confirm: confirm, disabled: disabled, dismissAfter: dismissAfter, action: action))
     }
 }
 
@@ -81,201 +82,260 @@ extension View {
 
 struct AddVialForm: View {
     @Environment(AppStore.self) private var store
-    /// Opens the label scanner straight away.
     var scanFirst = false
-    /// The compound to start on, when added from somewhere that knows it.
     var startingPeptideId: String?
-    /// Start on "mixed, in use", for a vial already being drawn from.
     var alreadyMixed = false
+    /// Editing keeps the compound, profile, order and dose-history links intact.
+    var editingVial: Vial?
 
-    enum Place: Hashable { case fridge, onOrder, mixed }
-    private var arrived: Bool { place != .onOrder }
     @State private var scanning = false
-    @State private var lot = ""
-    @State private var hasExpiry = false
-    @State private var expiry = Date()
+    @State private var addingCompound = false
+    @State private var loaded = false
     @State private var peptideId = ""
     @State private var strengthMg: Double = 10
     @State private var count: Double = 1
     @State private var tabletsPerPack: Double = 30
+    @State private var state: VialState = .sealed
+    @State private var ml: Double = 2
+    @State private var diluent: DiluentKind = .bacteriostatic
+    @State private var mixedOn = Date()
+    @State private var partiallyUsed = false
+    @State private var fractionLeft: Double = 1
+    @State private var inMl = true
+    @State private var bottleId = ""
+    @State private var syringeId = "u100-0.5"
+    @State private var supplier = ""
+    @State private var lot = ""
+    @State private var notes = ""
+    @State private var hasExpiry = false
+    @State private var expiry = Date()
+    @State private var cost: Double?
     @State private var shipping: Double?
     @State private var payCurrency = ""
-    @State private var supplier = ""
-    @State private var cost: Double?
     @State private var pricedAsKit = false
-    @State private var place: Place = .fridge
-    @State private var mixedMl: Double = 2
-    @State private var mixedOn = Date()
-    @State private var addingCompound = false
-    @State private var loaded = false
+    @State private var purchaseExpanded = false
+
+    private var tablets: Bool {
+        editingVial.map(isPack) ?? (store.data.peptide(peptideId)?.preparation == .tablet)
+    }
+    private var spray: Bool { editingVial.map(isSpray) ?? false }
+    private var capacity: Double { (tablets ? packStrengthMg(strengthMg, tabletsPerPack) : strengthMg) * 1000 }
+    private var mixed: Bool { state == .reconstituted && !tablets }
+    private var remaining: Double { capacity * (partiallyUsed ? fractionLeft : 1) }
+    private var n: Int { max(1, min(50, Int(count.isFinite ? count : 1))) }
+    private var valid: Bool {
+        !peptideId.isEmpty && capacity.isFinite && capacity > 0 &&
+        (!mixed || (ml.isFinite && ml > 0)) &&
+        (!partiallyUsed || (fractionLeft.isFinite && fractionLeft >= 0 && fractionLeft <= 1)) &&
+        (cost == nil || (cost!.isFinite && cost! >= 0)) &&
+        (shipping == nil || (shipping!.isFinite && shipping! >= 0))
+    }
 
     var body: some View {
-        let data = store.data
-        let currency = data.settings.currency
-        let peptide = data.peptide(peptideId)
-        let tablets = peptide?.preparation == .tablet
-        let packMg = packStrengthMg(strengthMg, tabletsPerPack)
-        let n = max(1, count)
-        // Stored per vial, whichever way it was entered.
-        let perVial: Double? = cost.flatMap { pricedAsKit ? costPerVialInKit($0, n) : $0 }
         Form {
-            Section {
-                Button { scanning = true } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
-                FooterRow { Text(t("ios_stock_scan_hint")) }
-            } footer: { FooterWrap { Text(t("ios_stock_scan_hint")) }}
-            Section {
-                Picker(t("plan_peptide"), selection: Binding(get: { peptideId }, set: choose)) {
-                    ForEach(data.allPeptides) { Text($0.name).tag($0.id) }
+            if editingVial == nil {
+                Section {
+                    Button { scanning = true } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
+                    Picker(t("plan_peptide"), selection: Binding(get: { peptideId }, set: choose)) {
+                        ForEach(store.data.allPeptides) { Text($0.name).tag($0.id) }
+                    }
+                    Button { addingCompound = true } label: { Label(t("add_compound_inline"), systemImage: "plus") }
                 }
-                Button { addingCompound = true } label: { Label(t("add_compound_inline"), systemImage: "plus") }
+            } else {
+                Section { Text(store.data.peptide(peptideId)?.name ?? peptideId).font(.headline) }
             }
             Section {
                 AmountRow(label: tablets ? t("stock_mg_per_tablet") : t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
-                if tablets {
-                    NumberRow(label: t("stock_tablets_per_pack"), value: $tabletsPerPack, range: 1...10_000)
+                if tablets { NumberRow(label: t("stock_tablets_per_pack"), value: $tabletsPerPack, range: 1...10_000) }
+                if editingVial == nil {
+                    NumberRow(label: tablets ? t("stock_how_many_packs") : t("stock_how_many"), value: $count, range: 1...50)
                 }
-                NumberRow(label: tablets ? t("stock_how_many_packs") : t("stock_how_many"), value: $count, range: 1...50)
-                TextField(t("stock_source"), text: $supplier, prompt: Text("\(t("stock_source")) (\(t("optional")))"))
-                LabeledContent(t("ios_scan_lot")) {
-                    TextField(t("optional"), text: $lot).multilineTextAlignment(.trailing).capitalisedCharacters().fieldTitleHidden()
+                if !spray {
+                    Picker(t("ios_vial_state"), selection: $state) {
+                        Text(t("stock_sealed")).tag(VialState.sealed)
+                        Text(tablets ? t("stock_open") : t("ios_stock_already_reconstituted")).tag(VialState.reconstituted)
+                        Text(t("stock_on_order")).tag(VialState.onOrder)
+                    }
                 }
-                Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
-                if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
-                Picker(t("stock_where"), selection: $place) {
-                    Text(t("stock_in_the_fridge")).tag(Place.fridge)
-                    if !tablets { Text(t("ios_stock_mixed_in_use")).tag(Place.mixed) }
-                    Text(t("stock_on_order")).tag(Place.onOrder)
+                if editingVial == nil && n > 1 && state == .reconstituted {
+                    Text(t("ios_vial_batch_open")).font(.footnote).foregroundStyle(.secondary)
                 }
-                if place == .mixed && !tablets {
-                    NumberRow(label: t("stock_water_added"), value: $mixedMl, suffix: "mL", range: 0...100)
+            }
+            if mixed {
+                Section(t("stock_reconstitute")) {
+                    NumberRow(label: t("stock_water_added"), value: $ml, suffix: "mL", range: 0...100)
+                    Picker(t("stock_diluent"), selection: $diluent) {
+                        ForEach(DILUENT_CHOICES, id: \.self) { Text(diluentName($0)).tag($0) }
+                        if !DILUENT_CHOICES.contains(diluent) { Text(diluentName(diluent)).tag(diluent) }
+                    }
                     DatePicker(t("ios_stock_mixed_on"), selection: $mixedOn, in: ...Date(), displayedComponents: .date)
-                }
-                FooterRow {
-                VStack(alignment: .leading, spacing: 4) {
-                    if tablets { Text(t("stock_pack_holds", ["mg": .string(trim(packMg, 2))])) }
-                    else if let sizes = peptide?.vialSizesMg, !sizes.isEmpty {
-                        Text(t("stock_common_sizes", ["sizes": .string(sizes.map { jsNumberString($0) }.joined(separator: ", "))]))
+                    Text(t("stock_makes_conc", ["conc": .string(trim(ml > 0 ? strengthMg / ml : 0, 3))]))
+                        .font(.footnote).foregroundStyle(.secondary)
+                    if editingVial?.state == .reconstituted {
+                        Text(t("ios_vial_correct_mix")).font(.footnote).foregroundStyle(.secondary)
                     }
-                    if !arrived { Text(t("stock_on_order_hint")) }
-                    if place == .mixed && !tablets {
-                        Text(t("stock_makes_conc", ["conc": .string(trim(mixedMl > 0 ? strengthMg / mixedMl : 0, 3))]))
-                        Text(n > 1 ? t("ios_stock_mixed_hint_many") : t("ios_stock_mixed_hint"))
+                }
+                if editingVial?.state != .reconstituted {
+                    let bottles = shelfOrder(store.data.mine.diluents.filter { $0.kind == diluent && bottleUsable($0, nowMillis()) }, nowMillis())
+                    BottlePicker(label: t("stock_from_bottle"), optionKey: "stock_bottle_option", bottles: bottles,
+                                 untrackedHint: t("stock_untracked_bottle"), bottleId: $bottleId)
+                }
+            }
+            if state != .onOrder {
+                Section(t("ios_left_title")) {
+                    Toggle(t("ios_stock_partially_used"), isOn: $partiallyUsed)
+                    if partiallyUsed {
+                        if mixed {
+                            Picker(t("ios_left_enter_as"), selection: $inMl) {
+                                Text("mL").tag(true)
+                                Text(t("ios_left_amount")).tag(false)
+                            }.pickerStyle(.segmented)
+                        }
+                        if mixed && inMl {
+                            NumberRow(label: t("ios_left_title"), value: Binding(
+                                get: { jsFixed(fractionLeft * ml, 3) }, set: { fractionLeft = ml > 0 ? $0 / ml : 0 }),
+                                      suffix: "mL", range: 0...max(0, ml))
+                        } else {
+                            AmountRow(label: t("ios_left_title"), value: Binding(
+                                get: { remaining }, set: { fractionLeft = capacity > 0 ? $0 / capacity : 0 }),
+                                      base: .mcg, range: 0...max(0, capacity))
+                        }
+                        Text(t("ios_left_hint", ["amount": .string(formatDose(remaining)), "pct": .string(trim(fractionLeft * 100, 0))]))
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
                 }
             }
-            } footer: { FooterWrap {
-                VStack(alignment: .leading, spacing: 4) {
-                    if tablets { Text(t("stock_pack_holds", ["mg": .string(trim(packMg, 2))])) }
-                    else if let sizes = peptide?.vialSizesMg, !sizes.isEmpty {
-                        Text(t("stock_common_sizes", ["sizes": .string(sizes.map { jsNumberString($0) }.joined(separator: ", "))]))
-                    }
-                    if !arrived { Text(t("stock_on_order_hint")) }
-                    if place == .mixed && !tablets {
-                        Text(t("stock_makes_conc", ["conc": .string(trim(mixedMl > 0 ? strengthMg / mixedMl : 0, 3))]))
-                        Text(n > 1 ? t("ios_stock_mixed_hint_many") : t("ios_stock_mixed_hint"))
-                    }
-                }
-            }}
+            if mixed && !spray {
+                ReconstitutionDosePreview(vial: draft(), diluentMl: ml, remainingMcg: remaining, syringeId: $syringeId)
+            }
             Section {
-                OptionalNumberRow(label: pricedAsKit ? t("stock_cost_kit") : t("stock_cost_per_vial_label"), value: $cost, suffix: payCurrency)
-                Picker(t("stock_priced_as"), selection: $pricedAsKit) {
-                    Text(t("stock_per_vial")).tag(false)
-                    Text(n > 1 ? t("stock_kit_of", ["n": .number(n)]) : t("stock_whole_kit")).tag(true)
-                }
-                Picker(t("stock_paid_in"), selection: $payCurrency) {
-                    ForEach(CURRENCIES, id: \.code) { Text("\($0.code) · \($0.label)").tag($0.code) }
-                }
-                if let c = cost, c > 0, payCurrency != currency, let url = converterUrl(c, payCurrency, currency) {
-                    Link(t("ios_stock_convert", ["amount": .string(formatMoney(c, payCurrency)), "currency": .string(currency)]), destination: url)
-                }
-                FooterRow {
-                VStack(alignment: .leading, spacing: 4) {
-                    if let perVial, strengthMg > 0 {
-                        Text(t("stock_cost_hint", ["avial": .string(formatMoney(perVial, currency)), "permg": .string(formatMoney(perVial / strengthMg, currency))])
-                             + (n > 1 ? t("stock_cost_all", ["total": .string(formatMoney(perVial * n, currency)), "n": .number(n)]) : ""))
-                    } else {
-                        Text(t("stock_cost_optional"))
+                DisclosureGroup(t("ios_vial_purchase"), isExpanded: $purchaseExpanded) {
+                    TextField(t("stock_source"), text: $supplier)
+                    TextField(t("ios_scan_lot"), text: $lot).capitalisedCharacters()
+                    Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
+                    if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
+                    OptionalNumberRow(label: pricedAsKit ? t("stock_cost_kit") : t("stock_cost_per_vial_label"), value: $cost, suffix: payCurrency)
+                    if editingVial == nil {
+                        Picker(t("stock_priced_as"), selection: $pricedAsKit) {
+                            Text(t("stock_per_vial")).tag(false)
+                            Text(t("stock_whole_kit")).tag(true)
+                        }
                     }
-                    Text(t("stock_paid_in_hint"))
-                }
-            }
-            } footer: { FooterWrap {
-                VStack(alignment: .leading, spacing: 4) {
-                    if let perVial, strengthMg > 0 {
-                        Text(t("stock_cost_hint", ["avial": .string(formatMoney(perVial, currency)), "permg": .string(formatMoney(perVial / strengthMg, currency))])
-                             + (n > 1 ? t("stock_cost_all", ["total": .string(formatMoney(perVial * n, currency)), "n": .number(n)]) : ""))
-                    } else {
-                        Text(t("stock_cost_optional"))
+                    Picker(t("stock_paid_in"), selection: $payCurrency) {
+                        ForEach(CURRENCIES, id: \.code) { Text("\($0.code) · \($0.label)").tag($0.code) }
                     }
-                    Text(t("stock_paid_in_hint"))
-                }
-            }}
-            Section {
-                OptionalNumberRow(label: t("stock_shipping_order"), value: $shipping, suffix: payCurrency)
-                FooterRow {
-                if let s = shipping, s > 0 {
-                    Text(t("stock_shipping_split", ["each": .string(formatMoney(s / n, currency)), "vials": .string(t("count_vials", ["n": .number(n)]))]))
-                } else {
-                    Text(t("stock_shipping_optional"))
-                }
-            }
-            } footer: { FooterWrap {
-                if let s = shipping, s > 0 {
-                    Text(t("stock_shipping_split", ["each": .string(formatMoney(s / n, currency)), "vials": .string(t("count_vials", ["n": .number(n)]))]))
-                } else {
-                    Text(t("stock_shipping_optional"))
-                }
-            }}
-        }
-        .formChrome(t("stock_new_vial"),
-                    confirm: arrived ? t("stock_add_vials", ["vials": .string(what(tablets, n))]) : t("stock_add_vials_on_order", ["vials": .string(what(tablets, n))]),
-                    disabled: peptideId.isEmpty || !(tablets ? packMg > 0 : strengthMg > 0) || (place == .mixed && !tablets && !(mixedMl > 0))) {
-            let base = Vial(id: "", profileId: "", peptideId: peptideId, strengthMg: tablets ? packMg : strengthMg,
-                            state: arrived ? .sealed : .onOrder,
-                            supplier: supplier.trimmingCharacters(in: .whitespaces).isEmpty ? nil : supplier.trimmingCharacters(in: .whitespaces),
-                            lot: lot.trimmingCharacters(in: .whitespaces).isEmpty ? nil : lot.trimmingCharacters(in: .whitespaces),
-                            cost: perVial, currency: perVial == nil ? nil : payCurrency, acquiredAt: nowMillis(), expiresAt: hasExpiry ? endOfLocalDay(expiry.millis) : nil,
-                            container: tablets ? .pack : nil, mgPerTablet: tablets ? strengthMg : nil)
-            let paid = shipping.flatMap { $0 > 0 ? $0 : nil }
-            let mix = place == .mixed && !tablets
-            let ml = mixedMl, mixedAt = min(nowMillis(), mixedOn.millis)
-            store.mutate { d in
-                let before = Set(d.vials.map(\.id))
-                d.addOrder(Array(repeating: base, count: Int(n)), shippingCost: paid, currency: paid == nil ? nil : payCurrency)
-                // One of them is the vial being drawn from; the rest stay sealed.
-                if mix, let id = d.vials.first(where: { !before.contains($0.id) })?.id {
-                    d.reconstituteVial(id, diluentMl: ml, diluent: .bacteriostatic, at: mixedAt)
+                    if editingVial == nil { OptionalNumberRow(label: t("stock_shipping_order"), value: $shipping, suffix: payCurrency) }
+                    TextField(t("labs_notes"), text: $notes, axis: .vertical)
                 }
             }
         }
+        .formChrome(t(editingVial == nil ? "stock_new_vial" : "ios_vial_edit"), confirm: t("save"), disabled: !valid, action: save)
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choose($0.id) }) } }
         .sheet(isPresented: $scanning) { NavigationStack { ScanVialView(onScanned: apply) } }
-        .onAppear {
-            guard !loaded else { return }
-            loaded = true
-            payCurrency = store.data.settings.currency
-            if let id = startingPeptideId, store.data.peptide(id) != nil { choose(id) }
-            else if let first = store.data.allPeptides.first { choose(first.id) }
-            if alreadyMixed { place = .mixed }
+        .onChange(of: diluent) { bottleId = "" }
+        .onAppear(perform: load)
+    }
+
+    /// Start with the existing record so edits retain metadata and all relationships.
+    private func draft() -> Vial {
+        var v = editingVial ?? Vial(id: "", profileId: "", peptideId: peptideId, strengthMg: strengthMg, state: state)
+        v.strengthMg = capacity / 1000
+        v.state = state
+        v.supplier = clean(supplier); v.lot = clean(lot); v.notes = clean(notes)
+        v.expiresAt = hasExpiry ? endOfLocalDay(expiry.millis) : nil
+        v.cost = cost.map { pricedAsKit && editingVial == nil ? $0 / Double(n) : $0 }
+        v.currency = v.cost == nil ? nil : payCurrency
+        if editingVial == nil { v.acquiredAt = nowMillis(); v.container = tablets ? .pack : nil }
+        if tablets { v.mgPerTablet = strengthMg }
+        if mixed {
+            v.diluentMl = ml; v.diluent = diluent
+            v.reconstitutedAt = min(nowMillis(), mixedOn.millis)
+            // Correcting volume or remaining stock never extends the original use-by date.
+            if editingVial?.reconstitutedAt != v.reconstitutedAt || editingVial?.state != .reconstituted {
+                v.budAt = spray ? editingVial?.budAt : beyondUseDate(v.reconstitutedAt!)
+            }
+        } else if !tablets {
+            v.reconstitutedAt = nil; v.diluentMl = nil; v.diluent = nil; v.diluentBottleId = nil; v.budAt = nil
+        } else if state == .reconstituted && editingVial?.state != .reconstituted {
+            v = openPack(v, nowMillis())
+        }
+        v.drawnMcg = jsFixed(capacity - remaining, 6)
+        return v
+    }
+
+    private func save() {
+        guard valid else { return }
+        let v = draft()
+        store.mutate { d in
+            if mixed && !spray {
+                d.settings.reconstitutionPreferences[d.activeProfileId + ":" + peptideId] =
+                    ReconstitutionPreference(diluentMl: ml, diluent: diluent, syringeId: syringeId)
+            }
+            if editingVial != nil {
+                d.editVialDetails(v, fromBottleId: bottleId.isEmpty ? nil : bottleId)
+            } else {
+                let before = Set(d.vials.map(\.id))
+                var sealed = v
+                if v.state == .reconstituted {
+                    sealed.state = .sealed; sealed.reconstitutedAt = nil; sealed.budAt = nil
+                    sealed.diluentMl = nil; sealed.diluent = nil; sealed.diluentBottleId = nil
+                }
+                sealed.drawnMcg = 0
+                d.addOrder(Array(repeating: sealed, count: n), shippingCost: shipping, currency: shipping == nil ? nil : payCurrency)
+                if let added = d.vials.first(where: { !before.contains($0.id) }) {
+                    var first = v; first.id = added.id
+                    d.editVialDetails(first, fromBottleId: bottleId.isEmpty ? nil : bottleId)
+                }
+            }
+        }
+    }
+
+    private func load() {
+        guard !loaded else { return }; loaded = true
+        payCurrency = store.data.settings.currency
+        syringeId = store.data.settings.defaultSyringeId ?? "u100-0.5"
+        if let v = editingVial {
+            useRememberedMix(v.peptideId)
+            peptideId = v.peptideId; state = v.state
+            strengthMg = isPack(v) ? (v.mgPerTablet ?? v.strengthMg) : v.strengthMg
+            tabletsPerPack = isPack(v) && strengthMg > 0 ? v.strengthMg / strengthMg : 30
+            ml = v.diluentMl ?? 2; diluent = v.diluent ?? .bacteriostatic
+            mixedOn = v.reconstitutedAt.map { Date(millis: $0) } ?? Date()
+            fractionLeft = vialFractionRemaining(v); partiallyUsed = fractionLeft < 1
+            supplier = v.supplier ?? ""; lot = v.lot ?? ""; notes = v.notes ?? ""
+            cost = v.cost; payCurrency = v.currency ?? payCurrency
+            hasExpiry = v.expiresAt != nil; expiry = v.expiresAt.map { Date(millis: $0) } ?? Date()
+            if alreadyMixed && !isPack(v) { state = .reconstituted }
+        } else {
+            choose(startingPeptideId ?? store.data.allPeptides.first?.id ?? "")
+            if alreadyMixed && !tablets { state = .reconstituted }
             if scanFirst { scanning = true }
         }
     }
-
-    private func what(_ tablets: Bool, _ n: Double) -> String {
-        tablets ? t("count_packs", ["n": .number(n)]) : t("count_vials", ["n": .number(n)])
+    private func clean(_ s: String) -> String? {
+        let value = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        return value.isEmpty ? nil : value
     }
-
-    /// A checked scan: the compound, and whatever else the label gave.
-    private func apply(_ s: ScannedVial) {
-        choose(s.peptideId)
-        if s.strengthMg > 0 { strengthMg = s.strengthMg }
-        if let l = s.lot { lot = l }
-        if let e = s.expiresAt { hasExpiry = true; expiry = Date(millis: e) }
-    }
-
     private func choose(_ id: String) {
         peptideId = id
+        useRememberedMix(id)
         if let first = store.data.peptide(id)?.vialSizesMg.first { strengthMg = first }
+        fractionLeft = 1; partiallyUsed = false
+    }
+    private func useRememberedMix(_ id: String) {
+        ml = 2; diluent = .bacteriostatic; bottleId = ""
+        syringeId = store.data.settings.defaultSyringeId ?? "u100-0.5"
+        if let preference = store.data.settings.reconstitutionPreferences[store.data.activeProfileId + ":" + id],
+           preference.diluentMl.isFinite, preference.diluentMl > 0 {
+            ml = preference.diluentMl; diluent = preference.diluent
+            if syringeById(preference.syringeId) != nil { syringeId = preference.syringeId }
+        }
+    }
+    private func apply(_ scan: ScannedVial) {
+        choose(scan.peptideId)
+        if scan.strengthMg > 0 { strengthMg = scan.strengthMg }
+        if let value = scan.lot { lot = value }
+        if let value = scan.expiresAt { hasExpiry = true; expiry = Date(millis: value) }
     }
 }
 
@@ -292,98 +352,67 @@ struct VialFor: Identifiable {
     var id: String { peptideId + (mixed ? "+mixed" : "") }
 }
 
-// MARK: - Correcting what is left
-
-/// What is left in an open vial, set by eye: in mL of solution for a mixed vial,
-/// or as an amount. Doses logged afterwards come out of the new figure.
-struct VialLeftForm: View {
+/// Estimates use today's protocol dose and the original concentration, even for part-used stock.
+private struct ReconstitutionDosePreview: View {
     @Environment(AppStore.self) private var store
     var vial: Vial
-    @State private var leftMcg: Double = 0
-    @State private var inMl = true
-    @State private var loaded = false
+    var diluentMl: Double
+    var remainingMcg: Double
+    @Binding var syringeId: String
+    @State private var choosingSyringe = false
 
     var body: some View {
-        let conc = vialConcentration(vial)
-        let mixed = conc.isFinite && conc > 0
-        let cap = vialCapacityMcg(vial)
-        let name = store.data.peptide(vial.peptideId)?.name ?? vial.peptideId
-        Form {
-            Section {
-                if mixed {
-                    Picker(t("ios_left_enter_as"), selection: $inMl) {
-                        Text("mL").tag(true)
-                        Text(t("ios_left_amount")).tag(false)
-                    }
-                    .pickerStyle(.segmented)
-                }
-                if mixed && inMl {
-                    NumberRow(label: t("ios_left_title"), value: Binding(get: { jsFixed(leftMcg / conc, 3) }, set: { leftMcg = $0 * conc }),
-                              suffix: "mL", range: 0...((vial.diluentMl ?? 0)))
-                } else {
-                    AmountRow(label: t("ios_left_title"), value: $leftMcg, base: .mcg, range: 0...cap)
-                }
-                FooterRow {
-                Text(t("ios_left_hint", ["amount": .string(formatDose(min(leftMcg, cap))), "pct": .string(trim(cap > 0 ? min(leftMcg, cap) / cap * 100 : 0, 0))])
-                     + (mixed ? " " + t("ios_left_ml", ["ml": .string(trim(min(leftMcg, cap) / conc, 2)), "full": .string(trim(vial.diluentMl ?? 0, 2))]) : ""))
-            }
-            } header: { Text("\(name) · \(jsNumberString(vial.strengthMg)) mg") } footer: { FooterWrap {
-                Text(t("ios_left_hint", ["amount": .string(formatDose(min(leftMcg, cap))), "pct": .string(trim(cap > 0 ? min(leftMcg, cap) / cap * 100 : 0, 0))])
-                     + (mixed ? " " + t("ios_left_ml", ["ml": .string(trim(min(leftMcg, cap) / conc, 2)), "full": .string(trim(vial.diluentMl ?? 0, 2))]) : ""))
-            }}
+        let protocols = store.data.mine.protocols.filter {
+            $0.active && $0.peptideId == vial.peptideId &&
+                [.subcutaneous, .intramuscular, .intravenous].contains($0.route)
         }
-        .formChrome(t("ios_left_title"), confirm: t("save")) {
-            store.mutate { $0.setVialRemaining(vial.id, remainingMcg: leftMcg) }
-        }
-        .onAppear {
-            guard !loaded else { return }
-            loaded = true
-            leftMcg = vialRemainingMcg(vial)
-        }
-    }
-}
-
-// MARK: - Making up and topping up
-
-struct ReconstituteForm: View {
-    @Environment(AppStore.self) private var store
-    var vial: Vial
-    @State private var ml: Double = 2
-    @State private var diluent: DiluentKind = .bacteriostatic
-    @State private var bottleId = ""
-    @State private var loaded = false
-
-    var body: some View {
+        let syringe = syringeById(syringeId) ?? SYRINGES[2]
         let now = nowMillis()
-        let bottles = store.data.mine.diluents
-        let available = shelfOrder(bottles.filter { $0.kind == diluent && bottleUsable($0, now) }, now)
-        let chosen = available.first { $0.id == bottleId }
-        let conc = ml > 0 ? vial.strengthMg / ml : 0
-        Form {
-            Section {
-                NumberRow(label: t("stock_water_added"), value: $ml, suffix: "mL", range: 0...100)
-                Picker(t("stock_diluent"), selection: Binding(get: { diluent }, set: { diluent = $0; bottleId = pickBottle(bottles, $0, ml, now)?.id ?? "" })) {
-                    ForEach(DILUENT_CHOICES, id: \.self) { Text(diluentName($0)).tag($0) }
+        Section {
+            if protocols.isEmpty {
+                Text(t("ios_recon_no_protocol")).font(.footnote).foregroundStyle(.secondary)
+            } else {
+                DisclosureGroup(isExpanded: $choosingSyringe) {
+                    SyringePickerView(value: Binding(get: { syringe.id }, set: {
+                        syringeId = $0; choosingSyringe = false
+                    }))
+                } label: {
+                    Text(syringe.label).font(.subheadline)
                 }
-                FooterRow { Text(t("stock_makes_conc", ["conc": .string(trim(conc, 3))])) }
-            } footer: { FooterWrap { Text(t("stock_makes_conc", ["conc": .string(trim(conc, 3))])) }}
-            BottlePicker(label: t("stock_from_bottle"), optionKey: "stock_bottle_option", bottles: available, untrackedHint: t("stock_untracked_bottle"), bottleId: $bottleId)
-            if let chosen, bottleRemainingMl(chosen) < ml - 1e-9 {
-                Text(t("stock_bottle_short", ["has": .string(trim(bottleRemainingMl(chosen), 2)), "want": .string(trim(ml, 2))])).foregroundStyle(Tone.tangerine.color)
+                if diluentMl.isFinite && diluentMl > 0 && remainingMcg.isFinite && remainingMcg >= 0 {
+                    ForEach(protocols) { p in
+                        let dose = scheduledDoseMcg(p, now)
+                        let draw = calculateDraw(vialMcg: vialCapacityMcg(vial), diluentMl: diluentMl,
+                                                 doseMcg: dose, syringe: syringe)
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(p.name).font(.subheadline.bold())
+                            if dose.isFinite && dose > 0 && draw.units.isFinite {
+                                Text(t("ios_units_per", ["marks": .string(trim(draw.units, 3)), "dose": .string(formatDose(dose))]))
+                                    .font(.headline).monospacedDigit()
+                                Text(t("ios_recon_doses", ["count": .number(floor(min(remainingMcg, vialCapacityMcg(vial)) / dose + 1e-9)),
+                                                           "units": .string(trim(draw.units, 3)),
+                                                           "scale": .string(syringe.scale == .u100 ? "U-100" : "U-40")]))
+                                    .font(.subheadline)
+                                Text(t("calc_volume") + ": " + trim(draw.volumeMl, 4) + " mL").font(.caption).foregroundStyle(.secondary)
+                                if draw.warnings.contains(.exceedsBarrel) {
+                                    Text(t("calc_body_exceeds_barrel")).font(.footnote).foregroundStyle(Tone.rose.color)
+                                }
+                                if draw.warnings.contains(.belowGraduation) {
+                                    Text(t("calc_body_below_graduation")).font(.footnote).foregroundStyle(Tone.tangerine.color)
+                                } else if draw.warnings.contains(.offGraduation) {
+                                    Text(t("calc_body_off_graduation")).font(.footnote).foregroundStyle(Tone.tangerine.color)
+                                }
+                            } else {
+                                Text(t("ios_recon_no_dose")).font(.footnote).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    Text(t("ios_recon_current_dose")).font(.footnote).foregroundStyle(.secondary)
+                } else {
+                    Text(t("calc_enter_to_see")).font(.footnote).foregroundStyle(.secondary)
+                }
             }
-            if diluent == .sterile { Text(t("stock_sterile_water_note")).foregroundStyle(Tone.tangerine.color) }
-            Section {
-                Text(t("stock_swirl_note", ["days": .string(t("count_days", ["n": .number(MULTI_DOSE_VIAL_BUD_DAYS)]))])).font(.footnote).foregroundStyle(.secondary)
-            }
-        }
-        .formChrome(t("stock_reconstitute"), confirm: t("stock_reconstitute"), disabled: !(ml > 0)) {
-            store.mutate { $0.reconstituteVial(vial.id, diluentMl: ml, diluent: diluent, fromBottleId: bottleId.isEmpty ? nil : bottleId) }
-        }
-        .onAppear {
-            guard !loaded else { return }
-            loaded = true
-            bottleId = pickBottle(bottles, diluent, ml, now)?.id ?? ""
-        }
+        } header: { Text(t("ios_recon_summary")) }
     }
 }
 

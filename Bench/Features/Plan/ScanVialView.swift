@@ -156,7 +156,7 @@ struct ScanVialView: View {
 }
 
 /// Text in a photo, line by line, read on the device.
-func recognizeText(_ image: PlatformImage) async -> [String] {
+func recognizeText(_ image: PlatformImage, groupRows: Bool = false) async -> [String] {
     guard let cg = image.pixels else { return [] }
     #if canImport(UIKit)
     let orientation = CGImagePropertyOrientation(image.imageOrientation)
@@ -164,14 +164,34 @@ func recognizeText(_ image: PlatformImage) async -> [String] {
     let orientation = CGImagePropertyOrientation.up
     #endif
     return await withCheckedContinuation { cont in
-        let request = VNRecognizeTextRequest { req, _ in
-            let lines = (req.results as? [VNRecognizedTextObservation] ?? []).compactMap { $0.topCandidates(1).first?.string }
-            cont.resume(returning: lines)
-        }
-        request.recognitionLevel = .accurate
-        request.usesLanguageCorrection = false
         DispatchQueue.global(qos: .userInitiated).async {
-            do { try VNImageRequestHandler(cgImage: cg, orientation: orientation).perform([request]) } catch { cont.resume(returning: []) }
+            let request = VNRecognizeTextRequest()
+            request.recognitionLevel = .accurate
+            request.usesLanguageCorrection = false
+            do {
+                try VNImageRequestHandler(cgImage: cg, orientation: orientation).perform([request])
+            } catch {
+                cont.resume(returning: [])
+                return
+            }
+            let observations = request.results ?? []
+            // Reports often have separate text boxes for the marker, value and unit.
+            // Reassemble boxes on the same baseline before parsing each result.
+            var rows: [[VNRecognizedTextObservation]] = []
+            for observation in observations.sorted(by: { $0.boundingBox.midY > $1.boundingBox.midY }) {
+                if groupRows, let index = rows.firstIndex(where: {
+                    guard let anchor = $0.first else { return false }
+                    return abs(anchor.boundingBox.midY - observation.boundingBox.midY)
+                        < min(anchor.boundingBox.height, observation.boundingBox.height) * 0.5
+                }) {
+                    rows[index].append(observation)
+                } else { rows.append([observation]) }
+            }
+            let lines = groupRows ? rows.map { row in
+                row.sorted { $0.boundingBox.minX < $1.boundingBox.minX }
+                    .compactMap { $0.topCandidates(1).first?.string }.joined(separator: "  ")
+            } : observations.compactMap { $0.topCandidates(1).first?.string }
+            cont.resume(returning: lines)
         }
     }
 }

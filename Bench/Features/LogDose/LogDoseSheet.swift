@@ -207,7 +207,7 @@ struct LogDoseSheet: View {
             }
         }
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choosePeptide($0.id) }) } }
-        .sheet(item: $mixing, onDismiss: repickVial) { v in NavigationStack { ReconstituteForm(vial: v) } }
+        .sheet(item: $mixing, onDismiss: repickVial) { v in NavigationStack { AddVialForm(alreadyMixed: true, editingVial: v) } }
         .sheet(isPresented: $addingVial, onDismiss: repickVial) { NavigationStack { AddVialForm(startingPeptideId: peptideId, alreadyMixed: true) } }
         .onAppear(perform: load)
         .onChange(of: site) { _, s in

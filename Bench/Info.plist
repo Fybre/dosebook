@@ -25,7 +25,7 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Bench reads a vial's label to fill in the compound, strength, lot and expiry. The photo is read on this iPhone and not kept.</string>
+	<string>Bench reads vial labels and bloodwork results from photos. Photos are read on this iPhone and not kept.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Bench reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back.</string>
 	<key>UIBackgroundModes</key>

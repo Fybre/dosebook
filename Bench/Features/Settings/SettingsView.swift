@@ -81,6 +81,11 @@ struct SettingsView: View {
                 }
                 NumberRow(label: t("settings_warn_vial_dates"), value: setting(\.budWarningDays), suffix: t("days"), range: 0...28)
                 NumberRow(label: t("settings_low_stock_at"), value: setting(\.lowStockDoses), suffix: t("settings_doses_suffix"), range: 0...60)
+                Picker(t("ios_stock_sort"), selection: setting(\.stockSort)) {
+                    Text(t("ios_stock_sort_alpha")).tag(StockSort.alphabetical)
+                    Text(t("ios_stock_sort_date")).tag(StockSort.dateAdded)
+                        Text(t("ios_stock_sort_newest")).tag(StockSort.newestFirst)
+                }
                 Picker(t("settings_group_vials"), selection: Binding(get: { settings.groupIdenticalVials == true }, set: { v in store.mutate { $0.settings.groupIdenticalVials = v } })) {
                     Text(t("settings_one_row_vial")).tag(false)
                     Text(t("settings_one_row_compound")).tag(true)

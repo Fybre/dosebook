@@ -415,6 +415,28 @@ private func stockOf(_ mcg: Double) -> Stock {
 }
 
 @Suite struct SetVialRemainingTests {
+    @Test func newlyAddedBatchCanHaveOnePreviouslyMixedPartUsedVial() {
+        var d = AppData()
+        let water = d.addDiluent(DiluentBottle(id: "", profileId: "", kind: .bacteriostatic, volumeMl: 30, state: .sealed))
+        let base = Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 10, state: .sealed)
+        d.addOrder([base, base, base], shippingCost: 12, currency: "AUD")
+        let id = d.vials[0].id
+        let mixedAt = nowMillis() - 7 * 86_400_000
+        d.reconstituteVial(id, diluentMl: 2, diluent: .bacteriostatic, at: mixedAt)
+        // 0.8 mL remains of the original 2 mL: 4 mg, still at 5 mg/mL.
+        d.setVialRemaining(id, remainingMcg: 0.8 * (10 / 2) * 1000)
+        let mixed = d.vials[0]
+        #expect(mixed.state == .reconstituted)
+        #expect(mixed.reconstitutedAt == mixedAt && mixed.budAt == beyondUseDate(mixedAt))
+        #expect(vialRemainingMcg(mixed) == 4000 && vialConcentration(mixed) == 5000)
+        #expect(abs(vialRemainingMl(mixed) - 0.8) < 1e-9)
+        #expect(d.vials.dropFirst().allSatisfy { $0.state == .sealed && vialRemainingMcg($0) == 10_000 })
+        #expect(d.logs.isEmpty)
+        #expect(d.diluents.first { $0.id == water }?.state == .sealed)
+        #expect(bottleRemainingMl(d.diluents[0]) == 30)
+        #expect(d.orders.count == 1 && d.orders[0].shippingCost == 12)
+    }
+
     @Test func setsWhatIsLeft() {
         var d = AppData()
         let id = d.addVial(Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 10, state: .sealed))
@@ -427,5 +449,110 @@ private func stockOf(_ mcg: Double) -> Stock {
         #expect(d.vials[0].drawnMcg == 0)
         d.setVialRemaining(id, remainingMcg: -5)
         #expect(vialRemainingMcg(d.vials[0]) == 0)
+    }
+}
+
+@Suite struct StockSortTests {
+    @Test func sortsByNamesAndDatesWithoutChangingGroupActions() {
+        let vials = [
+            vial("new", peptideId: "a", acquiredAt: 30),
+            vial("old", peptideId: "a", acquiredAt: 10),
+            vial("middle", peptideId: "b", acquiredAt: 20),
+            vial("undated", peptideId: "c")
+        ]
+        let names = ["a": "Zinc", "b": "alpha", "c": "Beta"]
+        #expect(sortedStockVials(vials, by: .newestFirst) { names[$0]! }.map(\.id) == ["new", "middle", "old", "undated"])
+        let alpha = sortedStockVials(vials, by: .alphabetical) { names[$0]! }
+        #expect(alpha.map(\.id) == ["middle", "undated", "new", "old"])
+        #expect(groupSealedVials(alpha).map(\.peptideId) == ["b", "c", "a"])
+        #expect(groupSealedVials(alpha).last?.vials.first?.id == "old")
+        #expect(sortedStockVials(vials, by: .dateAdded) { names[$0]! }.map(\.id) == ["old", "middle", "new", "undated"])
+    }
+
+    @Test func settingSurvivesExportAndOlderSettingsStillLoad() throws {
+        var data = AppData()
+        data.settings.stockSort = .alphabetical
+        let saved = try JSONEncoder().encode(data)
+        #expect(try AppData.load(saved).settings.stockSort == .alphabetical)
+        #expect(try JSONDecoder().decode(Settings.self, from: Data("{}".utf8)).stockSort == .dateAdded)
+        #expect(try JSONDecoder().decode(Settings.self, from: Data(#"{"stockSort":"future"}"#.utf8)).stockSort == .dateAdded)
+    }
+}
+
+@Suite struct UnifiedVialEditorTests {
+    @Test func editingMixedStockKeepsHistoryAndDoesNotDrawWaterAgain() {
+        var d = AppData()
+        let bottle = d.addDiluent(DiluentBottle(id: "", profileId: "", kind: .bacteriostatic, volumeMl: 30, state: .sealed))
+        let id = d.addVial(Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 10, state: .sealed, acquiredAt: 100))
+        d.reconstituteVial(id, diluentMl: 2, diluent: .bacteriostatic, at: 1000, fromBottleId: bottle)
+        d.addLog(DoseLog(id: "", profileId: "", peptideId: "bpc-157", at: 2000, doseMcg: 500, route: .subcutaneous, vialId: id))
+        let logs = d.logs
+        var draft = d.vials[0]
+        draft.diluentMl = 3; draft.drawnMcg = 6000; draft.notes = "Corrected label"
+        draft.budAt = 999_999 // A volume correction cannot reset the use-by date.
+        d.editVialDetails(draft, fromBottleId: bottle)
+        #expect(d.logs == logs)
+        #expect(d.diluents[0].drawnMl == 2)
+        #expect(d.vials[0].diluentBottleId == bottle)
+        #expect(d.vials[0].budAt == beyondUseDate(1000))
+        #expect(d.vials[0].notes == "Corrected label")
+        #expect(vialRemainingMcg(d.vials[0]) == 4000)
+        #expect(abs(vialRemainingMl(d.vials[0]) - 1.2) < 1e-9)
+    }
+
+    @Test func openingOneNewVialKeepsBatchAndProfileLinks() {
+        var d = AppData()
+        let base = Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 10, state: .sealed, acquiredAt: 500)
+        d.addOrder([base, base], shippingCost: 12, currency: "AUD")
+        let original = d.vials[0]
+        var draft = base
+        draft.id = original.id; draft.state = .reconstituted
+        draft.diluentMl = 2; draft.reconstitutedAt = 1000; draft.budAt = beyondUseDate(1000)
+        draft.drawnMcg = 6000
+        d.editVialDetails(draft)
+        #expect(d.vials[0].profileId == original.profileId)
+        #expect(d.vials[0].orderId == original.orderId)
+        #expect(d.vials[0].acquiredAt == 500)
+        #expect(d.vials[0].state == .reconstituted && vialRemainingMcg(d.vials[0]) == 4000)
+        #expect(d.vials[1].state == .sealed && vialRemainingMcg(d.vials[1]) == 10_000)
+        #expect(d.orders.count == 1 && d.orders[0].shippingCost == 12)
+        #expect(d.logs.isEmpty)
+    }
+
+    @Test func firstReconstitutionDrawsOnceAndInvalidEditsAreIgnored() {
+        var d = AppData()
+        let bottle = d.addDiluent(DiluentBottle(id: "", profileId: "", kind: .bacteriostatic, volumeMl: 30, state: .sealed))
+        let id = d.addVial(Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 10, state: .sealed))
+        var draft = d.vials[0]
+        draft.state = .reconstituted; draft.diluentMl = 2; draft.reconstitutedAt = 1000
+        d.editVialDetails(draft, fromBottleId: bottle)
+        d.editVialDetails(draft, fromBottleId: bottle)
+        #expect(d.diluents[0].drawnMl == 2)
+        let saved = d.vials[0]
+        draft.drawnMcg = 11_000
+        d.editVialDetails(draft)
+        #expect(d.vials[0] == saved)
+        draft.drawnMcg = 0; draft.diluentMl = 0
+        d.editVialDetails(draft)
+        #expect(d.vials[0] == saved)
+        draft.id = "missing"; draft.diluentMl = 2
+        d.editVialDetails(draft, fromBottleId: bottle)
+        #expect(d.diluents[0].drawnMl == 2 && d.vials[0].id == id)
+    }
+}
+
+@Suite struct ReconstitutionPreferenceTests {
+    @Test func preferencesRoundTripSeparatelyForEachProfileAndCompound() throws {
+        var data = AppData()
+        let first = ReconstitutionPreference(diluentMl: 2, diluent: .bacteriostatic, syringeId: "u100-0.5")
+        let second = ReconstitutionPreference(diluentMl: 3, diluent: .bacteriostatic, syringeId: "u100-1")
+        data.settings.reconstitutionPreferences["me:bpc-157"] = first
+        data.settings.reconstitutionPreferences["partner:bpc-157"] = second
+        data.settings.reconstitutionPreferences["me:kpv"] = second
+        data.settings.stockSort = .newestFirst
+        let loaded = try AppData.load(JSONEncoder().encode(data))
+        #expect(loaded.settings.reconstitutionPreferences == data.settings.reconstitutionPreferences)
+        #expect(loaded.settings.stockSort == .newestFirst)
+        #expect(try JSONDecoder().decode(Settings.self, from: Data("{}".utf8)).reconstitutionPreferences.isEmpty)
     }
 }

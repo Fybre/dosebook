@@ -7,6 +7,7 @@ import BenchStore
 struct LabsView: View {
     @Environment(AppStore.self) private var store
     @State private var adding = false
+    @State private var scanning = false
 
     var body: some View {
         let data = store.data
@@ -16,6 +17,11 @@ struct LabsView: View {
         }
         let missing = missingMarkerIds(labs, compounds)
         GroupedList {
+            #if os(iOS)
+            Section {
+                Button { scanning = true } label: { Label(t("ios_lab_scan_title"), systemImage: "camera") }
+            }
+            #endif
             Section { Text(t("labs_subtitle")).font(.subheadline).foregroundStyle(.secondary) }
             Section {
                 VStack(alignment: .leading, spacing: 4) {
@@ -52,6 +58,12 @@ struct LabsView: View {
             }
         }
         .sheet(isPresented: $adding) { NavigationStack { AddLabForm() } }
+        #if os(iOS)
+        .sheet(isPresented: $scanning) { NavigationStack { ScanLabView() } }
+        #if DEBUG
+        .onAppear { if ProcessInfo.processInfo.arguments.contains("-labPhotos") { scanning = true } }
+        #endif
+        #endif
     }
 }
 

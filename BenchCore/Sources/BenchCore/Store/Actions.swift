@@ -186,6 +186,13 @@ public extension AppData {
     mutating func removeMeasurement(_ id: String) { measurements.removeAll { $0.id == id } }
 
     @discardableResult
+    mutating func addImportedLab(_ result: LabResult) -> Bool {
+        guard !isDuplicateLab(markerId: result.markerId, value: result.value, at: result.at, existing: mine.labs) else { return false }
+        _ = addLab(result)
+        return true
+    }
+
+    @discardableResult
     mutating func addLab(_ l: LabResult) -> String {
         var row = l
         row.id = uid(); row.profileId = activeProfileId
@@ -242,6 +249,36 @@ public extension AppData {
     }
 
     mutating func updateVial(_ id: String, _ change: (inout Vial) -> Void) { vials.update(id, change) }
+
+    /// Correct one stock record without rewriting dose history or drawing water twice.
+    /// Identity and delivery links belong to the existing record, including newly added batches.
+    mutating func editVialDetails(_ draft: Vial, fromBottleId: String? = nil) {
+        guard let index = vials.firstIndex(where: { $0.id == draft.id && $0.profileId == activeProfileId }),
+              draft.strengthMg.isFinite, draft.strengthMg > 0,
+              (draft.drawnMcg ?? 0).isFinite, (draft.drawnMcg ?? 0) >= 0,
+              (draft.drawnMcg ?? 0) <= vialCapacityMcg(draft) else { return }
+        let old = vials[index]
+        let startsMixing = old.state != .reconstituted && draft.state == .reconstituted && !isPack(draft)
+        if draft.state == .reconstituted && !isPack(draft) {
+            guard let ml = draft.diluentMl, ml.isFinite, ml > 0 else { return }
+        }
+        var updated = draft
+        updated.id = old.id; updated.profileId = old.profileId
+        updated.peptideId = old.peptideId; updated.orderId = old.orderId
+        updated.acquiredAt = old.acquiredAt
+        updated.container = old.container; updated.filledFromVialId = old.filledFromVialId
+        updated.mlPerSpray = old.mlPerSpray; updated.extra = old.extra
+        if old.state == .reconstituted && updated.state == .reconstituted {
+            updated.diluentBottleId = old.diluentBottleId
+            if old.reconstitutedAt == updated.reconstitutedAt { updated.budAt = old.budAt }
+        } else if startsMixing {
+            updated.diluentBottleId = fromBottleId
+        }
+        vials[index] = updated
+        if startsMixing, let bottle = fromBottleId, let ml = updated.diluentMl {
+            diluents = drawFromBottle(diluents, bottle, ml, updated.reconstitutedAt ?? nowMillis())
+        }
+    }
 
     /// Several vials added together share an order (a delivery); one vial with no postage does not.
     mutating func addOrder(_ newVials: [Vial], shippingCost: Double?, currency: String?, now: Millis = nowMillis()) {

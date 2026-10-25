@@ -999,6 +999,17 @@ public struct RemindersSettings: Codable, Equatable, Sendable {
 
 public let DEFAULT_REMINDERS = RemindersSettings()
 
+public enum StockSort: String, Codable, Sendable { case dateAdded, newestFirst, alphabetical }
+
+public struct ReconstitutionPreference: Codable, Equatable, Sendable {
+    public var diluentMl: Double
+    public var diluent: DiluentKind
+    public var syringeId: String
+    public init(diluentMl: Double, diluent: DiluentKind, syringeId: String) {
+        self.diluentMl = diluentMl; self.diluent = diluent; self.syringeId = syringeId
+    }
+}
+
 public struct Settings: Extensible {
     public var theme: ThemeSetting = .system
     public var doseUnit: DoseUnit = .mcg
@@ -1010,6 +1021,8 @@ public struct Settings: Extensible {
     public var weekStartsOn: Int = 1
     public var currency: String = defaultCurrency()
     public var weightUnit: WeightUnit = .kg
+    public var stockSort: StockSort = .dateAdded
+    public var reconstitutionPreferences: [String: ReconstitutionPreference] = [:]
     public var groupIdenticalVials: Bool?
     public var waterAtBottom: Bool?
     public var backupEnabled: Bool = true
@@ -1025,7 +1038,7 @@ public struct Settings: Extensible {
 
     enum CodingKeys: String, CodingKey, CaseIterable {
         case theme, doseUnit, defaultSyringeId, disclaimerAcceptedAt, budWarningDays, lowStockDoses
-        case weekStartsOn, currency, weightUnit, groupIdenticalVials, waterAtBottom, backupEnabled
+        case reconstitutionPreferences, stockSort, weekStartsOn, currency, weightUnit, groupIdenticalVials, waterAtBottom, backupEnabled
         case backupIntervalHours, backupKeep, lastBackupAt, dataChangedAt, backupNagDismissedAt
         case reminders, plotWeightOnChart
     }
@@ -1050,6 +1063,8 @@ public struct Settings: Extensible {
         weekStartsOn = v(.weekStartsOn, d.weekStartsOn)
         currency = v(.currency, d.currency)
         weightUnit = v(.weightUnit, d.weightUnit)
+        stockSort = v(.stockSort, d.stockSort)
+        reconstitutionPreferences = v(.reconstitutionPreferences, [:])
         groupIdenticalVials = o(.groupIdenticalVials)
         waterAtBottom = o(.waterAtBottom)
         backupEnabled = v(.backupEnabled, d.backupEnabled)

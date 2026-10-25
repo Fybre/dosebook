@@ -223,7 +223,7 @@ struct ImportView: View {
     // MARK: Lab report
 
     @ViewBuilder private func labPreview(_ report: LabReport, lineCount: Int) -> some View {
-        let keeping = report.candidates.filter { !skipped.contains($0.markerId) }
+        let keeping = report.candidates.filter { !skipped.contains($0.markerId) && !duplicate($0, report) }
         let suspect = report.candidates.filter { $0.confidence == .unitMismatch }
         let markers = t("count_markers", ["n": .number(Double(report.candidates.count))])
         let when = report.collectedAt.map { formatDate($0) } ?? t("import_lab_today")
@@ -246,7 +246,8 @@ struct ImportView: View {
         }
         Section {
             ForEach(report.candidates, id: \.markerId) { c in
-                let on = !skipped.contains(c.markerId)
+                let repeated = duplicate(c, report)
+                let on = !skipped.contains(c.markerId) && !repeated
                 Button {
                     if on { skipped.insert(c.markerId) } else { skipped.remove(c.markerId) }
                 } label: {
@@ -264,12 +265,14 @@ struct ImportView: View {
                                 if c.confidence == .loose { Pill(text: t("import_matched_loosely")) }
                             }
                             Text(c.source).font(.caption.monospaced()).foregroundStyle(.secondary)
+                            if repeated { Text(t("ios_lab_duplicate")).font(.caption).foregroundStyle(.orange) }
                         }
                     }
                     .opacity(on ? 1 : 0.5)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .disabled(repeated)
                 .accessibilityAddTraits(on ? .isSelected : [])
             }
         }
@@ -280,12 +283,17 @@ struct ImportView: View {
         }
     }
 
+    private func duplicate(_ candidate: LabCandidate, _ report: LabReport) -> Bool {
+        isDuplicateLab(markerId: candidate.markerId, value: candidate.value,
+                       at: report.collectedAt ?? nowMillis(), existing: store.data.mine.labs)
+    }
+
     private func applyLabs(_ report: LabReport) {
         let at = report.collectedAt ?? nowMillis()
-        let rows = report.candidates.filter { !skipped.contains($0.markerId) }
+        let rows = report.candidates.filter { !skipped.contains($0.markerId) && !duplicate($0, report) }
         store.mutate { d in
             for c in rows {
-                d.addLab(LabResult(id: "", profileId: "", at: at, markerId: c.markerId, value: c.value, refLow: c.refLow, refHigh: c.refHigh, lab: report.lab))
+                _ = d.addImportedLab(LabResult(id: "", profileId: "", at: at, markerId: c.markerId, value: c.value, refLow: c.refLow, refHigh: c.refHigh, lab: report.lab))
             }
         }
         let saved = t("import_saved_results", ["results": .string(t("count_results", ["n": .number(Double(rows.count))])), "date": .string(formatDate(at))])

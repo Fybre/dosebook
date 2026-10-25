@@ -39,7 +39,7 @@ struct PkChartView: View {
                             .lineStyle(StrokeStyle(lineWidth: 2, dash: s.basis.map { $0 == .published ? [] : [5, 4] } ?? []))
                             .interpolationMethod(.monotone)
                     }
-                    ForEach(s.doses.filter { $0.at >= from && $0.at <= to }, id: \.at) { d in
+                    ForEach(Array(s.doses.filter { $0.at >= from && $0.at <= to }.enumerated()), id: \.offset) { _, d in
                         PointMark(x: .value("t", Date(millis: d.at)), y: .value("level", 0))
                             .symbol(.triangle).symbolSize(30).foregroundStyle(s.tone.color)
                     }

@@ -89,3 +89,34 @@ private func find(_ lines: [String], _ id: String) -> LabCandidate? { parseLabRe
         }
     }
 }
+
+@Suite struct LabDuplicateTests {
+    @Test func importsDeduplicateByMarkerValueAndLocalDayWithinProfile() {
+        var data = AppData()
+        let day = local(2026, 6, 14)
+        var result = LabResult(id: "", profileId: "", at: day, markerId: "alt", value: 22)
+        let imported1 = data.addImportedLab(result)
+        #expect(imported1)
+        result.at = day + 3_600_000
+        let imported2 = data.addImportedLab(result)
+        #expect(!imported2)
+        result.value = 23
+        let imported3 = data.addImportedLab(result)
+        #expect(imported3)
+        result.value = 22; result.markerId = "ast"
+        let imported4 = data.addImportedLab(result)
+        #expect(imported4)
+        result.markerId = "alt"; result.at = local(2026, 6, 15)
+        let imported5 = data.addImportedLab(result)
+        #expect(imported5)
+        result.at = day
+        data.addProfile(name: "Partner")
+        let imported6 = data.addImportedLab(result)
+        #expect(imported6)
+        let imported7 = data.addImportedLab(result)
+        #expect(!imported7)
+        #expect(data.mine.labs.count == 1 && data.labs.count == 5)
+        data.addLab(result) // Manual entry remains available for intentional repeats.
+        #expect(data.mine.labs.count == 2)
+    }
+}

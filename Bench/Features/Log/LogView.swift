@@ -161,8 +161,8 @@ struct LogView: View {
                         Button(t("log_first_dose_cta")) { editing = LogEdit(id: "new", logId: nil) }.buttonStyle(.borderedProminent)
                     }
                 } else {
-                    Color.clear.frame(height: 0).listRowBackground(Color.clear).id("diary")
                     ForEach(days, id: \.day) { day in daySection(day, missed: missedByDay[day.day] ?? [], data: data, palette: palette).id("day-\(Int(day.day))") }
+                        .id("diary")
                 }
             }
         }
