@@ -73,7 +73,7 @@
     "ios_about_data_2": "When you are signed in to iCloud, they are also kept in your private iCloud database, so your other devices see the same records. That database belongs to your Apple account; nobody else, including whoever made this app, can read it.",
     "ios_about_data_3": "Nobody can recover your records for you either. Export a copy from Settings now and then and keep it somewhere you control.",
     "ios_tracks_weight": "Weight, with Apple Health read-in",
-    "ios_about_port": "This iPhone app is an independent port of **Bench**, the open-source tracker built by Arun. The library, the arithmetic and most of the wording come from the original, which you can find at the link below.",
+    "ios_about_port": "This app, for iPhone, iPad and Mac, is an independent port of **Bench**, the open-source tracker built by Arun. The library, the arithmetic and most of the wording come from the original, which you can find at the link below.",
     "ios_about_original": "The original Bench",
     "ios_health_title": "Apple Health",
     "ios_health_desc": "Reads weight from Apple Health so a reading off your scale shows up here, and sleep and resting heart rate so they sit beside the day’s check-in. **Read-only**: Bench never writes anything to Apple Health.",
@@ -293,7 +293,15 @@
     "ios_calc_mark_mixed": "Mark my {mg} mg vial as mixed with {ml} mL",
     "ios_calc_add_mixed": "Add a {mg} mg vial, already mixed",
     "ios_calc_use_choose": "Choose a peptide above to start a protocol, or to record a vial mixed this way.",
-    "ios_calc_use_hint": "Each opens the usual form for {name}, filled in from this mix, for you to check and save. The dose here is one injection; you set the schedule in the protocol."
+    "ios_calc_use_hint": "Each opens the usual form for {name}, filled in from this mix, for you to check and save. The dose here is one injection; you set the schedule in the protocol.",
+    "ios_about_data_2_local": "iCloud sync is not on for this copy of Bench, so these records exist on this device only and are not on your other devices. Nobody else, including whoever made this app, can read them.",
+    "ios_tracks_reminders": "Reminders you can log from, missed doses and pausing",
+    "ios_tracks_goal": "A weight goal, and how you feel against dose changes",
+    "ios_guide_title": "How to use Bench",
+    "ios_guide_subtitle": "Short how-tos for each part of the app. The guide is in English for now.",
+    "ios_guide_none": "Nothing matches that.",
+    "ios_guide_open": "Open {screen}",
+    "ios_guide_link": "How to use Bench"
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -369,7 +377,7 @@
     "ios_about_data_2": "Wenn du bei iCloud angemeldet bist, liegen sie auch in deiner privaten iCloud-Datenbank, damit deine anderen Geräte dieselben Einträge sehen. Diese Datenbank gehört zu deinem Apple-Account; niemand sonst, auch nicht wer diese App gemacht hat, kann sie lesen.",
     "ios_about_data_3": "Niemand kann deine Einträge für dich wiederherstellen. Exportiere ab und zu eine Kopie in den Einstellungen und bewahre sie an einem Ort auf, den du kontrollierst.",
     "ios_tracks_weight": "Gewicht, mit Übernahme aus Apple Health",
-    "ios_about_port": "Diese iPhone-App ist eine unabhängige Portierung von **Bench**, dem quelloffenen Tracker von Arun. Bibliothek, Rechenwege und die meisten Texte stammen aus dem Original, das du unter dem Link unten findest.",
+    "ios_about_port": "Diese App für iPhone, iPad und Mac ist eine unabhängige Portierung von **Bench**, dem quelloffenen Tracker von Arun. Bibliothek, Rechenwege und die meisten Texte stammen aus dem Original, das du unter dem Link unten findest.",
     "ios_about_original": "Das Original-Bench",
     "ios_health_title": "Apple Health",
     "ios_health_desc": "Liest Gewicht aus Apple Health, damit eine Messung deiner Waage hier erscheint, sowie Schlaf und Ruhepuls, damit sie neben dem Tages-Check-in stehen. **Nur lesen**: Bench schreibt nie etwas in Apple Health.",
@@ -589,7 +597,15 @@
     "ios_calc_mark_mixed": "Meine {mg}-mg-Ampulle als mit {ml} mL aufgelöst markieren",
     "ios_calc_add_mixed": "Eine {mg}-mg-Ampulle hinzufügen, bereits aufgelöst",
     "ios_calc_use_choose": "Wähle oben ein Peptid, um ein Protokoll zu starten oder eine so aufgelöste Ampulle zu erfassen.",
-    "ios_calc_use_hint": "Jede öffnet das übliche Formular für {name}, aus dieser Mischung ausgefüllt, zum Prüfen und Speichern. Die Dosis hier ist eine Injektion; den Plan legst du im Protokoll fest."
+    "ios_calc_use_hint": "Jede öffnet das übliche Formular für {name}, aus dieser Mischung ausgefüllt, zum Prüfen und Speichern. Die Dosis hier ist eine Injektion; den Plan legst du im Protokoll fest.",
+    "ios_about_data_2_local": "Die iCloud-Synchronisierung ist für diese Bench-Version nicht aktiv. Diese Einträge liegen nur auf diesem Gerät, nicht auf deinen anderen Geräten. Niemand sonst, auch nicht wer diese App gemacht hat, kann sie lesen.",
+    "ios_tracks_reminders": "Erinnerungen mit Direkt-Erfassung, verpasste Dosen und Pausen",
+    "ios_tracks_goal": "Ein Gewichtsziel und dein Befinden im Verlauf der Dosisänderungen",
+    "ios_guide_title": "So nutzt du Bench",
+    "ios_guide_subtitle": "Kurze Anleitungen zu jedem Teil der App. Die Anleitung ist vorerst nur auf Englisch.",
+    "ios_guide_none": "Nichts passt dazu.",
+    "ios_guide_open": "{screen} öffnen",
+    "ios_guide_link": "So nutzt du Bench"
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -665,7 +681,7 @@
     "ios_about_data_2": "Ko si prijavljen v iCloud, so shranjeni tudi v tvoji zasebni bazi iCloud, da tvoje druge naprave vidijo iste zapise. Ta baza pripada tvojemu računu Apple; nihče drug, tudi avtor te aplikacije ne, je ne more brati.",
     "ios_about_data_3": "Tudi obnoviti tvojih zapisov ne more nihče namesto tebe. Občasno izvozi kopijo v Nastavitvah in jo hrani na mestu, ki ga nadzoruješ.",
     "ios_tracks_weight": "Teža, z branjem iz Apple Health",
-    "ios_about_port": "Ta aplikacija za iPhone je neodvisna predelava aplikacije **Bench**, odprtokodnega sledilnika, ki ga je naredil Arun. Knjižnica, izračuni in večina besedil izvirajo iz izvirnika, ki ga najdeš na spodnji povezavi.",
+    "ios_about_port": "Ta aplikacija za iPhone, iPad in Mac je neodvisna predelava aplikacije **Bench**, odprtokodnega sledilnika, ki ga je naredil Arun. Knjižnica, izračuni in večina besedil izvirajo iz izvirnika, ki ga najdeš na spodnji povezavi.",
     "ios_about_original": "Izvirni Bench",
     "ios_health_title": "Apple Health",
     "ios_health_desc": "Bere težo iz Apple Health, da se meritev s tehtnice pokaže tukaj, ter spanje in srčni utrip v mirovanju, da sta ob dnevni oceni. **Samo branje**: Bench v Apple Health nikoli ničesar ne zapiše.",
@@ -891,7 +907,15 @@
     "ios_calc_mark_mixed": "Označi mojo vialo {mg} mg kot pripravljeno z {ml} mL",
     "ios_calc_add_mixed": "Dodaj vialo {mg} mg, že pripravljeno",
     "ios_calc_use_choose": "Zgoraj izberi peptid, da začneš protokol ali zabeležiš tako pripravljeno vialo.",
-    "ios_calc_use_hint": "Vsaka odpre običajni obrazec za {name}, izpolnjen iz te mešanice, da ga preveriš in shraniš. Odmerek tu je ena injekcija; urnik nastaviš v protokolu."
+    "ios_calc_use_hint": "Vsaka odpre običajni obrazec za {name}, izpolnjen iz te mešanice, da ga preveriš in shraniš. Odmerek tu je ena injekcija; urnik nastaviš v protokolu.",
+    "ios_about_data_2_local": "Sinhronizacija iCloud za to različico aplikacije Bench ni vklopljena, zato so ti zapisi samo v tej napravi in ne v tvojih drugih napravah. Nihče drug, tudi avtor te aplikacije ne, jih ne more brati.",
+    "ios_tracks_reminders": "Opomniki z beleženjem iz obvestila, zamujeni odmerki in premori",
+    "ios_tracks_goal": "Ciljna teža in počutje glede na spremembe odmerkov",
+    "ios_guide_title": "Kako uporabljati Bench",
+    "ios_guide_subtitle": "Kratka navodila za vsak del aplikacije. Vodnik je zaenkrat samo v angleščini.",
+    "ios_guide_none": "Nič se ne ujema.",
+    "ios_guide_open": "Odpri {screen}",
+    "ios_guide_link": "Kako uporabljati Bench"
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -967,7 +991,7 @@
     "ios_about_data_2": "Po zalogowaniu do iCloud są też przechowywane w Twojej prywatnej bazie iCloud, więc inne Twoje urządzenia widzą te same zapisy. Ta baza należy do Twojego konta Apple; nikt inny, także twórca tej aplikacji, nie może jej odczytać.",
     "ios_about_data_3": "Nikt też nie odzyska Twoich zapisów za Ciebie. Od czasu do czasu wyeksportuj kopię w Ustawieniach i trzymaj ją w miejscu, które kontrolujesz.",
     "ios_tracks_weight": "Waga, z odczytem z Apple Health",
-    "ios_about_port": "Ta aplikacja na iPhone’a to niezależny port **Bench**, otwartoźródłowego trackera stworzonego przez Aruna. Biblioteka, obliczenia i większość tekstów pochodzą z oryginału, który znajdziesz pod linkiem poniżej.",
+    "ios_about_port": "Ta aplikacja na iPhone’a, iPada i Maca to niezależny port **Bench**, otwartoźródłowego trackera stworzonego przez Aruna. Biblioteka, obliczenia i większość tekstów pochodzą z oryginału, który znajdziesz pod linkiem poniżej.",
     "ios_about_original": "Oryginalny Bench",
     "ios_health_title": "Apple Health",
     "ios_health_desc": "Odczytuje wagę z Apple Health, aby pomiar z wagi pojawił się tutaj, oraz sen i tętno spoczynkowe, aby były obok dziennej oceny. **Tylko odczyt**: Bench nigdy nic nie zapisuje w Apple Health.",
@@ -1193,6 +1217,14 @@
     "ios_calc_mark_mixed": "Oznacz moją fiolkę {mg} mg jako rozpuszczoną w {ml} mL",
     "ios_calc_add_mixed": "Dodaj fiolkę {mg} mg, już rozpuszczoną",
     "ios_calc_use_choose": "Wybierz powyżej peptyd, aby rozpocząć protokół lub zapisać tak rozpuszczoną fiolkę.",
-    "ios_calc_use_hint": "Każda otwiera zwykły formularz dla {name}, wypełniony z tej mieszanki, do sprawdzenia i zapisania. Dawka tutaj to jedno wstrzyknięcie; harmonogram ustawisz w protokole."
+    "ios_calc_use_hint": "Każda otwiera zwykły formularz dla {name}, wypełniony z tej mieszanki, do sprawdzenia i zapisania. Dawka tutaj to jedno wstrzyknięcie; harmonogram ustawisz w protokole.",
+    "ios_about_data_2_local": "Synchronizacja iCloud nie jest włączona dla tej wersji Bench, więc te zapisy są tylko na tym urządzeniu, a nie na Twoich innych urządzeniach. Nikt inny, także twórca tej aplikacji, nie może ich odczytać.",
+    "ios_tracks_reminders": "Przypomnienia z zapisem z powiadomienia, pominięte dawki i wstrzymanie",
+    "ios_tracks_goal": "Cel wagi i samopoczucie na tle zmian dawek",
+    "ios_guide_title": "Jak używać Bench",
+    "ios_guide_subtitle": "Krótkie instrukcje do każdej części aplikacji. Przewodnik jest na razie tylko po angielsku.",
+    "ios_guide_none": "Nic nie pasuje.",
+    "ios_guide_open": "Otwórz {screen}",
+    "ios_guide_link": "Jak używać Bench"
   }
 }

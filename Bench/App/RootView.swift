@@ -18,7 +18,7 @@ struct RootView: View {
     @State private var logDoseRequests = 0
     @Environment(\.horizontalSizeClass) private var sizeClass
     /// Shown only in the sidebar; a narrow window has no sidebar, so they go under More.
-    private static let sidebarOnly: Set<String> = ["calculator", "library", "labs", "report", "settings", "about"]
+    private static let sidebarOnly: Set<String> = ["calculator", "library", "labs", "report", "settings", "about", "guide"]
 
     var body: some View {
         TabView(selection: Binding(get: { tab }, set: { next in
@@ -41,6 +41,7 @@ struct RootView: View {
                     Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView() } }
                     Tab(t("nav_settings_label"), systemImage: "gear", value: "settings") { NavigationStack { SettingsView() } }
                     Tab(t("nav_about"), systemImage: "info.circle", value: "about") { NavigationStack { AboutView() } }
+                    Tab(t("ios_guide_title"), systemImage: "questionmark.circle", value: "guide") { NavigationStack { GuideView() } }
                 }
                 .defaultVisibility(.hidden, for: .tabBar)
             }
@@ -56,6 +57,7 @@ struct RootView: View {
         .defaultAdaptableTabBarPlacement(sizeClass == .regular ? .sidebar : .automatic)
         #endif
         .environment(\.tabReselects, reselects)
+        .environment(\.goToTab) { tab = $0 }
         #if DEBUG
         // After the window's own saved screen is put back, which would otherwise win.
         .task {
@@ -86,10 +88,13 @@ struct RootView: View {
 }
 
 struct MoreView: View {
-    enum Screen: String, Hashable { case calculator, library, labs, report, settings, about, importer }
+    enum Screen: String, Hashable { case calculator, library, labs, report, settings, about, importer, guide }
 
     var body: some View {
         List {
+            Section {
+                NavigationLink(value: Screen.guide) { Label(t("ios_guide_title"), systemImage: "questionmark.circle") }
+            }
             Section {
                 NavigationLink(value: Screen.calculator) { Label(t("nav_calc"), systemImage: "function") }
                 NavigationLink(value: Screen.library) { Label(t("nav_library"), systemImage: "books.vertical") }
@@ -112,6 +117,7 @@ struct MoreView: View {
             case .settings: SettingsView()
             case .about: AboutView()
             case .importer: ImportView()
+            case .guide: GuideView()
             }
         }
     }

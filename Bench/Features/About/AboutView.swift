@@ -1,5 +1,6 @@
 import SwiftUI
 import BenchCore
+import BenchStore
 
 /// The iPhone app's own releases. English, as the original's changelog is.
 struct Release {
@@ -10,29 +11,40 @@ struct Release {
 }
 
 let RELEASES: [Release] = [
-    Release(version: "1.0", date: "2026", summary: "Bench on iPhone, with your records in iCloud.", changes: [
+    Release(version: "1.0", date: "October 2026", summary: "Test builds for iPhone, iPad and Mac.", changes: [
         "Every screen of the original: Now, Plan, Log, Stock, the calculator, the library, bloodwork and the clinician report.",
-        "Records sync through your private iCloud database. There is still no account and no server.",
-        "Backups read and write the same file format as the web and Android apps.",
-        "Dose reminders are scheduled on the phone and say only that a dose is due unless you choose otherwise.",
+        "A guide to using the app, under More.",
+        "Missed doses in the Log, with Log it and Skipped; a calendar and, on the Mac, a table view of the Log.",
+        "Pause everything, for travel or illness, and a weight goal with a projection.",
+        "Scan a vial's label to start a protocol or add stock; mark a vial as already mixed, and set what is left in it.",
+        "Import from Injectly, including protocols and blends; bloodwork from a photo.",
+        "Reminders you can log from, which say how much to draw when they are set to name the compound.",
+        "Blends show what they hold, each part's level, and let you set the amounts in your vial.",
+        "Apple Health weight read in each time you open the app.",
+        "A lock with Face ID, Touch ID or your passcode; dark mode; choose which panels show on Now.",
+        "iPad and Mac layouts, with a sidebar and a two-column Now.",
+        "Backups read and write the same file format as the web and Android apps. There is no account and no server.",
     ]),
 ]
 
 var CURRENT_VERSION: String { Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? RELEASES[0].version }
 
 struct AboutView: View {
+    @Environment(AppStore.self) private var store
     @State private var expanded: String? = RELEASES.first?.version
 
     var body: some View {
         GroupedList {
             Section { Text(t("about_subtitle")).font(.subheadline).foregroundStyle(.secondary) }
+            Section { NavigationLink(value: MoreView.Screen.guide) { Label(t("ios_guide_link"), systemImage: "questionmark.circle") } }
             Section {
                 Text(t("about_desc"))
                 Text(t("about_what_it_is_2", ["compounds": .number(Double(Library.peptides.count))]))
             } header: { HStack { Text(t("about_what_it_is")); Spacer(); Pill(text: "v\(CURRENT_VERSION)", tone: .mint) } }
             Section {
                 Text(t("ios_about_data_1"))
-                Text(t("ios_about_data_2"))
+                // Only said when it is true of this copy of the app.
+                if case .cloud = store.location { Text(t("ios_about_data_2")) } else { Text(t("ios_about_data_2_local")) }
                 Text(t("ios_about_data_3"))
             } header: { Label(t("about_your_data"), systemImage: "lock") }
             Section(t("about_skipped_dose")) {
@@ -46,7 +58,7 @@ struct AboutView: View {
             }
             Section(t("about_what_it_tracks")) {
                 ForEach([t("about_tracks_compounds", ["n": .number(Double(Library.peptides.count))]), t("about_tracks_protocols"), t("about_tracks_reconstitution"),
-                         t("about_tracks_stock"), t("about_tracks_sites"), t("ios_tracks_weight"),
+                         t("about_tracks_stock"), t("about_tracks_sites"), t("ios_tracks_weight"), t("ios_tracks_goal"), t("ios_tracks_reminders"),
                          t("about_tracks_markers", ["n": .number(Double(Library.labMarkers.count))]), t("about_tracks_interactions")], id: \.self) {
                     Label($0, systemImage: "checkmark").font(.subheadline)
                 }
