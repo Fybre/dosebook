@@ -10,6 +10,8 @@ struct ProtocolForm: View {
     var initial: DoseProtocol?
     /// For a new protocol: the compound to start with, as when a vial was scanned.
     var startingPeptideId: String? = nil
+    /// For a new protocol: the dose to start at, as worked out in the calculator.
+    var startingDoseMcg: Double? = nil
 
     enum PlanMode: String { case fixed, titration, phases }
     static let existingTitration = "__existing__"
@@ -232,7 +234,8 @@ struct ProtocolForm: View {
         loaded = true
         guard let p = initial else {
             if let id = startingPeptideId ?? peptides.first?.id { pick(id) }
-            phases = [ProtocolPhase(step: 1, doseMcg: 500, weeks: 4)]
+            if let dose = startingDoseMcg, dose > 0 { doseMcg = dose }
+            phases = [ProtocolPhase(step: 1, doseMcg: startingDoseMcg ?? 500, weeks: 4)]
             return
         }
         peptideId = p.peptideId; name = p.name; doseMcg = p.doseMcg; kind = p.schedule.kind

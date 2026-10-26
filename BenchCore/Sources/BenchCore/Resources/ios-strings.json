@@ -287,7 +287,13 @@
     "ios_panel_checkin": "How you feel",
     "ios_panel_trends": "Trends",
     "ios_upcoming_more": "Show {days} more",
-    "ios_upcoming_fewer": "Show fewer"
+    "ios_upcoming_fewer": "Show fewer",
+    "ios_calc_use_title": "Use this mix",
+    "ios_calc_start_protocol": "Start a protocol at {dose}",
+    "ios_calc_mark_mixed": "Mark my {mg} mg vial as mixed with {ml} mL",
+    "ios_calc_add_mixed": "Add a {mg} mg vial, already mixed",
+    "ios_calc_use_choose": "Choose a peptide above to start a protocol, or to record a vial mixed this way.",
+    "ios_calc_use_hint": "Each opens the usual form for {name}, filled in from this mix, for you to check and save. The dose here is one injection; you set the schedule in the protocol."
   },
   "de": {
     "ios_stock_sort_newest": "Hinzugefügt (neueste zuerst)",
@@ -577,7 +583,13 @@
     "ios_panel_checkin": "Befinden",
     "ios_panel_trends": "Trends",
     "ios_upcoming_more": "{days} weitere zeigen",
-    "ios_upcoming_fewer": "Weniger zeigen"
+    "ios_upcoming_fewer": "Weniger zeigen",
+    "ios_calc_use_title": "Diese Mischung verwenden",
+    "ios_calc_start_protocol": "Protokoll mit {dose} starten",
+    "ios_calc_mark_mixed": "Meine {mg}-mg-Ampulle als mit {ml} mL aufgelöst markieren",
+    "ios_calc_add_mixed": "Eine {mg}-mg-Ampulle hinzufügen, bereits aufgelöst",
+    "ios_calc_use_choose": "Wähle oben ein Peptid, um ein Protokoll zu starten oder eine so aufgelöste Ampulle zu erfassen.",
+    "ios_calc_use_hint": "Jede öffnet das übliche Formular für {name}, aus dieser Mischung ausgefüllt, zum Prüfen und Speichern. Die Dosis hier ist eine Injektion; den Plan legst du im Protokoll fest."
   },
   "sl": {
     "ios_stock_sort_newest": "Datum dodajanja (najnovejše najprej)",
@@ -873,7 +885,13 @@
     "ios_panel_checkin": "Počutje",
     "ios_panel_trends": "Trendi",
     "ios_upcoming_more": "Pokaži še {days}",
-    "ios_upcoming_fewer": "Pokaži manj"
+    "ios_upcoming_fewer": "Pokaži manj",
+    "ios_calc_use_title": "Uporabi to mešanico",
+    "ios_calc_start_protocol": "Začni protokol z {dose}",
+    "ios_calc_mark_mixed": "Označi mojo vialo {mg} mg kot pripravljeno z {ml} mL",
+    "ios_calc_add_mixed": "Dodaj vialo {mg} mg, že pripravljeno",
+    "ios_calc_use_choose": "Zgoraj izberi peptid, da začneš protokol ali zabeležiš tako pripravljeno vialo.",
+    "ios_calc_use_hint": "Vsaka odpre običajni obrazec za {name}, izpolnjen iz te mešanice, da ga preveriš in shraniš. Odmerek tu je ena injekcija; urnik nastaviš v protokolu."
   },
   "pl": {
     "ios_stock_sort_newest": "Data dodania (od najnowszych)",
@@ -1169,6 +1187,12 @@
     "ios_panel_checkin": "Samopoczucie",
     "ios_panel_trends": "Trendy",
     "ios_upcoming_more": "Pokaż jeszcze {days}",
-    "ios_upcoming_fewer": "Pokaż mniej"
+    "ios_upcoming_fewer": "Pokaż mniej",
+    "ios_calc_use_title": "Użyj tej mieszanki",
+    "ios_calc_start_protocol": "Rozpocznij protokół z {dose}",
+    "ios_calc_mark_mixed": "Oznacz moją fiolkę {mg} mg jako rozpuszczoną w {ml} mL",
+    "ios_calc_add_mixed": "Dodaj fiolkę {mg} mg, już rozpuszczoną",
+    "ios_calc_use_choose": "Wybierz powyżej peptyd, aby rozpocząć protokół lub zapisać tak rozpuszczoną fiolkę.",
+    "ios_calc_use_hint": "Każda otwiera zwykły formularz dla {name}, wypełniony z tej mieszanki, do sprawdzenia i zapisania. Dawka tutaj to jedno wstrzyknięcie; harmonogram ustawisz w protokole."
   }
 }

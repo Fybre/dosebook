@@ -13,6 +13,14 @@ struct CalculatorView: View {
     @State private var addingCompound = false
     @State private var choosingSyringe = false
     @State private var showBarrelInfo = false
+    @State private var startingProtocol = false
+    @State private var vialSheet: VialSheet?
+
+    /// What the "use this mix" buttons open.
+    private enum VialSheet: Identifiable {
+        case mixExisting(Vial), addMixed
+        var id: String { switch self { case .mixExisting(let v): "mix-" + v.id; case .addMixed: "add" } }
+    }
 
     var body: some View {
         let syringe = syringeById(syringeId) ?? SYRINGES[2]
@@ -147,6 +155,8 @@ struct CalculatorView: View {
                 } header: { Text(t("calc_cleaner_volumes")) } footer: { FooterWrap { Text(t("calc_cleaner_desc")) }}
             }
 
+            if valid { useSection(vialMg: vialMg) }
+
             Section(t("calc_how_worked_out")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("concentration = \(jsNumberString(vialMg)) mg ÷ \(trim(diluentMl, 2)) mL = **\(trim(draw.concentrationMgPerMl, 4)) mg/mL**")
@@ -166,7 +176,56 @@ struct CalculatorView: View {
         }
         .navigationTitle(t("calc_title"))
         .inlineTitle()
+        #if DEBUG
+        .onAppear {
+            // `-calcPeptide <id>`: the calculator with that compound chosen, for screenshots.
+            let args = ProcessInfo.processInfo.arguments
+            if peptideId.isEmpty, let i = args.firstIndex(of: "-calcPeptide"), i + 1 < args.count { apply(args[i + 1]) }
+        }
+        #endif
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { apply($0.id) }) } }
+        .sheet(isPresented: $startingProtocol) {
+            NavigationStack { ProtocolForm(initial: nil, startingPeptideId: peptideId, startingDoseMcg: doseMcg) }
+        }
+        .sheet(item: $vialSheet) { sheet in
+            NavigationStack {
+                switch sheet {
+                case .mixExisting(let v): AddVialForm(alreadyMixed: true, startingWaterMl: diluentMl, editingVial: v)
+                case .addMixed: AddVialForm(startingPeptideId: peptideId, alreadyMixed: true, startingStrengthMg: vialMg, startingWaterMl: diluentMl)
+                }
+            }
+        }
+    }
+
+    /// Take the mix somewhere: a protocol at this dose, or a vial recorded as mixed this way.
+    @ViewBuilder private func useSection(vialMg: Double) -> some View {
+        let data = store.data
+        let name = data.peptide(peptideId)?.name
+        // A sealed vial of this strength, the oldest first, is the one being made up.
+        let sealed = data.mine.vials
+            .filter { $0.state == .sealed && $0.peptideId == peptideId && !isPack($0) && !isSpray($0) && abs($0.strengthMg - vialMg) < 1e-6 }
+            .stableSorted { ($0.acquiredAt ?? .infinity) < ($1.acquiredAt ?? .infinity) }
+        Section {
+            if name == nil {
+                Text(t("ios_calc_use_choose")).font(.footnote).foregroundStyle(.secondary)
+            } else {
+                Button { startingProtocol = true } label: {
+                    Label(t("ios_calc_start_protocol", ["dose": .string(formatDose(doseMcg))]), systemImage: "checklist")
+                }
+                if let vial = sealed.first {
+                    Button { vialSheet = .mixExisting(vial) } label: {
+                        Label(t("ios_calc_mark_mixed", ["mg": .string(jsNumberString(vialMg)), "ml": .string(trim(diluentMl, 2))]), systemImage: "drop.fill")
+                    }
+                }
+                Button { vialSheet = .addMixed } label: {
+                    Label(t("ios_calc_add_mixed", ["mg": .string(jsNumberString(vialMg))]), systemImage: "plus")
+                }
+                FooterRow { Text(t("ios_calc_use_hint", ["name": .string(name ?? "")])) }
+            }
+        } header: { Text(t("ios_calc_use_title")) } footer: {
+            FooterWrap { if let name { Text(t("ios_calc_use_hint", ["name": .string(name)])) } }
+        }
+        .id("use")
     }
 
     private func stat(_ label: String, _ value: String, _ hint: String, _ tone: Tone) -> some View {

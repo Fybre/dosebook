@@ -85,6 +85,9 @@ struct AddVialForm: View {
     var scanFirst = false
     var startingPeptideId: String?
     var alreadyMixed = false
+    /// From the calculator: the strength of the vial and the water mixed into it.
+    var startingStrengthMg: Double? = nil
+    var startingWaterMl: Double? = nil
     /// Editing keeps the compound, profile, order and dose-history links intact.
     var editingVial: Vial?
 
@@ -317,8 +320,11 @@ struct AddVialForm: View {
             cost = v.cost; payCurrency = v.currency ?? payCurrency
             hasExpiry = v.expiresAt != nil; expiry = v.expiresAt.map { Date(millis: $0) } ?? Date()
             if alreadyMixed && !isPack(v) { state = .reconstituted }
+            if alreadyMixed, let water = startingWaterMl, water > 0 { ml = water }
         } else {
             choose(startingPeptideId ?? store.data.allPeptides.first?.id ?? "")
+            if let strength = startingStrengthMg, strength > 0 { strengthMg = strength }
+            if let water = startingWaterMl, water > 0 { ml = water }
             if alreadyMixed && !tablets { state = .reconstituted }
             if scanFirst { scanning = true }
         }
