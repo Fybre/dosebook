@@ -28,6 +28,7 @@ struct LogDoseSheet: View {
     @State private var effects: [String] = []
     @State private var loaded = false
     @State private var confirmDelete = false
+    @State private var confirmUnskip = false
     @State private var addingCompound = false
     @State private var showSkipHelp = false
     @State private var mixing: Vial?
@@ -46,6 +47,8 @@ struct LogDoseSheet: View {
     private var container: ContainerKind { containerForDose(peptide?.preparation, route) }
     private var routes: [Route] { routeChoices(peptide?.routes ?? [], mine.vials, peptideId, peptide?.preparation) }
     private var pinned: [InjectionSite] { protocol_?.sites ?? [] }
+    /// Places switched off in Settings; never suggested and not offered to pick.
+    private var never: Set<InjectionSite> { Set(data.settings.neverInjectSites) }
     private var vial: Vial? { mine.vials.first { $0.id == vialId } }
     private var conc: Double { vial.flatMap { v in v.diluentMl.map { concentration(mgToMcg(v.strengthMg), $0) } } ?? .nan }
     private var canConvert: Bool { conc.isFinite && conc > 0 }
@@ -115,12 +118,12 @@ struct LogDoseSheet: View {
                 if hasSite && !skipped {
                     Picker(t("log_site_short"), selection: $site) {
                         Text(t("log_not_recorded")).tag(InjectionSite?.none)
-                        ForEach(INJECTION_SITES.filter { pinned.isEmpty || siteOverride || pinned.contains($0.id) }, id: \.id.rawValue) {
+                        ForEach(INJECTION_SITES.filter { (pinned.isEmpty || siteOverride || pinned.contains($0.id)) && (!never.contains($0.id) || $0.id == site) }, id: \.id.rawValue) {
                             Text(siteLabel($0.id)).tag(Optional($0.id))
                         }
                     }
                     SiteMapView(logs: mine.logs.filter { $0.peptideId == peptideId }, selected: site.map { [$0] } ?? [],
-                                allowed: siteOverride ? nil : pinned, onSelect: { s in
+                                allowed: siteOverride ? nil : pinned, disabled: never, onSelect: { s in
                                     if !pinned.isEmpty && !pinned.contains(s) { siteOverride = true }
                                     site = s
                                 }, nowMs: at.millis)
@@ -205,6 +208,16 @@ struct LogDoseSheet: View {
                 if let e = editing { store.mutate { $0.removeLog(e.id) } }
                 dismiss()
             }
+        }
+        .confirmationDialog(t("ios_log_unskip_title"), isPresented: $confirmUnskip, titleVisibility: .visible) {
+            Button(t("ios_log_unskip_taken")) { saveDose() }
+            Button(t("ios_log_unskip_missed")) {
+                if let e = editing { store.mutate { $0.removeLog(e.id) } }
+                dismiss()
+            }
+            Button(t("cancel"), role: .cancel) { }
+        } message: {
+            Text(t("ios_log_unskip_message"))
         }
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choosePeptide($0.id) }) } }
         .sheet(item: $mixing, onDismiss: repickVial) { v in NavigationStack { AddVialForm(alreadyMixed: true, editingVial: v) } }
@@ -308,12 +321,12 @@ struct LogDoseSheet: View {
         if let draw, !skipped {
             Section {
                 HStack {
-                    Pill(text: "\(trim(draw.unitsRounded, 2)) \(t("log_units_suffix")) · \(trim(draw.volumeRoundedMl, 3)) mL", tone: .tangerine)
+                    Pill(text: "\(trim(draw.units, 2)) \(t("log_units_suffix")) · \(trim(draw.volumeMl, 3)) mL", tone: .tangerine)
                     Pill(text: syringe.scale == .u100 ? "U-100" : "U-40")
                 }
                 .id("draw")
                 Picker(t("log_syringe"), selection: $syringeId) { ForEach(SYRINGES) { Text($0.label).tag($0.id) } }
-                SyringeView(spec: syringe, units: draw.unitsRounded, ghostUnits: draw.units, overCapacity: draw.warnings.contains(.exceedsBarrel))
+                SyringeView(spec: syringe, units: draw.units, ghostUnits: nil, overCapacity: draw.warnings.contains(.exceedsBarrel))
             }
         } else if nasal, let v = vial, mcgPerSpray(v) > 0, doseMcg > 0, !skipped {
             Section {
@@ -357,7 +370,7 @@ struct LogDoseSheet: View {
         route = nextRoute
         vialId = pickVialForDose(mine.vials, pid, dose, atMs, containerFor(pid, nextRoute))?.id ?? ""
         siteOverride = false
-        site = suggestSite(mine.logs.filter { $0.peptideId == pid }, atMs, allowed: proto?.sites)
+        site = suggestSite(mine.logs.filter { $0.peptideId == pid }, atMs, allowed: data.allowedSites(for: proto))
     }
 
     private func choosePeptide(_ id: String) {
@@ -384,11 +397,22 @@ struct LogDoseSheet: View {
     }
 
     private func save() {
+        if editing?.isSkipped == true && !skipped {
+            confirmUnskip = true
+            return
+        }
+        saveDose()
+    }
+
+    private func saveDose() {
+        if editing?.isSkipped == true && !skipped && vialId.isEmpty {
+            vialId = pickVialForDose(mine.vials, peptideId, doseMcg, at.millis, container)?.id ?? ""
+        }
         let d = draw
         let trimmed = notes.trimmingCharacters(in: .whitespacesAndNewlines)
         let log = DoseLog(id: editing?.id ?? "", profileId: editing?.profileId ?? "", protocolId: protocol_?.id, peptideId: peptideId, at: at.millis,
                           doseMcg: doseMcg, route: route, site: hasSite && !skipped ? site : nil, vialId: vialId.isEmpty ? nil : vialId,
-                          volumeMl: d?.volumeRoundedMl, units: d?.unitsRounded, presses: presses, tablets: tabletCount,
+                          volumeMl: d?.volumeMl, units: d?.units, presses: presses, tablets: tabletCount,
                           syringeId: d != nil ? syringe.id : nil, syringeScale: d != nil ? syringe.scale : nil,
                           skipped: skipped ? true : nil, notes: trimmed.isEmpty ? nil : trimmed, feeling: feeling,
                           sideEffects: effects.isEmpty ? nil : effects)

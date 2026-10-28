@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.me.fybre.bench.test</string>
+		<string>group.me.fybre.dosebook.test</string>
 	</array>
 </dict>
 </plist>

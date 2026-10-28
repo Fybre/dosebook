@@ -179,7 +179,7 @@ struct ProtocolForm: View {
 
             if routeHasSite(route) {
                 Section {
-                    SiteMapView(logs: [], selected: Set(sites), multi: true, onSelect: toggleSite).frame(maxWidth: .infinity)
+                    SiteMapView(logs: [], selected: Set(sites), disabled: Set(store.data.settings.neverInjectSites), multi: true, onSelect: toggleSite).frame(maxWidth: .infinity)
                     if !sites.isEmpty { Button(t("plan_clear_sites"), role: .destructive) { sites = [] } }
                     FooterRow {
                     Text(sites.isEmpty ? t("plan_sites_hint_empty") : t("plan_sites_pinned", ["n": .number(Double(sites.count))]))

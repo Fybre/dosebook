@@ -107,6 +107,13 @@ enum DemoData {
             for i in 0..<8 {
                 d.addMeasurement(BodyMeasurement(id: "", profileId: "", at: now - Double(40 - i * 5) * day, weightKg: 98 - Double(i) * 0.7))
             }
+            // Synthetic vitals give the Health trend review enough dated rows
+            // to exercise its comparison layout in screenshots.
+            for i in 0..<30 {
+                d.recordVitals(dayMs: addLocalDays(startOfLocalDay(now), Double(-i)),
+                               sleepHours: 6.8 + Double(i % 5) * 0.15,
+                               restingHrBpm: 61 + Double(i % 4))
+            }
             for i in 0..<12 {
                 _ = d.saveCheckIn(at: now - Double(i) * day, ratings: ["energy": Double(3 + i % 3), "mood": 4, "sleep": Double(2 + i % 4), "appetite": 2, "foodNoise": Double(1 + i % 2)], notes: i == 3 ? "Slept badly after the late dose." : nil, now: now)
             }

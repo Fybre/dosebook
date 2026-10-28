@@ -65,7 +65,7 @@ struct ReminderFixture {
 
     @Test func wording() {
         let first = run()[0]
-        #expect(first.title == "Bench" && first.body == "A dose is due." && !"\(first.title) \(first.body)".contains("BPC"))
+        #expect(first.title == "Dosebook" && first.body == "A dose is due." && !"\(first.title) \(first.body)".contains("BPC"))
         let named = run(settings: f.on(showCompound: true))[0]
         #expect(named.title == "BPC-157" && named.body == "250 mcg due.")
         #expect(run([f.proto(name: "Morning healing")], settings: f.on(showCompound: true))[0].title == "Morning healing")
@@ -140,7 +140,7 @@ struct ReminderFixture {
 
     @Test func wording() {
         let ics = build()
-        #expect(ics.contains("SUMMARY:Bench: dose due") && !ics.contains("BPC") && !ics.contains("mcg"))
+        #expect(ics.contains("SUMMARY:Dosebook: dose due") && !ics.contains("BPC") && !ics.contains("mcg"))
         #expect(build(settings: RemindersSettings(showCompound: true)).contains("SUMMARY:BPC-157 250 mcg"))
         let phased = build([f.proto(phases: [ProtocolPhase(step: 1, doseMcg: 250, weeks: 1), ProtocolPhase(step: 2, doseMcg: 500, weeks: 8)])],
                            settings: RemindersSettings(showCompound: true), days: 14)
@@ -190,7 +190,7 @@ struct ReminderFixture {
         // Discreet stays discreet, whatever there is to draw.
         let quiet = remindersFor(protocols: d.protocols, logs: [], peptides: d.allPeptides,
                                  settings: RemindersSettings(enabled: true, showCompound: false), nowMs: now, drawText: draw)
-        #expect(quiet.first?.title == "Bench" && quiet.first?.body == "A dose is due.")
+        #expect(quiet.first?.title == "Dosebook" && quiet.first?.body == "A dose is due.")
         // Nothing to draw from: the text is as it was.
         let none = remindersFor(protocols: d.protocols, logs: [], peptides: d.allPeptides,
                                 settings: RemindersSettings(enabled: true, showCompound: true), nowMs: now, drawText: { _, _, _ in nil })

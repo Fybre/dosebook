@@ -66,3 +66,57 @@ public func mostTitratedCompound(_ logs: [DoseLog], now: Millis) -> String? {
     let ids = logs.filter { !$0.isSkipped }.map(\.peptideId).reduce(into: [String]()) { if !$0.contains($1) { $0.append($1) } }
     return ids.max { doseSteps(logs, peptideId: $0, now: now).count < doseSteps(logs, peptideId: $1, now: now).count }
 }
+
+public struct VitalAverage: Equatable, Sendable {
+    public var value: Double?
+    public var days: Int
+
+    public var hasEnoughDays: Bool { days >= MIN_DAYS_FOR_TREND }
+}
+
+public struct VitalStepComparison: Equatable, Sendable {
+    public var step: DoseStep
+    public var beforeFrom: Millis
+    public var beforeTo: Millis
+    public var afterFrom: Millis
+    public var afterTo: Millis
+    public var sleepBefore: VitalAverage
+    public var sleepAfter: VitalAverage
+    public var heartRateBefore: VitalAverage
+    public var heartRateAfter: VitalAverage
+}
+
+/// A descriptive comparison around each *logged* dose step. The dose day is
+/// excluded: a sleep record dated that morning predates an evening dose. The
+/// following window ends before the next change, and each day counts once.
+public func vitalsAroundDoseSteps(_ steps: [DoseStep], _ measurements: [BodyMeasurement], now: Millis,
+                                  windowDays: Int = 14) -> [VitalStepComparison] {
+    guard windowDays > 0 else { return [] }
+    let todayEnd = addLocalDays(startOfLocalDay(now), 1)
+
+    func average(_ from: Millis, _ to: Millis, _ value: (BodyMeasurement) -> Double?) -> VitalAverage {
+        var days: [Millis: (total: Double, count: Int)] = [:]
+        for m in measurements where m.at >= from && m.at < to {
+            guard let v = value(m), v.isFinite, v > 0 else { continue }
+            let day = startOfLocalDay(m.at)
+            let old = days[day] ?? (0, 0)
+            days[day] = (old.total + v, old.count + 1)
+        }
+        let daily = days.values.map { $0.total / Double($0.count) }
+        return VitalAverage(value: daily.isEmpty ? nil : daily.reduce(0, +) / Double(daily.count), days: daily.count)
+    }
+
+    return steps.map { step in
+        let pivot = startOfLocalDay(step.from)
+        let beforeFrom = addLocalDays(pivot, Double(-windowDays))
+        let afterFrom = addLocalDays(pivot, 1)
+        let nextStepDay = step.to >= now ? todayEnd : startOfLocalDay(step.to)
+        let afterTo = min(addLocalDays(afterFrom, Double(windowDays)), nextStepDay, todayEnd)
+        return VitalStepComparison(step: step, beforeFrom: beforeFrom, beforeTo: pivot,
+                                   afterFrom: afterFrom, afterTo: max(afterFrom, afterTo),
+                                   sleepBefore: average(beforeFrom, pivot, \.sleepHours),
+                                   sleepAfter: average(afterFrom, afterTo, \.sleepHours),
+                                   heartRateBefore: average(beforeFrom, pivot, \.restingHrBpm),
+                                   heartRateAfter: average(afterFrom, afterTo, \.restingHrBpm))
+    }
+}

@@ -65,3 +65,20 @@ public func weightGoalProgress(_ measurements: [BodyMeasurement], goal: WeightGo
     if days > 730 { return .slow(perWeekKg: perWeek) }
     return .onTrack(perWeekKg: perWeek, reachedAt: max(now, latest.at) + days * DAY_MS)
 }
+
+/// A person's current weight: the latest weigh-in, which is what Now, the profile and the
+/// goal all read. `at` is nil when it is only the number an import put on the profile.
+public struct WeightReading: Equatable, Sendable {
+    public var kg: Double
+    public var at: Millis?
+    public var fromHealth: Bool
+}
+
+extension AppData {
+    public func latestWeight(profileId: String) -> WeightReading? {
+        let latest = measurements.filter { $0.profileId == profileId && ($0.weightKg ?? 0) > 0 }.max { $0.at < $1.at }
+        if let latest, let kg = latest.weightKg { return WeightReading(kg: kg, at: latest.at, fromHealth: latest.source == .healthConnect) }
+        if let kg = profiles.first(where: { $0.id == profileId })?.weightKg, kg > 0 { return WeightReading(kg: kg, at: nil, fromHealth: false) }
+        return nil
+    }
+}

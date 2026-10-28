@@ -45,6 +45,31 @@ import Testing
         #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 3), nowMs: now).isEmpty)
     }
 
+    @Test func removingSkipRestoresMissedDoseWithoutDrawingStock() throws {
+        var (d, _) = setup()
+        let now = local(2026, 7, 3, 12)
+        let scheduled = try #require(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 3), nowMs: now).first?.doses.first)
+        let skippedId = d.logMissed(scheduled, skipped: true)
+        let id = try #require(skippedId)
+        d.removeLog(id)
+        #expect(d.logs.isEmpty)
+        #expect(d.vials[0].drawnMcg ?? 0 == 0)
+        #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 3), nowMs: now).first?.doses.map(\.at) == [scheduled.at])
+    }
+
+    @Test func changingSkipToTakenRecordsDoseAndDrawsStock() throws {
+        var (d, _) = setup()
+        let now = local(2026, 7, 3, 12)
+        let scheduled = try #require(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 3), nowMs: now).first?.doses.first)
+        let skippedId = d.logMissed(scheduled, skipped: true)
+        let id = try #require(skippedId)
+        let vialId = try #require(d.vials.first?.id)
+        d.updateLog(id) { $0.skipped = nil; $0.vialId = vialId }
+        #expect(d.logs.first?.isSkipped == false)
+        #expect(d.vials[0].drawnMcg == scheduled.doseMcg)
+        #expect(missedDoses(d.protocols, d.logs, fromMs: local(2026, 7, 3), nowMs: now).isEmpty)
+    }
+
     @Test func lateNightDoseOnTheNextDayDoesNotBlockIt() throws {
         // The evening's dose taken after midnight belongs to the next day, so the
         // evening is missed, and logging it must work rather than count that dose.

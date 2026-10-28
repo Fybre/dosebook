@@ -89,14 +89,11 @@ struct CalculatorView: View {
 
             Section {
                 if valid {
-                    SyringeView(spec: syringe, units: draw.unitsRounded, ghostUnits: draw.units, overCapacity: draw.warnings.contains(.exceedsBarrel))
-                    if draw.warnings.contains(.offGraduation) {
-                        Text(t("calc_dashed_line", ["units": .string(trim(draw.units, 2))])).font(.caption).foregroundStyle(.blue).frame(maxWidth: .infinity)
-                    }
+                    SyringeView(spec: syringe, units: draw.units, ghostUnits: nil, overCapacity: draw.warnings.contains(.exceedsBarrel))
                     Grid(alignment: .topLeading, horizontalSpacing: 16, verticalSpacing: 14) {
                         GridRow {
-                            stat(t("calc_volume"), "\(trim(draw.volumeRoundedMl, 3)) mL", t("calc_volume_hint"), .tangerine)
-                            stat(t("ios_scale_units", ["scale": .string(scaleName(syringe.scale))]), trim(draw.unitsRounded, 2),
+                            stat(t("calc_volume"), "\(trim(draw.volumeMl, 3)) mL", t("calc_volume_hint"), .tangerine)
+                            stat(t("ios_scale_units", ["scale": .string(scaleName(syringe.scale))]), trim(draw.units, 2),
                                  t("calc_on_the_scale", ["range": .string(syringe.scale == .u100 ? "0 to 100" : "0 to 40")]), .neutral)
                         }
                         GridRow {
@@ -104,14 +101,10 @@ struct CalculatorView: View {
                             stat(t("calc_doses_per_vial"), jsNumberString(draw.dosesPerVial), t("calc_at_each", ["dose": .string(formatDose(doseMcg))]), .sky)
                         }
                     }
-                    if draw.warnings.contains(.offGraduation) {
-                        Text("\(t("calc_settling_on", ["marks": .string(trim(draw.unitsRounded, 2))])) **\(formatDose(draw.deliveredMcg))**, \(draw.roundingErrorMcg > 0 ? t("calc_which_is_over") : t("calc_which_is_under")) **\(formatDose(abs(draw.roundingErrorMcg)))** (\(trim(abs(draw.roundingErrorPercent), 1))%).")
-                            .font(.footnote).foregroundStyle(.secondary)
-                    }
                     // The other barrel is never a guess.
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
                         Image(systemName: "arrow.left.arrow.right").font(.caption).foregroundStyle(.tertiary)
-                        Text("\(t("calc_same_volume_reads", ["ml": .string(formatMl(draw.volumeRoundedMl))])) **\(trim(draw.volumeRoundedMl * (other == .u100 ? 100 : 40), 2))** \(t("calc_marks_on_barrel", ["scale": .string(scaleName(other))]))")
+                        Text("\(t("calc_same_volume_reads", ["ml": .string(formatMl(draw.volumeMl))])) **\(trim(draw.volumeMl * (other == .u100 ? 100 : 40), 2))** \(t("calc_marks_on_barrel", ["scale": .string(scaleName(other))]))")
                             .font(.footnote).foregroundStyle(.secondary)
                     }
                 } else {

@@ -48,7 +48,7 @@ struct DoseWidgetView: View {
     // MARK: Pieces
 
     private var emptyText: String {
-        if snapshot == nil { return label("open", "Open Bench to set up") }
+        if snapshot == nil { return label("open", "Open Dosebook to set up") }
         if snapshot?.paused == true { return label("paused", "Paused") }
         return (snapshot?.expected ?? 0) > 0 ? label("allDone", "All done today") : label("nothing", "Nothing scheduled")
     }

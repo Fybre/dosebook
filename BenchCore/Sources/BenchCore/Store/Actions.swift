@@ -147,7 +147,7 @@ public extension AppData {
         }
         if answered { return nil }
         let mine = logs.filter { $0.profileId == activeProfileId && $0.peptideId == p.peptideId }
-        let site = routeHasSite(p.route) ? suggestSite(mine, now, allowed: p.sites) : nil
+        let site = routeHasSite(p.route) ? suggestSite(mine, now, allowed: allowedSites(for: p)) : nil
         return addLog(DoseLog(id: "", profileId: "", protocolId: p.id, peptideId: p.peptideId, at: now,
                               doseMcg: scheduledDoseMcg(p, doseAt), route: p.route, site: site))
     }
@@ -180,15 +180,29 @@ public extension AppData {
         row.id = uid(); row.profileId = activeProfileId
         measurements.append(row)
         measurements.sort { $0.at > $1.at }
+        syncProfileWeights()
         return row.id
     }
 
     mutating func updateMeasurement(_ id: String, _ change: (inout BodyMeasurement) -> Void) {
         measurements.update(id, change)
         measurements.sort { $0.at > $1.at }
+        syncProfileWeights()
     }
 
-    mutating func removeMeasurement(_ id: String) { measurements.removeAll { $0.id == id } }
+    mutating func removeMeasurement(_ id: String) {
+        measurements.removeAll { $0.id == id }
+        syncProfileWeights()
+    }
+
+    /// Weigh-ins are the one record of a person's weight. The profile's own `weightKg`, which
+    /// the web and Android apps read, follows the latest of them, so every screen and every
+    /// export agrees. With no weigh-ins at all it keeps whatever an import brought.
+    mutating func syncProfileWeights() {
+        for i in profiles.indices {
+            if let kg = latestWeight(profileId: profiles[i].id)?.kg, profiles[i].weightKg != kg { profiles[i].weightKg = kg }
+        }
+    }
 
     @discardableResult
     mutating func addImportedLab(_ result: LabResult) -> Bool {
@@ -418,6 +432,7 @@ public extension AppData {
         for m in newMeasurements { var r = m; r.id = uid(); r.profileId = activeProfileId; measurements.append(r) }
         logs.sort { $0.at > $1.at }
         measurements.sort { $0.at > $1.at }
+        syncProfileWeights()
     }
 
     /// The document for a backup file: everything, minus this device's own sync note.

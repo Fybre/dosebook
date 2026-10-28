@@ -31,13 +31,13 @@ public func reminderId(_ key: String) -> Int {
     return Int((h >> 1) % 2_000_000_000)
 }
 
-/// Discreet by default: "Bench" / "A dose is due." names nothing on a lock screen.
+/// Discreet by default: "Dosebook" / "A dose is due." names nothing on a lock screen.
 ///
 /// `draw` is what to draw for the dose ("10 units"). It rides along only when the
 /// reminder is allowed to name the compound: a number on a lock screen is still
 /// something to read, so the discreet text stays exactly as it was.
 private func reminderText(_ p: DoseProtocol, _ peptide: Peptide?, _ doseMcg: Double, _ settings: RemindersSettings, draw: String? = nil) -> (String, String) {
-    guard settings.showCompound else { return ("Bench", "A dose is due.") }
+    guard settings.showCompound else { return ("Dosebook", "A dose is due.") }
     let trimmed = p.name.trimmingCharacters(in: .whitespaces)
     let label = !trimmed.isEmpty ? trimmed : (peptide?.name ?? "Dose")
     return (label, "\(doseLabel(doseMcg, peptide)) due." + (draw.map { " \($0)." } ?? ""))

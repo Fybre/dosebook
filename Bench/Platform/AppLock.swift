@@ -5,7 +5,7 @@ import BenchCore
 import UIKit
 #endif
 
-/// Face ID, Touch ID or the device passcode before Bench opens, and a blank
+/// Face ID, Touch ID or the device passcode before Dosebook opens, and a blank
 /// cover in the app switcher. Per device: kept in UserDefaults, not with the data.
 ///
 /// If the device has nothing to unlock with (no passcode set), the lock lets

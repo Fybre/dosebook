@@ -9,8 +9,8 @@ xcodegen generate >/dev/null
 xcodebuild -project Bench.xcodeproj -scheme BenchTest -destination "id=$UDID" -derivedDataPath "${TMPDIR:-/tmp}/bench2-dd" build CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error:|BUILD FAILED" && exit 1
 xcrun simctl boot "$UDID" 2>/dev/null || true
 xcrun simctl install "$UDID" "${TMPDIR:-/tmp}/bench2-dd/Build/Products/Debug-iphonesimulator/BenchTest.app"
-xcrun simctl terminate "$UDID" me.fybre.bench.test 2>/dev/null || true
-xcrun simctl launch "$UDID" me.fybre.bench.test -demo -tab "$TAB" "$@" >/dev/null
+xcrun simctl terminate "$UDID" me.fybre.dosebook.test 2>/dev/null || true
+xcrun simctl launch "$UDID" me.fybre.dosebook.test -demo -tab "$TAB" "$@" >/dev/null
 sleep "${WAIT:-3}"
 xcrun simctl io "$UDID" screenshot "$OUT" >/dev/null
 echo "$OUT"

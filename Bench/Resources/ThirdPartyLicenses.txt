@@ -1,4 +1,4 @@
-Bench for iPhone is a port of Bench (https://github.com/ArunNGun/Bench). The compound and
+Dosebook is a port of Bench (https://github.com/ArunNGun/Bench). The compound and
 marker library, the translations and the calculation logic come from it, under this licence:
 
 MIT License

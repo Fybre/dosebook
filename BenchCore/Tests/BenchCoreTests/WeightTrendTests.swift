@@ -50,3 +50,39 @@ private func weigh(_ at: Millis, _ kg: Double) -> BodyMeasurement { BodyMeasurem
         #expect(mostTitratedCompound([], now: start) == nil)
     }
 }
+
+@Suite struct VitalDoseComparisonTests {
+    @Test func usesCalendarDaysAndStopsAtTheNextLoggedChange() {
+        let first = local(2026, 6, 15, 9)
+        let next = local(2026, 6, 22, 9)
+        let now = local(2026, 6, 30, 18)
+        let steps = doseSteps([dose(first, 1000), dose(next, 2000)], peptideId: "retatrutide", now: now)
+        func vital(_ day: Int, _ sleep: Double?, _ hr: Double? = nil) -> BodyMeasurement {
+            BodyMeasurement(id: UUID().uuidString, profileId: "me", at: local(2026, 6, day, 12),
+                            sleepHours: sleep, restingHrBpm: hr)
+        }
+        let readings = [vital(11, 6, 60), vital(12, 7, 61), vital(13, 8, 62), vital(14, 9),
+                        vital(14, 11), vital(15, 20, 100),
+                        vital(16, 7, 65), vital(17, 7, 66), vital(18, 7, 67), vital(19, 7, 68),
+                        vital(22, 20, 100), vital(23, 8, 70)]
+        let comparisons = vitalsAroundDoseSteps(steps, readings, now: now)
+        #expect(comparisons.count == 2)
+        #expect(comparisons[0].sleepBefore.days == 4 && comparisons[0].sleepBefore.value == 7.75)
+        #expect(comparisons[0].sleepAfter.days == 4 && comparisons[0].sleepAfter.value == 7)
+        #expect(comparisons[0].sleepBefore.hasEnoughDays && comparisons[0].sleepAfter.hasEnoughDays)
+        #expect(comparisons[0].heartRateBefore.days == 3 && !comparisons[0].heartRateBefore.hasEnoughDays)
+        #expect(comparisons[0].afterTo == startOfLocalDay(next))
+        #expect(comparisons[1].afterFrom == local(2026, 6, 23))
+        #expect(comparisons[1].sleepAfter.days == 1 && comparisons[1].sleepAfter.value == 8)
+    }
+
+    @Test func emptyOrInvalidWindowsYieldNoComparison() {
+        let at = local(2026, 6, 15)
+        let step = DoseStep(doseMcg: 1000, from: at, to: at, doses: 1)
+        #expect(vitalsAroundDoseSteps([], [], now: at).isEmpty)
+        #expect(vitalsAroundDoseSteps([step], [], now: at, windowDays: 0).isEmpty)
+        let result = vitalsAroundDoseSteps([step], [], now: at)[0]
+        #expect(result.sleepBefore.value == nil && result.sleepAfter.value == nil)
+        #expect(result.sleepBefore.days == 0 && result.sleepAfter.days == 0)
+    }
+}

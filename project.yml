@@ -37,7 +37,7 @@ targets:
     entitlements:
       path: Bench/Bench.entitlements
       properties:
-        com.apple.developer.icloud-container-identifiers: [iCloud.me.fybre.bench]
+        com.apple.developer.icloud-container-identifiers: [iCloud.me.fybre.dosebook]
         com.apple.developer.icloud-services: [CloudKit]
         aps-environment: development
         com.apple.developer.healthkit: true
@@ -45,24 +45,24 @@ targets:
     info:
       path: Bench/Info.plist
       properties:
-        CFBundleDisplayName: Bench
+        CFBundleDisplayName: Dosebook
         UILaunchScreen: {}
         UIBackgroundModes: [remote-notification]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UISupportedInterfaceOrientations~ipad:
           [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown,
            UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
-        NSHealthShareUsageDescription: "Bench reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back."
-        NSFaceIDUsageDescription: "Bench asks for Face ID to open, when you have turned the lock on."
-        NSCameraUsageDescription: "Bench reads vial labels and bloodwork results from photos. Photos are read on this iPhone and not kept."
+        NSHealthShareUsageDescription: "Dosebook reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back."
+        NSFaceIDUsageDescription: "Dosebook asks for Face ID to open, when you have turned the lock on."
+        NSCameraUsageDescription: "Dosebook reads vial labels and bloodwork results from photos. Photos are read on this iPhone and not kept."
         ITSAppUsesNonExemptEncryption: false
-        # Documents/Bench, where automatic backups go, shows in Files under On My iPhone.
+        # Documents/Dosebook, where automatic backups go, shows in Files under On My iPhone.
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
         UTImportedTypeDeclarations: []
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.bench
+        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.dosebook
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
@@ -88,7 +88,7 @@ targets:
       # Widgets are off until an App Group is registered for the account (it makes a
       # permanent identifier, so it waits on the name). To turn them on: add
       # `- target: BenchWidgets` here and
-      # `com.apple.security.application-groups: [group.me.fybre.bench.test]` below,
+      # `com.apple.security.application-groups: [group.me.fybre.dosebook.test]` below,
       # and register that group. See PLAN.md.
     entitlements:
       path: Bench/BenchTest.entitlements
@@ -98,23 +98,23 @@ targets:
     info:
       path: Bench/Info-Test.plist
       properties:
-        CFBundleDisplayName: Bench Test
-        BenchAppGroup: group.me.fybre.bench.test
+        CFBundleDisplayName: Dosebook Test
+        BenchAppGroup: group.me.fybre.dosebook.test
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UISupportedInterfaceOrientations~ipad:
           [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown,
            UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
-        NSHealthShareUsageDescription: "Bench reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back."
-        NSFaceIDUsageDescription: "Bench asks for Face ID to open, when you have turned the lock on."
-        NSCameraUsageDescription: "Bench reads vial labels and bloodwork results from photos. Photos are read on this iPhone and not kept."
+        NSHealthShareUsageDescription: "Dosebook reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back."
+        NSFaceIDUsageDescription: "Dosebook asks for Face ID to open, when you have turned the lock on."
+        NSCameraUsageDescription: "Dosebook reads vial labels and bloodwork results from photos. Photos are read on this iPhone and not kept."
         ITSAppUsesNonExemptEncryption: false
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
         UTImportedTypeDeclarations: []
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.bench.test
+        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.dosebook.test
         DEVELOPMENT_TEAM: "8BD49F6FX5"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) LOCAL_ONLY"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
@@ -139,15 +139,15 @@ targets:
     info:
       path: MacSupport/Info.plist
       properties:
-        CFBundleDisplayName: Bench Test
-        CFBundleName: Bench Test
+        CFBundleDisplayName: Dosebook Test
+        CFBundleName: Dosebook Test
         LSApplicationCategoryType: public.app-category.healthcare-fitness
-        NSCameraUsageDescription: "Bench reads vial labels and bloodwork results from photos. Photos are read on this Mac and not kept."
+        NSCameraUsageDescription: "Dosebook reads vial labels and bloodwork results from photos. Photos are read on this Mac and not kept."
         ITSAppUsesNonExemptEncryption: false
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.bench.test
-        PRODUCT_NAME: Bench Test
+        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.dosebook.test
+        PRODUCT_NAME: Dosebook Test
         CODE_SIGN_IDENTITY: "-"
         CODE_SIGN_STYLE: Manual
         DEVELOPMENT_TEAM: ""
@@ -167,17 +167,17 @@ targets:
     entitlements:
       path: Widgets/BenchWidgets.entitlements
       properties:
-        com.apple.security.application-groups: [group.me.fybre.bench.test]
+        com.apple.security.application-groups: [group.me.fybre.dosebook.test]
     info:
       path: Widgets/Info.plist
       properties:
-        CFBundleDisplayName: Bench Test
-        BenchAppGroup: group.me.fybre.bench.test
+        CFBundleDisplayName: Dosebook Test
+        BenchAppGroup: group.me.fybre.dosebook.test
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.bench.test.widgets
+        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.dosebook.test.widgets
         DEVELOPMENT_TEAM: "8BD49F6FX5"
         TARGETED_DEVICE_FAMILY: "1,2"
         SKIP_INSTALL: YES

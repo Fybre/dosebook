@@ -51,7 +51,7 @@ public extension AppData {
                                   doseMcg: m.doseMcg, route: p.route, skipped: true))
         }
         let earlier = logs.filter { $0.profileId == activeProfileId && $0.peptideId == p.peptideId && $0.at <= m.at }
-        let site = routeHasSite(p.route) ? suggestSite(earlier, m.at, allowed: p.sites) : nil
+        let site = routeHasSite(p.route) ? suggestSite(earlier, m.at, allowed: allowedSites(for: p)) : nil
         return addLog(DoseLog(id: "", profileId: "", protocolId: p.id, peptideId: p.peptideId, at: m.at,
                               doseMcg: m.doseMcg, route: p.route, site: site))
     }

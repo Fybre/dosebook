@@ -1001,6 +1001,9 @@ public let DEFAULT_REMINDERS = RemindersSettings()
 
 public enum StockSort: String, Codable, Sendable { case dateAdded, newestFirst, alphabetical }
 
+/// How Now and Plan order protocols. `nextDose` is soonest first, paused after, stopped last.
+public enum ProtocolSort: String, Codable, Sendable { case nextDose, alphabetical, dateAdded }
+
 public struct ReconstitutionPreference: Codable, Equatable, Sendable {
     public var diluentMl: Double
     public var diluent: DiluentKind
@@ -1096,6 +1099,13 @@ extension Settings {
     /// iOS only, in `extra`: how Stock is ordered. Earlier test builds kept it at
     /// the top level, where it now arrives in `extra` under its old name; it is read
     /// from there too, and moves across the next time it is set.
+    public var protocolSort: ProtocolSort {
+        get { extra["iosProtocolSort"]?.stringValue.flatMap(ProtocolSort.init(rawValue:)) ?? .nextDose }
+        set {
+            if newValue == .nextDose { extra.removeValue(forKey: "iosProtocolSort") } else { extra["iosProtocolSort"] = .string(newValue.rawValue) }
+        }
+    }
+
     public var stockSort: StockSort {
         get { (extra["iosStockSort"] ?? extra["stockSort"])?.stringValue.flatMap(StockSort.init(rawValue:)) ?? .dateAdded }
         set {

@@ -83,6 +83,7 @@ struct RootView: View {
         .task(id: store.data) {
             WidgetSync.update(store.data)
             await ReminderScheduler.rearm(store.data)
+            await StockWatcher.shared.update(store.data)
         }
     }
 }

@@ -7,6 +7,8 @@ struct SiteMapView: View {
     var logs: [DoseLog]
     var selected: Set<InjectionSite> = []
     var allowed: [InjectionSite]? = nil
+    /// Sites that are never used: drawn struck through and not selectable.
+    var disabled: Set<InjectionSite> = []
     /// Pin several sites (Plan) rather than pick one (logging).
     var multi = false
     var showLegend = true
@@ -35,10 +37,17 @@ struct SiteMapView: View {
                     }
                 }
                 .frame(width: 200 * s, height: 240 * s)
+                // One tap target for the whole figure: the nearest dot wins. Separate
+                // buttons for dots that sit 16 units apart overlapped each other.
+                .contentShape(Rectangle())
+                .gesture(SpatialTapGesture().onEnded { tap in
+                    guard let onSelect, let dot = nearestDot(to: tap.location, scale: s) else { return }
+                    onSelect(dot.id)
+                })
                 .offset(x: ox)
             }
             .aspectRatio(200.0 / 240.0, contentMode: .fit)
-            .frame(maxWidth: 220)
+            .frame(maxWidth: 300)
             if showLegend { legend }
         }
     }
@@ -50,7 +59,8 @@ struct SiteMapView: View {
         let isSuggested = !isSelected && dot.id == suggestion
         let offPlan = allowed.map { !$0.isEmpty && !$0.contains(dot.id) } ?? false
         let label = "\(siteLabel(dot.id)). " + (u?.lastUsedAt.map { t("site_last_used", ["when": .string(relativeTime($0, nowMs: nowMs))]) } ?? t("site_never_used"))
-        Button { onSelect?(dot.id) } label: {
+        let off = disabled.contains(dot.id)
+        Button { if !off { onSelect?(dot.id) } } label: {
             ZStack {
                 if isSuggested {
                     Circle().strokeBorder(Color.accentColor.opacity(0.6), style: StrokeStyle(lineWidth: 1, dash: [3, 3])).frame(width: 26, height: 26)
@@ -65,14 +75,25 @@ struct SiteMapView: View {
                     Text("\(n)").font(.system(size: 8, design: .monospaced)).foregroundStyle(fill > 0.5 ? Color(.systemBackground) : .primary)
                 }
             }
+            .overlay { if off { Image(systemName: "xmark").font(.system(size: 9, weight: .heavy)).foregroundStyle(.red) } }
             .frame(width: 16, height: 16)
-            .contentShape(Circle().inset(by: -8))
         }
         .buttonStyle(.plain)
-        .disabled(onSelect == nil)
-        .opacity(offPlan ? 0.35 : 1)
+        // The figure takes the taps; the dots stay for VoiceOver, which activates them directly.
+        .allowsHitTesting(false)
+        .disabled(onSelect == nil || off)
+        .opacity(off ? 0.5 : (offPlan ? 0.35 : 1))
         .accessibilityLabel(label)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    /// The dot closest to a tap, if it landed within reach of one. Disabled sites are not offered.
+    private func nearestDot(to point: CGPoint, scale s: CGFloat) -> SiteDot? {
+        let reach = 14 * s
+        return SITE_DOTS.filter { !disabled.contains($0.id) }
+            .map { ($0, hypot($0.cx * s - point.x, $0.cy * s - point.y)) }
+            .filter { $0.1 <= reach }
+            .min { $0.1 < $1.1 }?.0
     }
 
     private var legend: some View {

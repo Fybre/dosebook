@@ -19,7 +19,7 @@ struct LabsView: View {
         GroupedList {
             #if os(iOS)
             Section {
-                Button { scanning = true } label: { Label(t("ios_lab_scan_title"), systemImage: "camera") }
+                Button { scanning = true } label: { Label(t("ios_lab_scan_title"), systemImage: "doc.text") }
             }
             #endif
             Section { Text(t("labs_subtitle")).font(.subheadline).foregroundStyle(.secondary) }
@@ -61,7 +61,10 @@ struct LabsView: View {
         #if os(iOS)
         .sheet(isPresented: $scanning) { NavigationStack { ScanLabView() } }
         #if DEBUG
-        .onAppear { if ProcessInfo.processInfo.arguments.contains("-labPhotos") { scanning = true } }
+        .onAppear {
+            let args = ProcessInfo.processInfo.arguments
+            if args.contains("-labPhotos") || args.contains("-labPDF") { scanning = true }
+        }
         #endif
         #endif
     }

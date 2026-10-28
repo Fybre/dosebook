@@ -2,15 +2,18 @@
 import SwiftUI
 import PhotosUI
 import AVFoundation
+import PDFKit
+import UniformTypeIdentifiers
 import BenchCore
 import BenchStore
 
-/// A report's photos stay in memory; only verified, nonduplicate results are saved.
+/// Report pages stay in memory; only verified, nonduplicate results are saved.
 struct ScanLabView: View {
     @Environment(AppStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var photos: [PhotosPickerItem] = []
     @State private var camera = false
+    @State private var choosingPDF = false
     @State private var busy = false
     @State private var error: String?
     @State private var cameraDenied = false
@@ -66,9 +69,23 @@ struct ScanLabView: View {
             }
             Button(t("cancel"), role: .cancel) {}
         }
+        .fileImporter(isPresented: $choosingPDF, allowedContentTypes: [.pdf]) { result in
+            guard case .success(let url) = result else { return }
+            let access = url.startAccessingSecurityScopedResource()
+            defer { if access { url.stopAccessingSecurityScopedResource() } }
+            guard let data = try? Data(contentsOf: url) else {
+                error = t("ios_lab_pdf_unreadable")
+                return
+            }
+            Task { await readPDF(data) }
+        }
         #if DEBUG
         .task {
             let args = ProcessInfo.processInfo.arguments
+            if pages.isEmpty, let i = args.firstIndex(of: "-labPDF"), i + 1 < args.count,
+               let data = try? Data(contentsOf: URL(fileURLWithPath: args[i + 1])) {
+                await readPDF(data)
+            }
             if pages.isEmpty, let i = args.firstIndex(of: "-labPhotos"), i + 1 < args.count {
                 busy = true
                 for path in args[i + 1].components(separatedBy: ",") {
@@ -123,8 +140,11 @@ struct ScanLabView: View {
                 PhotosPicker(selection: $photos, maxSelectionCount: 10, matching: .images) {
                     Label(t("ios_scan_library"), systemImage: "photo")
                 }
+                Button { choosingPDF = true } label: {
+                    Label(t("ios_lab_choose_pdf"), systemImage: "doc.richtext")
+                }
             }.disabled(busy)
-            if busy { Section { ProgressView(t("ios_scan_reading")) } }
+            if busy { Section { ProgressView(t("ios_lab_reading")) } }
             if let error { Section { Text(error).foregroundStyle(.red) } }
             if pages.contains(where: { p in p.collectedAt.map { startOfLocalDay($0) != startOfLocalDay(at.millis) } ?? false }) {
                 Section { Text(t("ios_lab_page_date")).foregroundStyle(.orange) }
@@ -198,8 +218,43 @@ struct ScanLabView: View {
         defer { busy = false }
         await appendPage(image)
     }
-    private func appendPage(_ image: UIImage) async {
-        let lines = await recognizeText(image, groupRows: true)
+    private func readPDF(_ data: Data) async {
+        busy = true; error = nil
+        defer { busy = false }
+        guard let document = PDFDocument(data: data), !document.isLocked, document.pageCount > 0 else {
+            error = t("ios_lab_pdf_unreadable"); return
+        }
+        let limit = 20
+        guard document.pageCount <= limit else {
+            error = t("ios_lab_pdf_too_many", ["limit": .number(Double(limit))]); return
+        }
+        var failedPages = false
+        for index in 0..<document.pageCount {
+            guard let pdfPage = document.page(at: index) else { failedPages = true; continue }
+            let bounds = pdfPage.bounds(for: .mediaBox)
+            guard bounds.width > 0, bounds.height > 0 else { failedPages = true; continue }
+            let scale = min(2.5, 2400 / bounds.width, 3200 / bounds.height)
+            let image = pdfPage.thumbnail(of: CGSize(width: bounds.width * scale, height: bounds.height * scale), for: .mediaBox)
+            let textLines = pdfPage.string?.components(separatedBy: .newlines) ?? []
+            await appendPage(image, textLines: textLines)
+        }
+        if failedPages { error = t("ios_lab_pdf_pages_failed") }
+    }
+    private func appendPage(_ image: UIImage, textLines: [String] = []) async {
+        let scannedLines = await recognizeText(image, groupRows: true)
+        // Digital PDFs can carry exact text. OCR also handles scanned PDFs and
+        // often recovers table rows whose text layer is split into columns.
+        // Keep both only when they find different markers, avoiding duplicate
+        // raw text when either source already found all the results.
+        let textCount = parseLabReport(textLines).candidates.count
+        let scanCount = parseLabReport(scannedLines).candidates.count
+        let combined = textLines + scannedLines
+        let lines: [String]
+        if !textLines.isEmpty && parseLabReport(combined).candidates.count > max(textCount, scanCount) {
+            lines = combined
+        } else {
+            lines = textCount >= scanCount && !textLines.isEmpty ? textLines : scannedLines
+        }
         let p = ScannedLabPage(image: image, text: lines.joined(separator: "\n"))
         let first = pages.isEmpty
         pages.append(p); pageID = p.id

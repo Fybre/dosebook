@@ -61,3 +61,34 @@ struct PauseSheet: View {
         }
     }
 }
+
+/// A vial has been used up: say so, and how many are left. No button to open another;
+/// that waits until a dose needs it.
+struct EmptyVialCards: View {
+    @Environment(AppStore.self) private var store
+    @Environment(\.goToTab) private var goToTab
+    var watcher = StockWatcher.shared
+    var now: Millis
+
+    var body: some View {
+        let data = store.data
+        ForEach(watcher.pending, id: \.self) { id in
+            if let v = data.mine.vials.first(where: { $0.id == id }) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Image(systemName: "flask").foregroundStyle(Tone.tangerine.color)
+                        Text(emptyVialText(data, v, now: now)).font(.subheadline)
+                    }
+                    HStack {
+                        Button { goToTab("stock") } label: { Label(t("nav_stock"), systemImage: "arrow.right.circle") }
+                            .buttonStyle(.bordered).controlSize(.small)
+                        Button(t("dismiss")) { watcher.dismiss(id) }
+                            .buttonStyle(.bordered).controlSize(.small)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .card()
+            }
+        }
+    }
+}

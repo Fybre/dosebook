@@ -43,12 +43,15 @@ struct BenchApp: App {
                 .onChange(of: scenePhase, initial: true) { _, phase in
                     AppLock.shared.phaseChanged(phase)
                 }
-                .onChange(of: scenePhase) { _, phase in
+                .onChange(of: scenePhase, initial: true) { _, phase in
                     if phase == .active {
                         store.reload(); BackupFolder.runIfDue(store)
                         WidgetSync.applyPending(store)
-                        // New weigh-ins from Apple Health each time Bench comes to the front.
-                        Task { _ = try? await HealthKitAdapter.pullWeight(into: store) }
+                        // Bring all permitted Health readings in when Dosebook opens or returns.
+                        Task {
+                            _ = try? await HealthKitAdapter.pullWeight(into: store)
+                            await HealthKitAdapter.pullVitals(into: store)
+                        }
                     }
                 }
                 .task { BackupFolder.runIfDue(store) }
@@ -109,7 +112,7 @@ extension FocusedValues {
 
 @MainActor
 enum Bootstrap {
-    static let containerId = "iCloud.me.fybre.bench"
+    static let containerId = "iCloud.me.fybre.dosebook"
 
     /// CloudKit when there is an iCloud account and the build is entitled; this
     /// device only otherwise. The choice is shown in Settings.
@@ -134,6 +137,10 @@ enum Bootstrap {
             }
             if let i = args.firstIndex(of: "-theme"), i + 1 < args.count { store.mutate { $0.settings.theme = ThemeSetting(rawValue: args[i + 1]) } }
             if args.contains("-demoGoal") { store.mutate { $0.settings.weightGoal = WeightGoal(kg: 88, startKg: 98) } }
+            if args.contains("-demoProfiles") {
+                // A second profile, with the first still showing.
+                store.mutate { let first = $0.activeProfileId; _ = $0.addProfile(name: "Sam"); $0.switchProfile(first) }
+            }
             if args.contains("-demoPaused") { store.mutate { $0.pauseAll(until: startOfLocalDay(nowMillis() + 3 * DAY_MS)) } }
             return store
         }

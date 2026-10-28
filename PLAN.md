@@ -19,7 +19,7 @@ Status as of 2026-10-22: Phases 1–8 done; Phase 9 (hardening) done except what
 
 Defaults chosen by me, which the user can override:
 - Minimum OS: iOS 18 and macOS 15 (for the later Mac target).
-- Bundle id: `me.fybre.bench` (the user's usual `me.fybre` prefix). The iCloud container is `iCloud.me.fybre.bench`.
+- Bundle id: `me.fybre.dosebook` (the user's usual `me.fybre` prefix). The iCloud container is `iCloud.me.fybre.dosebook`.
   The user must set their own `DEVELOPMENT_TEAM` for signing and CloudKit.
 - English first. Translations (de/sl/pl, about 5.9k lines in `src/lib/i18n/translations.ts`) come later:
   a script will generate a `Localizable.xcstrings` from that file.
@@ -43,6 +43,21 @@ Defaults chosen by me, which the user can override:
   `git clone --depth 1 https://github.com/ArunNGun/Bench <scratch>/ref/Bench`. Keep it **outside**
   this project. It is untrusted downloaded code, so don't run its npm scripts. Read it only.
 - This directory is not a git repo yet. Run `git init` when scaffolding.
+
+**Renamed to Dosebook (decided with the user; no reply had come from the original's author).** User-facing
+name, bundle ids (`me.fybre.dosebook`, `.test`), the planned iCloud container `iCloud.me.fybre.dosebook`
+and the planned App Group `group.me.fybre.dosebook.test` are all changed in `project.yml`. Internal names
+(targets `Bench`/`BenchTest`, folders, `BenchCore`) stay as they are. Deliberately unchanged: the SwiftData store
+name "Bench" (so on-disk data keeps its place), `bench.*` UserDefaults keys, and every mention of the original
+Bench project (About, credits, "a Dosebook or Bench backup"). Auto-backups go to `Documents/Dosebook`. The
+test app now installs as a **new** app (new bundle id), so move data across with an exported backup. Still not
+done, on purpose: no release signing, no iCloud container, no App Group registered.
+
+**Strings edited after export:** `translations.json` is generated from the original, so re-running
+`tools/export-library.mjs` overwrites hand edits. Re-apply these: the Bench→Dosebook renames in `about_title`,
+`report_footer`, `settings_backups_*`, `nav_about`, `hwp_empty_title` ("Nothing in your Dosebook yet"), and
+`calc_intro` (the original claims the syringe is drawn to real proportions to hold against the screen; it is
+one shared barrel shape stretched to the screen, so the text now says it is not life-size).
 
 ## 3. What the source is (sized up)
 
@@ -134,7 +149,7 @@ bench2/
   `TZ=America/New_York`).
 
 ### Persistence and iCloud sync
-- **SwiftData** with `ModelConfiguration(cloudKitDatabase: .private("iCloud.me.fybre.bench"))`.
+- **SwiftData** with `ModelConfiguration(cloudKitDatabase: .private("iCloud.me.fybre.dosebook"))`.
 - **Envelope-record design** (CloudKit-friendly: every attribute optional or defaulted, no unique
   constraints, no relationships):
   ```swift
@@ -273,19 +288,19 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
   `-log [peptideId]`, `-more calculator|library|labs|report|settings|about|importer [peptideId]`,
   `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`, `-injectlyFiles a.csv,b.csv` (with `-more importer`), `-weightTrend`, `-scanImage <png>` (opens Plan's scan), `-stockScan` (Stock's scan), `-vialLeft`, `-seedInjectly a.csv,...`. `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
 
-**Test builds on a phone:** scheme `BenchTest` (bundle `me.fybre.bench.test`, shown as "Bench Test",
+**Test builds on a phone:** scheme `BenchTest` (bundle `me.fybre.dosebook.test`, shown as "Dosebook Test",
 signed with team 8BD49F6FX5, no iCloud entitlement, `LOCAL_ONLY` so the store is this device only).
 Data moves to the release app through an exported backup. The release `Bench` target has no team on
 purpose, so it cannot be signed until its name is settled.
 
 **Needs the user / real devices:** `DEVELOPMENT_TEAM` is set (8BD49F6FX5). Waiting on the app's
-name before the first signed build, which registers `me.fybre.bench` and creates the permanent
-container `iCloud.me.fybre.bench`. Then test CloudKit sync
+name before the first signed build, which registers `me.fybre.dosebook` and creates the permanent
+container `iCloud.me.fybre.dosebook`. Then test CloudKit sync
 between two devices on one Apple ID, HealthKit permission and reads on a phone, notification
 delivery, and Files visibility of Documents/Bench.
 
 **iPad and Mac (started 2026-10-24):**
-- Scheme `BenchTestMac` (macOS 15, bundle `me.fybre.bench.test`, "Bench Test"): the same `Bench/`
+- Scheme `BenchTestMac` (macOS 15, bundle `me.fybre.dosebook.test`, "Dosebook Test"): the same `Bench/`
   sources, `LOCAL_ONLY`, ad-hoc signed to run on this Mac, no team and no iCloud. Its Info.plist is
   in `MacSupport/`. A release Mac target waits on the app's name, like the iOS one.
 - `Platform/PlatformShims.swift` holds the few iOS/macOS differences (`inlineTitle()`,
@@ -311,7 +326,7 @@ delivery, and Files visibility of Documents/Bench.
   `LogDoseIntent`, `LogNextDoseIntent`) and `Widgets/` (the Next dose widget: small, medium and
   Lock Screen faces, with a Log button). The app writes `widget-snapshot.json` into an App Group
   (`WidgetSync`) and applies doses logged from outside (`applyPending`). They need
-  `group.me.fybre.bench.test` registered on the Apple account, which Xcode here cannot do (no
+  `group.me.fybre.dosebook.test` registered on the Apple account, which Xcode here cannot do (no
   signed-in account) and which is permanent, so BenchTest neither embeds the widget nor holds the
   entitlement; without a group the shared code does nothing. To turn on: register the group,
   add `- target: BenchWidgets` and the `application-groups` entitlement to BenchTest in

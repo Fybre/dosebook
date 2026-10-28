@@ -80,7 +80,18 @@ struct SettingsView: View {
                     Text(t("settings_pounds")).tag(WeightUnit.lb)
                 }
                 NumberRow(label: t("settings_warn_vial_dates"), value: setting(\.budWarningDays), suffix: t("days"), range: 0...28)
-                NumberRow(label: t("settings_low_stock_at"), value: setting(\.lowStockDoses), suffix: t("settings_doses_suffix"), range: 0...60)
+                Picker(t("ios_stock_alert_unit"), selection: setting(\.lowStockUnit)) {
+                    Text(t("ios_stock_alert_doses")).tag(LowStockUnit.doses)
+                    Text(t("ios_stock_alert_days")).tag(LowStockUnit.days)
+                }
+                if settings.lowStockUnit == .doses {
+                    NumberRow(label: t("settings_low_stock_at"), value: setting(\.lowStockDoses), suffix: t("settings_doses_suffix"), range: 0...60)
+                } else {
+                    NumberRow(label: t("settings_low_stock_at"), value: setting(\.lowStockDays), suffix: t("days"), range: 1...180)
+                }
+                Toggle(t("ios_stock_alert_low_notify"), isOn: setting(\.lowStockNotify))
+                Toggle(t("ios_stock_alert_empty_notify"), isOn: setting(\.emptyVialNotify))
+                Text(t("ios_stock_alert_note")).font(.footnote).foregroundStyle(.secondary)
                 Picker(t("ios_stock_sort"), selection: setting(\.stockSort)) {
                     Text(t("ios_stock_sort_alpha")).tag(StockSort.alphabetical)
                     Text(t("ios_stock_sort_date")).tag(StockSort.dateAdded)
@@ -100,6 +111,13 @@ struct SettingsView: View {
             }
 
             NowPanelsSection()
+
+            Section {
+                NavigationLink { NeverSitesView() } label: {
+                    LabeledContent(t("ios_sites_title"), value: settings.neverInjectSites.isEmpty ? t("ios_sites_none_off") : t("ios_sites_n_off", ["n": .number(Double(settings.neverInjectSites.count))]))
+                }
+                FooterRow { Text(t("ios_sites_hint")) }
+            } footer: { FooterWrap { Text(t("ios_sites_hint")) }}
 
             LockSection()
 
@@ -189,6 +207,7 @@ private struct ProfilesSection: View {
     @Environment(AppStore.self) private var store
     @State private var newName = ""
     @State private var deleting: Profile?
+    @State private var addingWeight = false
 
     var body: some View {
         let data = store.data
@@ -222,10 +241,17 @@ private struct ProfilesSection: View {
                         Text("\(t("count_protocols", ["n": .number(Double(protocols))])) · \(t("count_doses", ["n": .number(Double(doses))]))")
                             .font(.caption).foregroundStyle(.secondary)
                     }
-                    OptionalNumberRow(label: t("settings_body_weight"), value: Binding(
-                        get: { p.weightKg.map { jsFixed(toDisplayWeight($0, unit), 1) } },
-                        set: { v in store.mutate { $0.updateProfile(p.id) { $0.weightKg = v.map { fromDisplayWeight($0, unit) } } } }),
-                        suffix: unit.rawValue, hint: p.weightKg != nil ? t("settings_weight_set") : t("settings_weight_unset"))
+                    // Weigh-ins are the one record of weight: the card on Now, the goal and this all read the latest.
+                    let reading = data.latestWeight(profileId: p.id)
+                    VStack(alignment: .leading, spacing: 4) {
+                        LabeledContent(t("settings_body_weight")) {
+                            Text(reading.map { "\(trim(toDisplayWeight($0.kg, unit), 1)) \(unit.rawValue)" } ?? "—").monospacedDigit()
+                        }
+                        Text(reading == nil ? t("ios_profile_weight_none")
+                             : reading!.at.map { t(reading!.fromHealth ? "ios_profile_weight_health" : "ios_profile_weight_entered", ["date": .string(formatDate($0))]) } ?? t("ios_profile_weight_imported"))
+                            .font(.caption).foregroundStyle(.secondary)
+                        if active { Button(t("ios_profile_weight_add")) { addingWeight = true }.buttonStyle(.bordered).controlSize(.small) }
+                    }
                 }
                 .padding(.vertical, 4)
                 .rowActions {
@@ -242,6 +268,7 @@ private struct ProfilesSection: View {
             }
             FooterRow { Text(t("settings_profiles_note")) }
         } header: { Text(t("settings_profiles")) } footer: { FooterWrap { Text(t("settings_profiles_note")) }}
+        .sheet(isPresented: $addingWeight) { NavigationStack { WeightEntry() } }
         .confirmationDialog(deleting.map { t("plan_delete_named", ["name": .string($0.name)]) } ?? "",
                             isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible, presenting: deleting) { p in
             Button(t("plan_delete_named", ["name": .string(p.name)]), role: .destructive) { store.mutate { $0.removeProfile(p.id) } }
@@ -546,6 +573,7 @@ private struct NowPanelsSection: View {
                     hiddenRaw = NowPanels.raw(next)
                 })) { Label(panel.title, systemImage: panel.symbol) }
             }
+            NavigationLink { NowPanelOrderView() } label: { Label(t("ios_panels_arrange"), systemImage: "arrow.up.arrow.down") }
             FooterRow { Text(t("ios_panels_hint")) }
         } header: { Text(t("ios_panels_title")) } footer: { FooterWrap { Text(t("ios_panels_hint")) }}
     }

@@ -97,6 +97,12 @@ func creditDay(_ l: DoseLog, _ active: [DoseProtocol], earlyHours: Double) -> Mi
     return startOfLocalDay(nearest)
 }
 
+/// The earlier day an early-morning dose counts toward, or nil when it counts for its own.
+public func earlyCreditDay(_ l: DoseLog, _ protocols: [DoseProtocol], earlyHours: Double) -> Millis? {
+    let day = creditDay(l, protocols.filter(\.active), earlyHours: earlyHours)
+    return day == startOfLocalDay(l.at) ? nil : day
+}
+
 /// How a single day went, counted from the same crediting as `dayBreakdown`.
 public func dayProgress(_ protocols: [DoseProtocol], _ logs: [DoseLog], _ dayMs: Millis, earlyHours: Double = 0) -> DayProgress {
     let breakdown = dayBreakdown(protocols, logs, dayMs, nowMs: .infinity, earlyHours: earlyHours)

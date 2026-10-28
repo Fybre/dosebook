@@ -238,3 +238,41 @@ struct ProjectionPreviewView: View {
         .padding(8).background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 8))
     }
 }
+
+/// Protocols in the order chosen in Settings: by next dose (soonest first, paused after,
+/// stopped last), by name, or as stored. Ties keep their stored order.
+func sortedProtocols(_ protocols: [DoseProtocol], by sort: ProtocolSort, now: Millis, name: (DoseProtocol) -> String) -> [DoseProtocol] {
+    func rank(_ p: DoseProtocol) -> Int { !p.active ? 2 : isPaused(p, now) ? 1 : 0 }
+    func next(_ p: DoseProtocol) -> Millis { protocolNextDoseTime(p, now) ?? Double.infinity }
+    switch sort {
+    case .dateAdded: return protocols
+    case .alphabetical:
+        return protocols.enumerated().sorted { a, b in
+            let c = name(a.element).localizedCaseInsensitiveCompare(name(b.element))
+            return c != .orderedSame ? c == .orderedAscending : a.offset < b.offset
+        }.map(\.element)
+    case .nextDose:
+        return protocols.enumerated().sorted { a, b in
+            let (ra, rb) = (rank(a.element), rank(b.element))
+            if ra != rb { return ra < rb }
+            let (na, nb) = (next(a.element), next(b.element))
+            return na != nb ? na < nb : a.offset < b.offset
+        }.map(\.element)
+    }
+}
+
+/// The sort menu on Now and Plan; one choice for both.
+struct ProtocolSortMenu: View {
+    @Environment(AppStore.self) private var store
+    var body: some View {
+        Menu {
+            Picker(t("ios_protocol_sort"), selection: Binding(get: { store.data.settings.protocolSort }, set: { value in
+                store.mutate { $0.settings.protocolSort = value }
+            })) {
+                Text(t("ios_protocol_sort_next")).tag(ProtocolSort.nextDose)
+                Text(t("ios_protocol_sort_alpha")).tag(ProtocolSort.alphabetical)
+                Text(t("ios_protocol_sort_added")).tag(ProtocolSort.dateAdded)
+            }
+        } label: { Label(t("ios_protocol_sort"), systemImage: "arrow.up.arrow.down") }
+    }
+}

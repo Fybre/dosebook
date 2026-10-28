@@ -2,7 +2,7 @@ import Foundation
 import BenchCore
 import BenchStore
 
-/// Rotating backups in Documents/Bench, which the Files app shows under On My iPhone.
+/// Rotating backups in Documents/Dosebook, which the Files app shows under On My iPhone.
 /// A second copy on the device, never uploaded by this app.
 @MainActor
 enum BackupFolder {

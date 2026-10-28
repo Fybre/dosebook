@@ -87,3 +87,82 @@ struct WeightTrendView: View {
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button(t("done")) { dismiss() } } }
     }
 }
+
+/// Shows nearby Health readings for recorded dose changes, without assigning a cause.
+struct VitalsTrendView: View {
+    @Environment(AppStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    var now: Millis
+    @State private var peptideId: String?
+
+    var body: some View {
+        let data = store.data
+        let mine = data.mine
+        let compounds = mine.logs.filter { !$0.isSkipped && $0.doseMcg > 0 }.map(\.peptideId)
+            .reduce(into: [String]()) { if !$0.contains($1) { $0.append($1) } }
+        let chosen = peptideId ?? mostTitratedCompound(mine.logs, now: now)
+        let steps = chosen.map { doseSteps(mine.logs, peptideId: $0, now: now) } ?? []
+        let comparisons = vitalsAroundDoseSteps(steps, mine.measurements, now: now)
+        let hasVitals = mine.measurements.contains { $0.sleepHours != nil || $0.restingHrBpm != nil }
+
+        GroupedList {
+            Section { Text(t("ios_vitals_intro")).font(.footnote).foregroundStyle(.secondary) }
+            if !compounds.isEmpty {
+                Section {
+                    Picker(t("ios_trend_against"), selection: Binding(get: { chosen ?? "" }, set: { peptideId = $0 })) {
+                        ForEach(compounds, id: \.self) { Text(data.peptide($0)?.name ?? $0).tag($0) }
+                    }
+                }
+            }
+            if !hasVitals || steps.isEmpty {
+                Section { Text(t("ios_vitals_empty")).foregroundStyle(.secondary) }
+            } else {
+                ForEach(Array(comparisons.suffix(8).enumerated().reversed()), id: \.offset) { _, comparison in
+                    Section {
+                        if comparison.afterTo > comparison.afterFrom {
+                            Text(t("ios_vitals_period", [
+                                "beforeFrom": .string(formatDate(comparison.beforeFrom)),
+                                "beforeTo": .string(formatDate(addLocalDays(comparison.beforeTo, -1))),
+                                "afterFrom": .string(formatDate(comparison.afterFrom)),
+                                "afterTo": .string(formatDate(addLocalDays(comparison.afterTo, -1)))
+                            ])).font(.caption).foregroundStyle(.secondary)
+                        } else {
+                            Text(t("ios_vitals_no_after")).font(.caption).foregroundStyle(.secondary)
+                        }
+                        metric(t("ios_vitals_sleep"), comparison.sleepBefore, comparison.sleepAfter, unit: "h")
+                        metric(t("ios_vitals_hr"), comparison.heartRateBefore, comparison.heartRateAfter, unit: "bpm")
+                    } header: {
+                        Text(t("ios_vitals_step", ["dose": .string(formatDose(comparison.step.doseMcg)),
+                                                    "date": .string(formatDate(comparison.step.from))]))
+                    }
+                }
+                Section { Text(t("ios_vitals_note")).font(.footnote).foregroundStyle(.secondary) }
+            }
+        }
+        .navigationTitle(t("ios_vitals_title"))
+        .inlineTitle()
+        .toolbar { ToolbarItem(placement: .confirmationAction) { Button(t("done")) { dismiss() } } }
+    }
+
+    private func metric(_ title: String, _ before: VitalAverage, _ after: VitalAverage, unit: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title).font(.subheadline.weight(.semibold))
+            Text(t("ios_vitals_values", [
+                "before": .string(before.value.map { trim($0, 1) } ?? "—"),
+                "beforeDays": .string(t("count_days", ["n": .number(Double(before.days))])),
+                "after": .string(after.value.map { trim($0, 1) } ?? "—"),
+                "afterDays": .string(t("count_days", ["n": .number(Double(after.days))])),
+                "beforeUnit": .string(unit),
+                "afterUnit": .string(unit)
+            ])).font(.caption.monospacedDigit())
+            if before.hasEnoughDays && after.hasEnoughDays, let b = before.value, let a = after.value {
+                let delta = ((a - b) * 10).rounded() / 10
+                Text(t("ios_vitals_difference", ["amount": .string((delta > 0 ? "+" : delta < 0 ? "−" : "") + trim(abs(delta), 1)),
+                                                 "unit": .string(unit)]))
+                    .font(.caption).foregroundStyle(.secondary)
+            } else {
+                Text(t("ios_vitals_insufficient")).font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+}

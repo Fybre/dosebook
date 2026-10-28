@@ -167,7 +167,7 @@ struct LogNextDoseIntent: AppIntent {
 
     @MainActor func perform() async throws -> some IntentResult & ProvidesDialog {
         guard let snapshot = SharedStore.readSnapshot() else {
-            return .result(dialog: "Open Bench once, so it can see your plan.")
+            return .result(dialog: "Open Dosebook once, so it can see your plan.")
         }
         let now = Date().timeIntervalSince1970 * 1000
         let due = snapshot.doses

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Bench</string>
+	<string>Dosebook</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -25,11 +25,11 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Bench reads vial labels and bloodwork results from photos. Photos are read on this iPhone and not kept.</string>
+	<string>Dosebook reads vial labels and bloodwork results from photos. Photos are read on this iPhone and not kept.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Bench asks for Face ID to open, when you have turned the lock on.</string>
+	<string>Dosebook asks for Face ID to open, when you have turned the lock on.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Bench reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back.</string>
+	<string>Dosebook reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

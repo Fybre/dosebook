@@ -20,6 +20,7 @@ struct TodayView: View {
     @State private var confirmEarly: String?
     @State private var addingVial: VialFor?
     @AppStorage(NowPanels.key) private var hiddenRaw = ""
+    @AppStorage(NowPanels.orderKey) private var orderRaw = ""
     @Environment(\.logDoseRequests) private var logDoseRequests
     /// The last ⌘N request this screen has opened a sheet for.
     @State private var answeredLogDose = 0
@@ -28,6 +29,92 @@ struct TodayView: View {
     private var wide: Bool { width >= 1000 }
     private let tick = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
+    /// Overdue and due-now doses, soonest first.
+    private static func needsAttention(_ tracks: [Track]) -> [Track] {
+        let due = tracks.filter { $0.due.state == .overdue || $0.due.state == .dueNow }
+        return due.sorted { ($0.due.at ?? Double.infinity) < ($1.due.at ?? Double.infinity) }
+    }
+
+    /// Active protocols in the chosen order; by next dose, an overdue one comes first.
+    private static func ordered(_ tracks: [Track], data: AppData, now: Millis) -> [Track] {
+        let sort = data.settings.protocolSort
+        let order = sortedProtocols(tracks.map(\.protocol_), by: sort, now: now) { data.peptide($0.peptideId)?.name ?? $0.name }.map(\.id)
+        let rank = Dictionary(uniqueKeysWithValues: order.enumerated().map { ($1, $0) })
+        let overdue = Dictionary(uniqueKeysWithValues: tracks.map { ($0.id, sort == .nextDose && $0.due.state == .overdue ? 0 : 1) })
+        return tracks.sorted { (overdue[$0.id]!, rank[$0.id]!) < (overdue[$1.id]!, rank[$1.id]!) }
+    }
+
+    /// Everything a panel needs, worked out once per update.
+    private struct NowContent {
+        var data: AppData
+        var tracks: [Track]
+        var series: [PkSeries]
+        var attention: [Track]
+        var hidden: Set<NowPanel>
+        var mine: AppData { data.mine }
+        var active: [DoseProtocol] { mine.protocols.filter(\.active) }
+    }
+
+    /// The notices and what is due, then the panels in the order chosen. Today stays first.
+    @ViewBuilder private func leftColumn(_ c: NowContent, _ panels: [NowPanel]) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if !c.hidden.contains(.today) { TodayCard(protocols: c.mine.protocols, logs: c.mine.logs, now: now, earlyHours: c.data.settings.earlyHours) }
+            RescueNotice()
+            BackupNagCard(now: now)
+            PauseBanner(now: now)
+            EmptyVialCards(now: now)
+            RemindersTipCard()
+            noVialCards(c.tracks, data: c.data)
+            if c.mine.protocols.isEmpty {
+                HistoryWithoutPlanCard(now: now)
+            } else {
+                if let q = lastQuickLog { quickLogNote(q) }
+                ForEach(c.attention) { attentionRow($0, logs: c.mine.logs) }
+            }
+            ForEach(panels.filter { !$0.isToday }, id: \.self) { panelView($0, c) }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder private func rightColumn(_ c: NowContent, _ panels: [NowPanel]) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            ForEach(panels, id: \.self) { panelView($0, c) }
+        }
+    }
+
+    @ViewBuilder private func panelView(_ panel: NowPanel, _ c: NowContent) -> some View {
+        let data = c.data, mine = c.mine
+        if !c.hidden.contains(panel) {
+            switch panel {
+            case .today: EmptyView()
+            case .interactions:
+                if !mine.protocols.isEmpty, c.active.count >= 2 { StackWarningsView(compact: true, nowMs: now).card() }
+            case .laterToday:
+                if !mine.protocols.isEmpty { laterToday(c.tracks, logs: mine.logs, attention: c.attention) }
+            case .chart:
+                if !mine.protocols.isEmpty, !c.series.isEmpty {
+                    PkChartView(series: c.series, now: now,
+                                weights: data.settings.plotWeightOnChart == true ? mine.measurements : [],
+                                weightUnit: data.settings.weightUnit, describeVial: { describeVial($0, data) })
+                        .card()
+                        .id("chart")
+                    notes(c.tracks, data: data)
+                }
+            case .protocols:
+                if !mine.protocols.isEmpty {
+                    Text(t("now_active_protocols").uppercased()).font(.caption.bold()).foregroundStyle(.secondary).id("protocols")
+                    ForEach(Self.ordered(c.tracks, data: data, now: now)) { protocolCard($0, data: data).id("proto-\($0.protocol_.peptideId)") }
+                }
+            case .weight: WeightCard(now: now).id("cards")
+            case .checkIn: CheckInCard(now: now)
+            case .bloodwork: LabsCard()
+            case .trends:
+                if !mine.protocols.isEmpty { InsightsView(tracks: c.tracks, logs: mine.logs, now: now) }
+            case .worthSorting: worthSorting(c.tracks, data: data)
+            }
+        }
+    }
+
     var body: some View {
         let data = store.data
         let mine = data.mine
@@ -35,50 +122,22 @@ struct TodayView: View {
         let palette = assignColors(colorSubjects(active, resolve: { data.peptide($0) }, nowMs: now))
         let tracks = TodayModel.tracks(data, now: now, palette: palette)
         let series = TodayModel.series(tracks, palette: palette)
-        let attention = tracks.filter { $0.due.state == .overdue || $0.due.state == .dueNow }
+        let attention = Self.needsAttention(tracks)
         let hidden = NowPanels.hidden(hiddenRaw)
         ScrollViewReader { proxy in
         ScrollView {
-            let columns = wide ? AnyLayout(HStackLayout(alignment: .top, spacing: 20)) : AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
-            columns {
-            // Today and the plan on the left; how you are doing on the right.
-            VStack(alignment: .leading, spacing: 16) {
-                if !hidden.contains(.today) { TodayCard(protocols: mine.protocols, logs: mine.logs, now: now, earlyHours: data.settings.earlyHours) }
-                RescueNotice()
-                BackupNagCard(now: now)
-                PauseBanner(now: now)
-                RemindersTipCard()
-                noVialCards(tracks, data: data)
-                if mine.protocols.isEmpty {
-                    HistoryWithoutPlanCard(now: now)
-                } else {
-                    if active.count >= 2, !hidden.contains(.interactions) { StackWarningsView(compact: true, nowMs: now).card() }
-                    if let q = lastQuickLog { quickLogNote(q) }
-                    ForEach(attention) { attentionRow($0, logs: mine.logs) }
-                    if !hidden.contains(.laterToday) { laterToday(tracks, logs: mine.logs, attention: attention) }
-                    if !series.isEmpty, !hidden.contains(.chart) {
-                        PkChartView(series: series, now: now,
-                                    weights: data.settings.plotWeightOnChart == true ? mine.measurements : [],
-                                    weightUnit: data.settings.weightUnit, describeVial: { describeVial($0, data) })
-                            .card()
-                            .id("chart")
-                        notes(tracks, data: data)
-                    }
-                    if !hidden.contains(.protocols) {
-                        Text(t("now_active_protocols").uppercased()).font(.caption.bold()).foregroundStyle(.secondary).id("protocols")
-                        ForEach(tracks) { protocolCard($0, data: data).id("proto-\($0.protocol_.peptideId)") }
-                    }
+            let order = NowPanels.order(orderRaw)
+            let content = NowContent(data: data, tracks: tracks, series: series, attention: attention, hidden: hidden)
+            // Wide: the left column and a narrower right one. Narrow: one stack in the saved order.
+            Group {
+            if wide {
+                HStack(alignment: .top, spacing: 20) {
+                    leftColumn(content, order.filter(\.inLeftColumn))
+                    rightColumn(content, order.filter { !$0.inLeftColumn }).frame(maxWidth: 420, alignment: .leading)
                 }
+            } else {
+                VStack(alignment: .leading, spacing: 16) { leftColumn(content, order) }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            VStack(alignment: .leading, spacing: 16) {
-                if !hidden.contains(.weight) { WeightCard(now: now).id("cards") }
-                if !hidden.contains(.checkIn) { CheckInCard(now: now) }
-                if !hidden.contains(.bloodwork) { LabsCard() }
-                if !mine.protocols.isEmpty, !hidden.contains(.trends) { InsightsView(tracks: tracks, logs: mine.logs, now: now) }
-                if !hidden.contains(.worthSorting) { worthSorting(tracks, data: data) }
-            }
-            .frame(maxWidth: wide ? 420 : .infinity, alignment: .leading)
             }
             .padding()
             .pageWidth(width, limit: wide ? 1240 : READABLE_WIDTH)
@@ -91,7 +150,9 @@ struct TodayView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle(t("nav_now"))
+        .profileChip()
         .toolbar {
+            ToolbarItem(placement: .primaryAction) { ProtocolSortMenu() }
             ToolbarItem(placement: .primaryAction) {
                 Button { logRequest = LogRequest(peptideId: nil) } label: { Label(t("log_new_dose"), systemImage: "plus") }
             }
@@ -208,7 +269,7 @@ struct TodayView: View {
 
     private func choices(_ track: Track, logs: [DoseLog]) -> [SiteUsage] {
         routeHasSite(track.protocol_.route)
-            ? siteChoices(logs.filter { $0.peptideId == track.protocol_.peptideId }, now, allowed: track.protocol_.sites)
+            ? siteChoices(logs.filter { $0.peptideId == track.protocol_.peptideId }, now, allowed: store.data.allowedSites(for: track.protocol_))
             : []
     }
 
@@ -290,10 +351,18 @@ struct TodayView: View {
                             // A dose logged hours early is usually a misread row, so it asks.
                             Text(t("now_not_due_until", ["time": .string(formatTime(row.at)), "when": .string(relativeTime(row.at, nowMs: now))]))
                                 .font(.caption).foregroundStyle(.secondary)
+                            // What logging it here would do: where it goes and how much to draw.
+                            let site = routeHasSite(row.track.protocol_.route)
+                                ? suggestSite(logs.filter { $0.peptideId == row.track.protocol_.peptideId }, nowMillis(), allowed: store.data.allowedSites(for: row.track.protocol_)) : nil
+                            HStack(spacing: 8) {
+                                if let site { Text(t("now_at_site", ["site": .string(siteLabel(site))])) }
+                                DoseMarksText(peptideId: row.track.protocol_.peptideId, doseMcg: row.track.targetMcg, route: row.track.protocol_.route, nowMs: now)
+                            }
+                            .font(.caption.weight(.medium))
                             HStack {
                                 Button(t("now_yes_log_it")) {
                                     confirmEarly = nil
-                                    log(row.track, site: suggestSite(logs.filter { $0.peptideId == row.track.protocol_.peptideId }, nowMillis(), allowed: row.track.protocol_.sites))
+                                    log(row.track, site: site)
                                 }.buttonStyle(.borderedProminent)
                                 Button(t("now_details")) { confirmEarly = nil; logRequest = LogRequest(peptideId: row.track.protocol_.peptideId) }.buttonStyle(.bordered)
                                 Button(t("cancel")) { confirmEarly = nil }
@@ -338,7 +407,7 @@ struct TodayView: View {
 
     private func protocolCard(_ track: Track, data: AppData) -> some View {
         let yours = track.curve?.basis == .yours ? data.halfLifeOverrides[track.protocol_.peptideId]?.hours : nil
-        let low = track.stock.dosesRemaining <= data.settings.lowStockDoses
+        let low = stockIsLow(track.stock, supplyDays: track.supplyDays, data.settings)
         return VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top) {
                 Image(systemName: "syringe").foregroundStyle(track.tone.color).frame(width: 34, height: 34)
@@ -455,7 +524,7 @@ struct TodayView: View {
     }
 
     @ViewBuilder private func worthSorting(_ tracks: [Track], data: AppData) -> some View {
-        let low = tracks.filter { $0.stock.dosesRemaining <= data.settings.lowStockDoses && $0.targetMcg > 0 && hasAnyVial(data, $0.protocol_.peptideId) }
+        let low = tracks.filter { stockIsLow($0.stock, supplyDays: $0.supplyDays, data.settings) && $0.targetMcg > 0 && hasAnyVial(data, $0.protocol_.peptideId) }
         let expiring = data.mine.vials.filter { $0.state == .reconstituted && $0.budAt.map { $0 - now < data.settings.budWarningDays * DAY_MS } == true }
         if !low.isEmpty || !expiring.isEmpty {
             VStack(alignment: .leading, spacing: 8) {

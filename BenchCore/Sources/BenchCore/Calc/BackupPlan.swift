@@ -4,7 +4,7 @@ import Foundation
 // Rotating backups: names that sort by time, and a prune that never touches a
 // file it does not recognise and never empties the folder.
 
-public let BACKUP_DIR = "Bench"
+public let BACKUP_DIR = "Dosebook"
 
 private func pad(_ n: Int) -> String { n < 10 ? "0\(n)" : String(n) }
 

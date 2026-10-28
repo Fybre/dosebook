@@ -185,7 +185,7 @@ struct WeightCard: View {
                 Button { adding = true } label: { Label(t("add"), systemImage: "plus") }.font(.caption).buttonStyle(.bordered).controlSize(.mini)
             }
             if series.isEmpty {
-                Text(t("weight_none_yet")).font(.footnote).foregroundStyle(.secondary)
+                Text(t("ios_weight_none_yet_neutral")).font(.footnote).foregroundStyle(.secondary)
             } else {
                 HStack(spacing: 8) {
                     stat(t("weight_latest"), trim(toDisplayWeight(series.last!.kg, unit), 1), unit.rawValue, nil, nil)
@@ -330,6 +330,7 @@ struct CheckInCard: View {
     @Environment(AppStore.self) private var store
     var now: Millis
     @State private var editing = false
+    @State private var showingVitalsTrend = false
 
     var body: some View {
         let mine = store.data.mine
@@ -342,6 +343,8 @@ struct CheckInCard: View {
             HStack {
                 CardHeader(title: t("checkin_how_you_feel"), systemImage: "heart.text.square")
                 Button { editing = true } label: { Label(existing != nil ? t("checkin_rated") : t("checkin_rate_today"), systemImage: existing != nil ? "checkmark" : "plus") }
+                    .font(.caption).buttonStyle(.bordered).controlSize(.mini)
+                Button { showingVitalsTrend = true } label: { Label(t("ios_vitals_button"), systemImage: "chart.xyaxis.line") }
                     .font(.caption).buttonStyle(.bordered).controlSize(.mini)
             }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 96), spacing: 8)], spacing: 8) {
@@ -368,6 +371,10 @@ struct CheckInCard: View {
         }
         .card()
         .sheet(isPresented: $editing) { NavigationStack { CheckInSheet(dayMs: now) } }
+        .sheet(isPresented: $showingVitalsTrend) { NavigationStack { VitalsTrendView(now: now) } }
+        #if DEBUG
+        .onAppear { if ProcessInfo.processInfo.arguments.contains("-vitalsTrend") { showingVitalsTrend = true } }
+        #endif
         // Sleep and resting heart rate from Apple Health, onto each day's vitals.
         .task(id: startOfLocalDay(now)) { await HealthKitAdapter.pullVitals(into: store) }
     }

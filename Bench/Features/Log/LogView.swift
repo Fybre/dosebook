@@ -8,6 +8,7 @@ struct LogView: View {
     @Environment(\.tabReselects) private var reselects
     @AppStorage("bench.logMode") private var mode = Mode.list
     @State private var filter = ""
+    @State private var query = ""
     @State private var editing: LogEdit?
     @State private var ratingDay: RatingDay?
     @State private var pickingDay = false
@@ -25,6 +26,8 @@ struct LogView: View {
     var body: some View {
         content
         .navigationTitle(t("log_title"))
+        .profileChip()
+        .searchable(text: $query, prompt: Text(t("ios_log_search")))
         .toolbar {
             ToolbarItem(placement: .secondaryAction) {
                 Button { pickingDay = true } label: { Label(t("log_rate_another_day"), systemImage: "calendar.badge.plus") }
@@ -54,13 +57,16 @@ struct LogView: View {
         let data = store.data
         let mine = data.mine
         let logs = mine.logs
-        let shown = filter.isEmpty ? logs : logs.filter { $0.peptideId == filter }
+        let words = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let byCompound = filter.isEmpty ? logs : logs.filter { $0.peptideId == filter }
+        let shown = words.isEmpty ? byCompound : byCompound.filter { logMatches($0, query: words, peptideName: data.peptide($0.peptideId)?.name ?? $0.peptideId) }
         let palette = assignColors(colorSubjects(mine.protocols.filter(\.active), resolve: { data.peptide($0) }, nowMs: now))
         // A check-in belongs to a day and not to a compound, so a filtered list leaves them out.
-        let checkIns = filter.isEmpty ? mine.checkIns : []
+        let searching = !filter.isEmpty || !words.isEmpty
+        let checkIns = searching ? [] : mine.checkIns
         let logged = diaryDays(shown, at: \.at, checkIns)
         // Missed doses, at most 90 days back, for the compound shown.
-        let missedByDay: [Millis: [MissedDose]] = showMissed ? Dictionary(uniqueKeysWithValues:
+        let missedByDay: [Millis: [MissedDose]] = showMissed && words.isEmpty ? Dictionary(uniqueKeysWithValues:
             missedDoses(mine.protocols, mine.logs, fromMs: max(now - 90 * DAY_MS, mine.protocols.map(\.startedAt).min() ?? now), nowMs: now, earlyHours: data.settings.earlyHours)
                 .map { ($0.day, $0.doses.filter { filter.isEmpty || $0.peptideId == filter }) }.filter { !$0.1.isEmpty }) : [:]
         let days = Set(logged.map(\.day)).union(missedByDay.keys).sorted(by: >).map { day in
@@ -152,7 +158,9 @@ struct LogView: View {
 
                 if peptideIds.count > 1 { filterSection(data, peptideIds) }
 
-                if days.isEmpty {
+                if days.isEmpty && !query.trimmingCharacters(in: .whitespaces).isEmpty {
+                    ContentUnavailableView.search(text: query)
+                } else if days.isEmpty {
                     ContentUnavailableView {
                         Label(t("log_no_logs"), systemImage: "list.bullet.rectangle")
                     } description: {
@@ -232,7 +240,8 @@ struct LogView: View {
                 Text(t("ios_calendar_nothing")).font(.footnote).foregroundStyle(.secondary)
             }
             ForEach(day.entries) { l in
-                Button { editing = LogEdit(id: l.id, logId: l.id) } label: { LogRow(log: l, name: data.peptide(l.peptideId)?.name ?? l.peptideId, tone: doseColor(palette, protocolId: l.protocolId, peptideId: l.peptideId), peptide: data.peptide(l.peptideId)) }
+                Button { editing = LogEdit(id: l.id, logId: l.id) } label: { LogRow(log: l, name: data.peptide(l.peptideId)?.name ?? l.peptideId, tone: doseColor(palette, protocolId: l.protocolId, peptideId: l.peptideId), peptide: data.peptide(l.peptideId),
+                                    countedFor: earlyCreditDay(l, data.mine.protocols, earlyHours: data.settings.earlyHours)) }
                     .buttonStyle(.plain)
                     .accessibilityLabel(t("log_edit_dose", ["when": .string(formatDateTime(l.at, nowMs: now))]))
             }
@@ -285,6 +294,8 @@ private struct LogRow: View {
     var name: String
     var tone: Tone?
     var peptide: Peptide? = nil
+    /// The earlier day this dose counts toward, when it was taken in the early hours.
+    var countedFor: Millis? = nil
 
     var body: some View {
         let l = log
@@ -309,6 +320,10 @@ private struct LogRow: View {
                         if let site { Text(site).fontWeight(.medium).foregroundStyle(.primary) }
                     }
                     .font(.caption).foregroundStyle(.secondary)
+                }
+                if let countedFor {
+                    Label(t("ios_log_counted_toward", ["day": .string("\(formatWeekday(countedFor)), \(formatDate(countedFor))")]), systemImage: "moon.stars")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
                 if l.feeling != nil || !(l.sideEffects ?? []).isEmpty {
                     FlowLayout(spacing: 4) {

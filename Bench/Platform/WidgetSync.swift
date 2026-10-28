@@ -66,7 +66,7 @@ enum WidgetSync {
     }
 }
 
-/// "Log my dose in Bench", for Siri, Shortcuts and the Action button.
+/// "Log my dose in Dosebook", for Siri, Shortcuts and the Action button.
 struct BenchShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(intent: LogNextDoseIntent(),

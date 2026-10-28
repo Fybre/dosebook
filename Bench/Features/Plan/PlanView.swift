@@ -41,7 +41,7 @@ struct PlanView: View {
                     .opacity(protocols.filter(\.active).count >= 2 ? 1 : 0)
                     .frame(height: protocols.filter(\.active).count >= 2 ? nil : 0)
                 // Cards first: on a phone the fortnight list would push them a long way down.
-                ForEach(protocols) { p in
+                ForEach(sortedProtocols(protocols, by: data.settings.protocolSort, now: now) { data.peptide($0.peptideId)?.name ?? $0.name }) { p in
                     ProtocolCard(protocol_: p, nowMs: now, onEdit: { editing = .existing(p) })
                 }
                 if protocols.contains(where: \.active) { UpcomingView(nowMs: now) }
@@ -56,6 +56,7 @@ struct PlanView: View {
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .background(Color(.systemGroupedBackground))
         .navigationTitle(t("plan_title"))
+        .profileChip()
         .peptideDestination()
         .toolbar {
             // Occasional actions, apart from the + that makes a protocol.
@@ -63,6 +64,7 @@ struct PlanView: View {
                 Button { pausing = true } label: { Label(t("ios_pause_title"), systemImage: "pause.circle") }
                     .disabled(currentPause(protocols, now) != nil || !protocols.contains(where: \.active))
             }
+            ToolbarItem(placement: .primaryAction) { ProtocolSortMenu() }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button { editing = .new } label: { Label(t("plan_new_protocol"), systemImage: "square.and.pencil") }

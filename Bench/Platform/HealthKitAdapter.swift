@@ -68,6 +68,7 @@ enum HealthKitAdapter {
     }
 
     private static var pulling = false
+    private static var pullingVitals = false
 
     /// New weigh-ins since the newest one already brought in from Health (or the
     /// last year), added and linked by their Health record id. Nil when Health is
@@ -99,6 +100,9 @@ enum HealthKitAdapter {
 
     /// Sleep and resting heart rate for the last month, onto each day's vitals.
     static func pullVitals(into store: AppStore, now: Millis = nowMillis()) async {
+        guard !pullingVitals else { return }
+        pullingVitals = true
+        defer { pullingVitals = false }
         guard await availability() == .asked else { return }
         let since = now - 30 * DAY_MS
         guard let sleep = try? await readSleep(since: since), let hr = try? await readRestingHr(since: since) else { return }

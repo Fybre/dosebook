@@ -84,3 +84,37 @@ public func siteChoices(_ logs: [DoseLog], _ nowMs: Millis, restDays: Double = 1
 public func overusedSites(_ logs: [DoseLog], _ nowMs: Millis, restDays: Double = 14, threshold: Int = 3) -> [SiteUsage] {
     siteUsage(logs, nowMs, restDays: restDays).filter { $0.recentCount >= threshold }
 }
+
+extension Settings {
+    /// iOS only, in `extra`: places that must never be suggested or picked, whatever a protocol pins.
+    public var neverInjectSites: [InjectionSite] {
+        get {
+            let all = Set(InjectionSite.allCases)
+            return extra["iosNeverSites"]?.arrayValue?.compactMap { $0.stringValue.map(InjectionSite.init(rawValue:)) }.filter(all.contains) ?? []
+        }
+        set {
+            if newValue.isEmpty { extra.removeValue(forKey: "iosNeverSites") }
+            else { extra["iosNeverSites"] = .array(InjectionSite.allCases.filter(newValue.contains).map { .string($0.rawValue) }) }
+        }
+    }
+}
+
+/// The sites a dose may use: what the protocol pins (or every site), less those that are never used.
+/// Nil, meaning no restriction, only when nothing is excluded and nothing is pinned. If every
+/// pinned site is excluded, the pins give way rather than leaving nowhere to inject.
+public func allowedSites(pinned: [InjectionSite]?, never: [InjectionSite]) -> [InjectionSite]? {
+    guard !never.isEmpty else { return pinned }
+    let banned = Set(never)
+    let base = pinned?.isEmpty == false ? pinned! : InjectionSite.allCases
+    let ok = base.filter { !banned.contains($0) }
+    if !ok.isEmpty { return ok }
+    let rest = InjectionSite.allCases.filter { !banned.contains($0) }
+    return rest.isEmpty ? pinned : rest
+}
+
+extension AppData {
+    /// Where a protocol's doses may go, honouring the sites switched off in Settings.
+    public func allowedSites(for p: DoseProtocol?) -> [InjectionSite]? {
+        BenchCore.allowedSites(pinned: p?.sites, never: settings.neverInjectSites)
+    }
+}
