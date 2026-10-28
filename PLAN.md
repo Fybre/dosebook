@@ -59,6 +59,12 @@ done, on purpose: no release signing, no iCloud container, no App Group register
 `calc_intro` (the original claims the syringe is drawn to real proportions to hold against the screen; it is
 one shared barrel shape stretched to the screen, so the text now says it is not life-size).
 
+**Sync and vial amounts.** A vial's amount drawn is derived: `drawnMcg = drawnStart + the doses logged against
+it` (`Calc/VialLedger.swift`; `drawnStart` lives in the vial's `extra`). `AppStore.mutate` settles `drawnStart`
+after every local change, and `load()`/`reload()` recompute `drawnMcg` from the doses and write the correction
+back, so two devices logging from one vial both count after a merge. `drawnMcg` stays as the cached value the
+screens and the web/Android apps read. Still last-writer-wins per record otherwise (see Envelope.swift).
+
 ## 3. What the source is (sized up)
 
 About 60k lines of TypeScript including tests, and about 44k without them.

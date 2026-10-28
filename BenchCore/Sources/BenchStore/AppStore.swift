@@ -51,9 +51,11 @@ public final class AppStore {
     public func load() {
         do {
             let envelopes = try records.loadEnvelopes()
-            let doc = document(from: envelopes, activeProfileId: defaults.string(forKey: Self.activeProfileKey))
+            var doc = document(from: envelopes, activeProfileId: defaults.string(forKey: Self.activeProfileKey))
             if envelopes.isEmpty {
                 try records.apply(envelopeDiff(from: nil, to: doc))
+            } else {
+                try settleDrawn(&doc)
             }
             data = doc
         } catch {
@@ -64,13 +66,24 @@ public final class AppStore {
     /// Re-read after a change arrived from another device.
     public func reload() {
         do {
-            let next = preservingOrder(document(from: try records.loadEnvelopes(), activeProfileId: data.activeProfileId), from: data)
+            var read = document(from: try records.loadEnvelopes(), activeProfileId: data.activeProfileId)
+            try settleDrawn(&read)
+            let next = preservingOrder(read, from: data)
             guard next != data else { return }
             keepRescue(previous: data, next: next)
             data = next
         } catch {
             lastError = "\(error)"
         }
+    }
+
+    /// What came from storage may be a merge of two devices' changes, in which a vial's stored
+    /// total is only one writer's. Recompute it from the doses, and write the correction down so
+    /// every device ends on the same figure.
+    private func settleDrawn(_ doc: inout AppData) throws {
+        let stored = doc
+        guard doc.reconcileDrawn() else { return }
+        try records.apply(envelopeDiff(from: stored, to: doc, at: Date(millis: clock())))
     }
 
     // MARK: Writing
@@ -93,6 +106,7 @@ public final class AppStore {
 
     private func commit(_ proposed: AppData) {
         var next = proposed
+        next.settleDrawnStarts()
         if documentChanged(next, data) { next.settings.dataChangedAt = clock() }
         guard next != data else { return }
         keepRescue(previous: data, next: next)

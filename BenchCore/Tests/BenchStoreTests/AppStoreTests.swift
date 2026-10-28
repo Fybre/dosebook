@@ -98,3 +98,29 @@ private func makeStore() throws -> (AppStore, RecordStore, URL) {
         return (AppStore(records: records, defaults: UserDefaults(suiteName: "o-\(UUID().uuidString)")!, rescueURL: nil), records, ())
     }
 }
+
+@MainActor @Suite struct TwoDeviceVialTests {
+    /// Two devices on one set of records: each logs a dose from the same vial before seeing the other's.
+    @Test func bothDosesCountAfterTheMerge() throws {
+        let (phone, records, _) = try makeStore()
+        let vialId = phone.mutate { $0.addVial(Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 5, state: .reconstituted, diluentMl: 2)) }
+        let mac = AppStore(records: records, defaults: UserDefaults(suiteName: "bench-test-\(UUID().uuidString)")!, rescueURL: nil, clock: { 1_000_000 })
+        func dose(_ day: Double) -> DoseLog {
+            DoseLog(id: "", profileId: "", peptideId: "bpc-157", at: 1_700_000_000_000 + day * DAY_MS, doseMcg: 250, route: .subcutaneous, vialId: vialId)
+        }
+        phone.mutate { $0.addLog(dose(0)) }
+        mac.mutate { $0.addLog(dose(1)) }   // never saw the phone's dose
+        #expect(mac.data.vials.first { $0.id == vialId }?.drawnMcg == 250, "the stale device's own total")
+
+        // What arrives from the other device is a merge; reading it puts the total right on both.
+        phone.reload()
+        mac.reload()
+        for store in [phone, mac] {
+            #expect(store.data.logs.count == 2)
+            #expect(store.data.vials.first { $0.id == vialId }?.drawnMcg == 500)
+        }
+        // And what is stored says the same, so it will not flip back.
+        let stored = document(from: try records.loadEnvelopes(), activeProfileId: "me")
+        #expect(stored.vials.first { $0.id == vialId }?.drawnMcg == 500)
+    }
+}
