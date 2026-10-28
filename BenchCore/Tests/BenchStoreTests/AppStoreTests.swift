@@ -124,3 +124,67 @@ private func makeStore() throws -> (AppStore, RecordStore, URL) {
         #expect(stored.vials.first { $0.id == vialId }?.drawnMcg == 500)
     }
 }
+
+@MainActor @Suite struct FirstLaunchWithICloudTests {
+    /// A second device opening for the first time must not write factory settings that are newer
+    /// than, and would replace, the ones still on their way from the first.
+    @Test func nothingIsWrittenUntilSomethingChanges() throws {
+        let records = try RecordStore(location: .memory)
+        let store = AppStore(records: records, defaults: UserDefaults(suiteName: "bench-test-\(UUID().uuidString)")!, rescueURL: nil,
+                             clock: { 1_000_000 }, holdDefaults: true)
+        #expect(try records.loadEnvelopes().isEmpty)
+        #expect(store.data.profiles == [DEFAULT_PROFILE])
+        store.mutate { $0.settings.protocolSort = .alphabetical }
+        let kinds = try records.loadEnvelopes().map(\.kind)
+        let ids = try records.loadEnvelopes().map(\.recordId)
+        #expect(Set(kinds) == ["setting"] && ids.contains("iosProtocolSort"), "only what was changed is written, one row per setting")
+    }
+
+    @Test func recordsThatArriveReplaceTheFactoryOnes() throws {
+        let records = try RecordStore(location: .memory)
+        // The new device opens first, before anything has reached it, and is used for a moment.
+        let fresh = AppStore(records: records, defaults: UserDefaults(suiteName: "bench-test-\(UUID().uuidString)")!, rescueURL: nil,
+                             clock: { 2_000 }, holdDefaults: true)
+        // Meanwhile the first device's settings land in the records, with an older stamp than the new device's clock.
+        let first = AppStore(records: records, defaults: UserDefaults(suiteName: "bench-test-\(UUID().uuidString)")!, rescueURL: nil, clock: { 500 })
+        first.mutate { $0.settings.neverInjectSites = [.armL]; $0.settings.stockSort = .alphabetical }
+        fresh.reload()
+        #expect(fresh.data.settings.neverInjectSites == [.armL] && fresh.data.settings.stockSort == .alphabetical)
+        let kept = document(from: try records.loadEnvelopes(), activeProfileId: "me")
+        #expect(kept.settings.neverInjectSites == [.armL], "the first device's settings were never overwritten")
+    }
+}
+
+@MainActor @Suite struct SettingRowTests {
+    func store(_ records: RecordStore, at: Millis) -> AppStore {
+        AppStore(records: records, defaults: UserDefaults(suiteName: "bench-test-\(UUID().uuidString)")!, rescueURL: nil, clock: { at })
+    }
+
+    /// Two devices each change a different setting before seeing the other's change.
+    @Test func differentSettingsDoNotOverwriteEachOther() throws {
+        let records = try RecordStore(location: .memory)
+        let phone = store(records, at: 1_000)
+        let mac = store(records, at: 2_000)
+        phone.mutate { $0.settings.neverInjectSites = [.armL] }
+        mac.mutate { $0.settings.protocolSort = .alphabetical }   // its copy has no idea of the phone's change
+        phone.reload(); mac.reload()
+        for s in [phone, mac] {
+            #expect(s.data.settings.neverInjectSites == [.armL] && s.data.settings.protocolSort == .alphabetical)
+        }
+    }
+
+    /// Settings saved as one row by an earlier build are converted, without losing any.
+    @Test func theOldSingleRowBecomesOneRowEach() throws {
+        let records = try RecordStore(location: .memory)
+        var old = AppData()
+        old.settings.currency = "EUR"
+        old.settings.neverInjectSites = [.gluteL]
+        let payload = try old.settings.lenientJSON(encoder: Codec.encoder)
+        records.container.mainContext.insert(Record(kind: "settings", recordId: "settings", profileId: nil, payload: payload, updatedAt: Date(timeIntervalSince1970: 100)))
+        try records.container.mainContext.save()
+        let s = store(records, at: 5_000)
+        #expect(s.data.settings.currency == "EUR" && s.data.settings.neverInjectSites == [.gluteL])
+        let kinds = Set(try records.loadEnvelopes().map(\.kind))
+        #expect(!kinds.contains("settings") && kinds.contains("setting"))
+    }
+}

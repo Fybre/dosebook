@@ -71,9 +71,9 @@ private func sample() -> AppData {
         let back = document(from: try store.loadEnvelopes(), activeProfileId: "me")
         #expect(back.logs.count == 2 && back.vials[0].drawnMcg == 500)
         // A duplicate written by another device is removed on load.
-        store.container.mainContext.insert(Record(kind: "settings", recordId: "settings", profileId: nil, payload: Data("{}".utf8), updatedAt: .distantPast))
+        store.container.mainContext.insert(Record(kind: "setting", recordId: "currency", profileId: nil, payload: Data("\"USD\"".utf8), updatedAt: .distantPast))
         try store.container.mainContext.save()
-        #expect(try store.loadEnvelopes().filter { $0.kind == "settings" }.count == 1)
+        #expect(try store.loadEnvelopes().filter { $0.kind == "setting" && $0.recordId == "currency" }.count == 1)
         #expect(document(from: try store.loadEnvelopes(), activeProfileId: "me").settings.currency == "EUR")
     }
 }

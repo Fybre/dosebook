@@ -419,11 +419,15 @@ public extension AppData {
     // MARK: Whole document
 
     /// Replace everything with a backup, through the same migration as stored data.
-    /// Settings this device keeps for itself (`sync`) survive.
+    /// Settings this device keeps for itself (`sync`) survive. So do the iOS-only settings
+    /// (`ios…`, in `extra`) that the backup says nothing about: a backup made by an older build,
+    /// or by the web or Android app, has never heard of them, and restoring it should not reset them.
     mutating func importData(_ data: AppData) {
         let sync = settings.extra["sync"]
+        let mine = settings.extra.filter { $0.key.hasPrefix("ios") }
         self = migrateAppData(data)
         if let sync { settings.extra["sync"] = sync } else { settings.extra.removeValue(forKey: "sync") }
+        for (key, value) in mine where settings.extra[key] == nil { settings.extra[key] = value }
     }
 
     /// Merges another app's history. Imported doses carry no vial and leave stock alone.

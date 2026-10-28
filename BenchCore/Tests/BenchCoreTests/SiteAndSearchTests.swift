@@ -72,3 +72,26 @@ import Testing
         #expect(d.profiles.first { $0.id == pid }?.weightKg == 88)
     }
 }
+
+@Suite struct ImportKeepsDeviceSettingsTests {
+    @Test func aBackupThatKnowsNothingOfThemDoesNotResetThem() {
+        var d = AppData()
+        d.settings.neverInjectSites = [.armL]
+        d.settings.stockSort = .alphabetical
+        d.settings.protocolSort = .alphabetical
+        d.settings.lowStockUnit = .days
+        // A backup from before any of that existed.
+        d.importData(AppData())
+        #expect(d.settings.neverInjectSites == [.armL])
+        #expect(d.settings.stockSort == .alphabetical && d.settings.protocolSort == .alphabetical && d.settings.lowStockUnit == .days)
+    }
+
+    @Test func aBackupThatDoesSetThemWins() {
+        var d = AppData()
+        d.settings.neverInjectSites = [.armL]
+        var backup = AppData()
+        backup.settings.neverInjectSites = [.gluteR]
+        d.importData(backup)
+        #expect(d.settings.neverInjectSites == [.gluteR])
+    }
+}

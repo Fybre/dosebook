@@ -10,8 +10,12 @@ import BenchCore
 
 public enum EnvelopeKind: String, CaseIterable, Sendable {
     case profile, `protocol`, log, vial, measurement, lab, checkIn, customPeptide, order, diluent, compoundNote
-    /// The settings singleton; recordId is always "settings".
+    /// The old settings singleton, one row holding every setting; recordId is always "settings".
+    /// Read, and converted to `setting` rows, but no longer written.
     case settings
+    /// One row per setting, so two devices changing different settings cannot overwrite each
+    /// other; recordId is the setting's name and the payload its value.
+    case setting
     /// One per compound; recordId is the peptide id.
     case halfLifeOverride
     /// A top-level field this build does not know; recordId is the key.
@@ -85,8 +89,15 @@ public func envelopeDiff(from old: AppData?, to new: AppData, at: Date = Date())
     rows(.diluent, o.diluents, new.diluents, owner: { $0.profileId }, at: at, into: &d)
     rows(.compoundNote, o.compoundNotes, new.compoundNotes, owner: { $0.profileId }, at: at, into: &d)
 
-    if old == nil || o.settings != new.settings, let data = try? new.settings.lenientJSON(encoder: Codec.encoder) {
-        d.upserts.append(Envelope(kind: EnvelopeKind.settings.rawValue, recordId: "settings", profileId: nil, payload: data, updatedAt: at))
+    let oldSettings = old == nil ? JSONObject() : settingsObject(o.settings)
+    let newSettings = settingsObject(new.settings)
+    for (key, value) in newSettings where oldSettings[key] != value {
+        if let data = try? Codec.encoder.encode(value) {
+            d.upserts.append(Envelope(kind: EnvelopeKind.setting.rawValue, recordId: key, profileId: nil, payload: data, updatedAt: at))
+        }
+    }
+    for key in oldSettings.keys where newSettings[key] == nil {
+        d.deletes.append(EnvelopeKey(kind: EnvelopeKind.setting.rawValue, recordId: key))
     }
     for (id, value) in new.halfLifeOverrides where old == nil || o.halfLifeOverrides[id] != value {
         if let data = try? Codec.encoder.encode(value) {
@@ -118,6 +129,32 @@ public func envelopeDiff(from old: AppData?, to new: AppData, at: Date = Date())
         let written = Set(d.upserts.map(\.key))
         d.deletes.removeAll { written.contains($0) }
     }
+    return d
+}
+
+/// The settings as the JSON object a backup holds: every known setting and every unknown one, by name.
+func settingsObject(_ settings: Settings) -> JSONObject {
+    guard let data = try? settings.lenientJSON(encoder: Codec.encoder),
+          case .object(let object)? = try? JSONDecoder().decode(JSONValue.self, from: data) else { return [:] }
+    return object
+}
+
+/// Settings stored the old way, as one row, become one row each. A setting that already has a row
+/// of its own is left alone (another device got there first, and may have changed it since). The
+/// new rows keep the old row's time, so a real change made after it still wins.
+public func legacySettingsMigration(_ envelopes: [Envelope]) -> EnvelopeDiff {
+    var d = EnvelopeDiff()
+    let legacy = envelopes.filter { $0.kind == EnvelopeKind.settings.rawValue }
+    guard let newest = legacy.max(by: { $0.updatedAt < $1.updatedAt }) else { return d }
+    let have = Set(envelopes.filter { $0.kind == EnvelopeKind.setting.rawValue }.map(\.recordId))
+    if case .object(let object)? = try? JSONDecoder().decode(JSONValue.self, from: newest.payload) {
+        for (key, value) in object where !have.contains(key) {
+            if let data = try? Codec.encoder.encode(value) {
+                d.upserts.append(Envelope(kind: EnvelopeKind.setting.rawValue, recordId: key, profileId: nil, payload: data, updatedAt: newest.updatedAt))
+            }
+        }
+    }
+    d.deletes.append(EnvelopeKey(kind: EnvelopeKind.settings.rawValue, recordId: "settings"))
     return d
 }
 
@@ -156,13 +193,17 @@ public func document(from envelopes: [Envelope], activeProfileId: String?) -> Ap
         "diluent": "diluents", "compoundNote": "compoundNotes",
     ]
     var overrides: JSONObject = [:]
+    var legacySettings: JSONObject = [:]
+    var settingRows: JSONObject = [:]
     let decoder = JSONDecoder()
     for e in envelopes.sorted(by: { $0.recordId < $1.recordId }) {
         guard let value = try? decoder.decode(JSONValue.self, from: e.payload) else { continue }
         if let key = collectionKey[e.kind] {
             collections[key, default: []].append(value)
         } else if e.kind == EnvelopeKind.settings.rawValue {
-            obj["settings"] = value
+            if case .object(let o) = value { legacySettings = o }
+        } else if e.kind == EnvelopeKind.setting.rawValue {
+            settingRows[e.recordId] = value
         } else if e.kind == EnvelopeKind.halfLifeOverride.rawValue {
             overrides[e.recordId] = value
         } else if e.kind == EnvelopeKind.extra.rawValue {
@@ -171,6 +212,7 @@ public func document(from envelopes: [Envelope], activeProfileId: String?) -> Ap
             collections[String(collection), default: []].append(value)
         }
     }
+    if !legacySettings.isEmpty || !settingRows.isEmpty { obj["settings"] = .object(legacySettings.merging(settingRows) { _, row in row }) }
     for (k, v) in collections { obj[k] = .array(v) }
     obj["halfLifeOverrides"] = .object(overrides)
     if let active = activeProfileId { obj["activeProfileId"] = .string(active) }

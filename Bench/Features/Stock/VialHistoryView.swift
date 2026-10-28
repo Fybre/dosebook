@@ -28,6 +28,18 @@ struct VialHistoryView: View {
                 if let exp = v.expiresAt { row(t("ios_vh_expires"), formatDate(exp, nowMs: now), tone: exp < now ? .rose : nil) }
             } header: { Text("\(peptide?.name ?? v.peptideId) · \(jsNumberString(v.strengthMg)) mg") }
 
+            if let water = v.diluentMl, water > 0 {
+                Section(t("ios_vh_mixed_with")) {
+                    row(t("ios_vh_water"), "\(trim(water, 2)) mL")
+                    if let kind = v.diluent { row(t("ios_vh_water_kind"), diluentName(kind)) }
+                    let conc = vialConcentration(v)
+                    if conc.isFinite { row(t("ios_vh_concentration"), formatConcentration(conc)) }
+                    if let b = data.mine.diluents.first(where: { $0.id == v.diluentBottleId }) {
+                        row(t("ios_vh_bottle"), "\(diluentName(b.kind)), \(trim(b.volumeMl, 1)) mL")
+                    }
+                }
+            }
+
             Section {
                 row(t("ios_vh_drawn"), formatDose(h.drawnMcg))
                 row(t("ios_vh_left"), formatDose(h.remainingMcg))

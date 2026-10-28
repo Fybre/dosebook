@@ -29,8 +29,16 @@ public final class AppStore {
 
     static let activeProfileKey = "bench.activeProfileId"
 
+    /// With iCloud, an empty store may only mean another device's records have not arrived yet.
+    /// Writing the factory settings and profile then would make them the newest copy, and they would
+    /// replace the real ones when those arrive. So nothing is written until something is changed.
+    @ObservationIgnored private let holdDefaults: Bool
+
     public init(records: RecordStore, defaults: UserDefaults = .standard, rescueURL: URL? = AppStore.defaultRescueURL,
-                clock: @escaping () -> Millis = nowMillis) {
+                clock: @escaping () -> Millis = nowMillis, holdDefaults: Bool? = nil) {
+        if let holdDefaults { self.holdDefaults = holdDefaults }
+        else if case .cloud = records.location { self.holdDefaults = true }
+        else { self.holdDefaults = false }
         self.records = records
         self.defaults = defaults
         self.rescueURL = rescueURL
@@ -50,10 +58,10 @@ public final class AppStore {
     /// Read everything from storage. On first launch, write the fresh document down.
     public func load() {
         do {
-            let envelopes = try records.loadEnvelopes()
+            let envelopes = try readEnvelopes()
             var doc = document(from: envelopes, activeProfileId: defaults.string(forKey: Self.activeProfileKey))
             if envelopes.isEmpty {
-                try records.apply(envelopeDiff(from: nil, to: doc))
+                if !holdDefaults { try records.apply(envelopeDiff(from: nil, to: doc)) }
             } else {
                 try settleDrawn(&doc)
             }
@@ -66,7 +74,7 @@ public final class AppStore {
     /// Re-read after a change arrived from another device.
     public func reload() {
         do {
-            var read = document(from: try records.loadEnvelopes(), activeProfileId: data.activeProfileId)
+            var read = document(from: try readEnvelopes(), activeProfileId: data.activeProfileId)
             try settleDrawn(&read)
             let next = preservingOrder(read, from: data)
             guard next != data else { return }
@@ -75,6 +83,15 @@ public final class AppStore {
         } catch {
             lastError = "\(error)"
         }
+    }
+
+    /// The stored rows, with settings kept the old way (one row for all) turned into one row each.
+    private func readEnvelopes() throws -> [Envelope] {
+        let envelopes = try records.loadEnvelopes()
+        let migration = legacySettingsMigration(envelopes)
+        guard envelopes.contains(where: { $0.kind == EnvelopeKind.settings.rawValue }) else { return envelopes }
+        try records.apply(migration)
+        return try records.loadEnvelopes()
     }
 
     /// What came from storage may be a merge of two devices' changes, in which a vial's stored
