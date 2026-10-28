@@ -11,7 +11,7 @@ private let EVENT_MINUTES = 15
 public func calendarFileName(_ atMs: Millis = nowMillis()) -> String {
     let f = ISO8601DateFormatter()
     f.formatOptions = [.withFullDate]
-    return "bench-doses-\(f.string(from: Date(millis: atMs))).ics"
+    return "dosebook-doses-\(f.string(from: Date(millis: atMs))).ics"
 }
 
 /// Escape a TEXT value; backslash first.

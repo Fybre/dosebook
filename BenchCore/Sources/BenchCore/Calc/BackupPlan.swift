@@ -8,20 +8,20 @@ public let BACKUP_DIR = "Dosebook"
 
 private func pad(_ n: Int) -> String { n < 10 ? "0\(n)" : String(n) }
 
-/// `bench-backup-YYYY-MM-DD-HHMMSS.json`, local time.
+/// `dosebook-backup-YYYY-MM-DD-HHMMSS.json`, local time. Files written under the old name, `bench-backup-…`, are still ours.
 public func backupFileName(_ atMs: Millis) -> String {
     let c = LocalTime.calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: Date(millis: atMs))
-    return "bench-backup-\(c.year!)-\(pad(c.month!))-\(pad(c.day!))-\(pad(c.hour!))\(pad(c.minute!))\(pad(c.second!)).json"
+    return "dosebook-backup-\(c.year!)-\(pad(c.month!))-\(pad(c.day!))-\(pad(c.hour!))\(pad(c.minute!))\(pad(c.second!)).json"
 }
 
 /// The moment a backup name stands for, or nil for anything that is not exactly one of ours.
 public func parseBackupName(_ name: String) -> Millis? {
-    guard let m = JSRegex(#"^bench-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})(\d{2})(\d{2})\.json$"#).exec(name) else { return nil }
+    guard let m = JSRegex(#"^(?:dosebook|bench)-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})(\d{2})(\d{2})\.json$"#).exec(name) else { return nil }
     var c = DateComponents()
     c.year = Int(m[1]!); c.month = Int(m[2]!); c.day = Int(m[3]!); c.hour = Int(m[4]!); c.minute = Int(m[5]!); c.second = Int(m[6]!)
     guard let date = LocalTime.calendar.date(from: c) else { return nil }
     let ms = date.millis
-    return backupFileName(ms) == name ? ms : nil
+    return backupFileName(ms) == name.replacingOccurrences(of: "bench-backup-", with: "dosebook-backup-") ? ms : nil
 }
 
 public struct BackupFile: Equatable, Sendable {
@@ -52,5 +52,5 @@ public func backupDue(_ lastAtMs: Millis?, _ nowMs: Millis, intervalHours: Doubl
 
 /// The name a manual export is saved under: the UTC date, as the web app writes it.
 public func exportFileName(_ atMs: Millis = nowMillis()) -> String {
-    "bench-export-\(isoString(atMs).prefix(10)).json"
+    "dosebook-export-\(isoString(atMs).prefix(10)).json"
 }

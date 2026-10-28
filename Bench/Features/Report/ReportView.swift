@@ -93,7 +93,7 @@ struct ReportView: View {
 @MainActor
 enum ReportPDF {
     static func write(_ html: String) -> URL? {
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("bench-report.pdf")
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("dosebook-report.pdf")
         let page = CGRect(x: 0, y: 0, width: 595.2, height: 841.8)
         #if canImport(UIKit)
         let formatter = UIMarkupTextPrintFormatter(markupText: html)

@@ -8,10 +8,10 @@ private func named(_ names: String...) -> [(name: String, size: Int?)] { names.m
     @Test func namesRoundTrip() {
         let at = local(2026, 7, 30, 2, 45, 12)
         let name = backupFileName(at)
-        #expect(name == "bench-backup-2026-07-30-024512.json")
+        #expect(name == "dosebook-backup-2026-07-30-024512.json")
         #expect(parseBackupName(name) == at)
         let early = backupFileName(local(2026, 1, 5, 9, 8, 7)), later = backupFileName(local(2026, 11, 25, 21, 8, 7))
-        #expect(early == "bench-backup-2026-01-05-090807.json")
+        #expect(early == "dosebook-backup-2026-01-05-090807.json")
         #expect([later, early].sorted() == [early, later])
     }
 
@@ -21,6 +21,15 @@ private func named(_ names: String...) -> [(name: String, size: Int?)] { names.m
                      "bench-backup-2026-02-31-000000.json", "bench-backup-2026-13-01-000000.json"] {
             #expect(parseBackupName(name) == nil, "\(name)")
         }
+    }
+
+    @Test func bothNamesAreOurs() {
+        #expect(parseBackupName("dosebook-backup-2026-07-30-024512.json") != nil)
+        #expect(parseBackupName("dosebook-backup-2026-07-30-024512.json") == parseBackupName("bench-backup-2026-07-30-024512.json"))
+        #expect(parseBackupName("dosebook-export-2026-07-30-024512.json") == nil)
+        #expect(parseBackupName("dosebook-backup-2026-02-31-000000.json") == nil)
+        let files = listBackups(named("bench-backup-2026-07-28-100000.json", "dosebook-backup-2026-07-30-100000.json"))
+        #expect(files.map(\.name) == ["dosebook-backup-2026-07-30-100000.json", "bench-backup-2026-07-28-100000.json"])
     }
 
     @Test func lists() {
@@ -61,6 +70,6 @@ private func named(_ names: String...) -> [(name: String, size: Int?)] { names.m
     @Test func exportName() {
         var c = DateComponents(); c.year = 2026; c.month = 7; c.day = 30; c.hour = 8
         var utc = Calendar(identifier: .gregorian); utc.timeZone = TimeZone(identifier: "UTC")!
-        #expect(exportFileName(utc.date(from: c)!.millis) == "bench-export-2026-07-30.json")
+        #expect(exportFileName(utc.date(from: c)!.millis) == "dosebook-export-2026-07-30.json")
     }
 }

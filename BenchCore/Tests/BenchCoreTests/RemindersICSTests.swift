@@ -118,7 +118,7 @@ struct ReminderFixture {
         #expect(ics.components(separatedBy: "BEGIN:VEVENT").count == ics.components(separatedBy: "END:VEVENT").count)
         #expect(ics.components(separatedBy: "BEGIN:VALARM").count == ics.components(separatedBy: "END:VALARM").count)
         for field in ["UID:", "DTSTAMP:", "DTSTART:", "SUMMARY:"] { #expect(ics.contains(field)) }
-        #expect(calendarFileName(f.NOW).range(of: "^bench-doses-2026-01-0\\d\\.ics$", options: .regularExpression) != nil)
+        #expect(calendarFileName(f.NOW).range(of: "^dosebook-doses-2026-01-0\\d\\.ics$", options: .regularExpression) != nil)
     }
 
     @Test func doses() {

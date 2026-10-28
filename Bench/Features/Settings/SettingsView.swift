@@ -144,7 +144,7 @@ struct SettingsView: View {
         .navigationTitle(t("settings_title"))
         .backupExporter(isPresented: $exporting)
         .fileExporter(isPresented: $exportingCsv, document: CsvDocument(text: csv.text), contentType: .commaSeparatedText,
-                      defaultFilename: "bench-doses-\(isoDay())") { result in
+                      defaultFilename: "dosebook-doses-\(isoDay())") { result in
             if case .success = result { message = (.sky, t("settings_exported_csv", ["n": .number(Double(csv.rows.count))])) }
         }
         .confirmationDialog(t("settings_erase"), isPresented: $confirmingReset, titleVisibility: .visible) {
