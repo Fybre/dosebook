@@ -49,6 +49,8 @@ struct TodayView: View {
         var data: AppData
         var tracks: [Track]
         var series: [PkSeries]
+        var oneOffs: [OneOffCompound]
+        var palette: Palette
         var attention: [Track]
         var hidden: Set<NowPanel>
         var mine: AppData { data.mine }
@@ -92,7 +94,7 @@ struct TodayView: View {
             case .laterToday:
                 if !mine.protocols.isEmpty { laterToday(c.tracks, logs: mine.logs, attention: c.attention) }
             case .chart:
-                if !mine.protocols.isEmpty, !c.series.isEmpty {
+                if !c.series.isEmpty {
                     PkChartView(series: c.series, now: now,
                                 weights: data.settings.plotWeightOnChart == true ? mine.measurements : [],
                                 weightUnit: data.settings.weightUnit, describeVial: { describeVial($0, data) })
@@ -105,6 +107,7 @@ struct TodayView: View {
                     Text(t("now_active_protocols").uppercased()).font(.caption.bold()).foregroundStyle(.secondary).id("protocols")
                     ForEach(Self.ordered(c.tracks, data: data, now: now)) { protocolCard($0, data: data).id("proto-\($0.protocol_.peptideId)") }
                 }
+            case .oneOffs: oneOffCard(c)
             case .weight: WeightCard(now: now).id("cards")
             case .checkIn: CheckInCard(now: now)
             case .bloodwork: LabsCard()
@@ -119,15 +122,16 @@ struct TodayView: View {
         let data = store.data
         let mine = data.mine
         let active = mine.protocols.filter(\.active)
-        let palette = assignColors(colorSubjects(active, resolve: { data.peptide($0) }, nowMs: now))
+        let palette = TodayModel.palette(data, now: now)
         let tracks = TodayModel.tracks(data, now: now, palette: palette)
-        let series = TodayModel.series(tracks, palette: palette)
+        let oneOffs = oneOffCompounds(data, nowMs: now)
+        let series = TodayModel.series(tracks, palette: palette) + TodayModel.oneOffSeries(data, oneOffs, palette: palette)
         let attention = Self.needsAttention(tracks)
         let hidden = NowPanels.hidden(hiddenRaw)
         ScrollViewReader { proxy in
         ScrollView {
             let order = NowPanels.order(orderRaw)
-            let content = NowContent(data: data, tracks: tracks, series: series, attention: attention, hidden: hidden)
+            let content = NowContent(data: data, tracks: tracks, series: series, oneOffs: oneOffs, palette: palette, attention: attention, hidden: hidden)
             // Wide: the left column and a narrower right one. Narrow: one stack in the saved order.
             Group {
             if wide {
@@ -402,6 +406,54 @@ struct TodayView: View {
         if !unplotted.isEmpty {
             (Text(unplotted.joined(separator: ", ")).bold() + Text(" " + t("now_unplotted", ["n": .number(Double(unplotted.count))])))
                 .font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
+    /// Compounds taken recently with no protocol, so a one-off dose does not vanish from Now once logged.
+    @ViewBuilder private func oneOffCard(_ c: NowContent) -> some View {
+        if !c.oneOffs.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                CardHeader(title: t("ios_panel_oneoffs")).padding(.bottom, 8)
+                ForEach(c.oneOffs) { o in
+                    let tone = c.palette.byPeptide[o.peptideId] ?? .neutral
+                    let peptide = c.data.peptide(o.peptideId)
+                    let last = o.last
+                    let curve = peptide.flatMap { isBlend($0) ? nil : curveFor($0, yours: c.data.halfLifeOverrides[o.peptideId]) }
+                    let snap = curve.flatMap { cv in
+                        isMeasuredInPeople(cv.basis)
+                            ? snapshot(now, o.doses.map { DoseEvent(at: $0.at, amountMcg: $0.doseMcg, vialId: $0.vialId) }, cv.params, last.doseMcg) : nil
+                    }
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 6) {
+                            Circle().fill(tone.color).frame(width: 8, height: 8)
+                            NavigationLink(value: o.peptideId) { Text(peptide?.name ?? o.peptideId).font(.subheadline.weight(.medium)) }.buttonStyle(.plain)
+                            if let snap { Pill(text: t(CURVE_KEY[snap.phase]!), tone: snap.phase == .cleared ? .neutral : .sky) }
+                            Spacer()
+                            Button { logRequest = LogRequest(peptideId: o.peptideId) } label: { Label(t("now_log_short"), systemImage: "plus") }
+                                .buttonStyle(.bordered).controlSize(.small)
+                        }
+                        HStack(spacing: 8) {
+                            Text(t("now_last_dose") + " " + relativeTime(last.at, nowMs: now))
+                            Text(doseLabel(last.doseMcg, peptide)).monospacedDigit()
+                            if let u = last.units { Text(t("ios_units_count", ["n": .string(trim(u, 2))])).monospacedDigit() }
+                            if let site = last.site, routeHasSite(last.route) { Text(siteLabel(site)) }
+                        }
+                        .font(.caption).foregroundStyle(.secondary)
+                        if let snap {
+                            ProgressView(value: min(1, snap.level)).tint(tone.color)
+                            Text(t("now_percent_of_peak", ["pct": .string(jsToFixed(snap.percentOfPeak, 0))])).font(.footnote.weight(.semibold)).monospacedDigit()
+                        }
+                        if o.doses.filter({ $0.at >= now - 14 * DAY_MS }).count > 1 {
+                            Text(t("count_doses", ["n": .number(Double(o.doses.filter { $0.at >= now - 14 * DAY_MS }.count))]) + " " + t("ios_oneoff_window"))
+                                .font(.caption).foregroundStyle(.tertiary)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    if o.id != c.oneOffs.last?.id { Divider() }
+                }
+            }
+            .card()
+            .id("oneoffs")
         }
     }
 

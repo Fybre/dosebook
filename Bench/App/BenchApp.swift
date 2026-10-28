@@ -3,10 +3,23 @@ import BenchCore
 import BenchStore
 import CoreData
 
+#if os(macOS) && !LOCAL_ONLY
+/// A Mac app has to ask for pushes itself. Even so, while the app sits in the background, development
+/// builds often get no push, and a change from the phone shows up when the window next comes to the front.
+final class MacAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApplication.shared.registerForRemoteNotifications()
+    }
+}
+#endif
+
 @main
 struct BenchApp: App {
     @State private var store: AppStore
     @Environment(\.scenePhase) private var scenePhase
+    #if os(macOS) && !LOCAL_ONLY
+    @NSApplicationDelegateAdaptor(MacAppDelegate.self) private var appDelegate
+    #endif
 
     init() {
         let store = Bootstrap.makeStore()
@@ -140,6 +153,14 @@ enum Bootstrap {
             if args.contains("-demoProfiles") {
                 // A second profile, with the first still showing.
                 store.mutate { let first = $0.activeProfileId; _ = $0.addProfile(name: "Sam"); $0.switchProfile(first) }
+            }
+            if args.contains("-demoOneOff") {
+                // Doses logged by hand for compounds with no protocol.
+                store.mutate {
+                    $0.addLog(DoseLog(id: "", profileId: "", peptideId: "cagrilintide", at: nowMillis() - 2 * HOUR_MS, doseMcg: 250, route: .subcutaneous, site: .thighL))
+                    $0.addLog(DoseLog(id: "", profileId: "", peptideId: "cagrilintide", at: nowMillis() - 3 * DAY_MS, doseMcg: 250, route: .subcutaneous, site: .thighR))
+                    $0.addLog(DoseLog(id: "", profileId: "", peptideId: "aod-9604", at: nowMillis() - 20 * HOUR_MS, doseMcg: 300, route: .subcutaneous, site: .abdomenLM))
+                }
             }
             if args.contains("-demoPaused") { store.mutate { $0.pauseAll(until: startOfLocalDay(nowMillis() + 3 * DAY_MS)) } }
             return store

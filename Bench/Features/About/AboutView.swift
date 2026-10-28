@@ -26,6 +26,7 @@ let RELEASES: [Release] = [
         "Low-stock and used-up-vial notices, with a warning point in doses or days, and a History for each vial.",
         "Search the Log; sort protocols by next dose on Now and Plan; drag the Now panels into your own order; a Stock table on the Mac.",
         "Switch off injection sites you never use, and tap the body figure more easily.",
+        "Doses logged without a protocol appear on the Circulating now chart and in a Recent one-off doses card.",
         "One weight: your latest weigh-in is what Now, the goal and your profile show. With several profiles, a chip shows which is active (press and hold to switch).",
         "Doses are logged and shown at the exact syringe units, not rounded to the nearest mark, and the calculator no longer claims to draw a life-size syringe.",
         "Renamed to Dosebook.",

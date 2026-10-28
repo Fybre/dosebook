@@ -46,6 +46,39 @@ struct PkSeries: Identifiable {
 }
 
 enum TodayModel {
+    /// One colour per thing on Now: the running protocols first, in order, then the compounds taken
+    /// without one, so a one-off never shifts a protocol's colour.
+    static func palette(_ data: AppData, now: Millis) -> Palette {
+        let active = data.mine.protocols.filter(\.active)
+        return assignColors(colorSubjects(active, resolve: { data.peptide($0) }, nowMs: now)
+                            + oneOffColorSubjects(oneOffCompounds(data, nowMs: now), resolve: { data.peptide($0) }))
+    }
+
+    /// Chart lines for compounds taken without a protocol, from every dose of them logged.
+    static func oneOffSeries(_ data: AppData, _ oneOffs: [OneOffCompound], palette: Palette) -> [PkSeries] {
+        var out: [PkSeries] = []
+        for o in oneOffs {
+            guard let peptide = data.peptide(o.peptideId) else { continue }
+            let doses = o.doses.map { DoseEvent(at: $0.at, amountMcg: $0.doseMcg, vialId: $0.vialId) }
+            let tag = t("ios_one_off")
+            let parts = isBlend(peptide) ? modellableComponents(decomposeDose(peptide, o.last.doseMcg, resolve: { data.peptide($0) })) : []
+            if !parts.isEmpty {
+                for part in parts {
+                    let id = "oneoff:\(o.peptideId):\(part.peptideId ?? part.name)"
+                    out.append(PkSeries(id: id, label: "\(part.name) · in \(peptide.name) (\(tag))",
+                                        doses: doses.map { DoseEvent(at: $0.at, amountMcg: $0.amountMcg * part.fraction, vialId: $0.vialId) },
+                                        params: CurveParams(halfLifeHours: part.peptide!.halfLifeHours!, tmaxHours: part.peptide!.tmaxHours),
+                                        referenceMcg: part.mcg > 0 ? part.mcg : 1, basis: nil, tone: palette.byKey[id] ?? .neutral))
+                }
+            } else if let curve = curveFor(peptide, yours: data.halfLifeOverrides[o.peptideId]) {
+                let id = "oneoff:\(o.peptideId)"
+                out.append(PkSeries(id: id, label: "\(peptide.name) (\(tag))", doses: doses, params: curve.params,
+                                    referenceMcg: o.last.doseMcg > 0 ? o.last.doseMcg : 1, basis: curve.basis, tone: palette.byKey[id] ?? .neutral))
+            }
+        }
+        return out
+    }
+
     static func tracks(_ data: AppData, now: Millis, palette: Palette) -> [Track] {
         let mine = data.mine
         return mine.protocols.filter(\.active).map { p in

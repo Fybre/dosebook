@@ -60,7 +60,7 @@ struct LogView: View {
         let words = query.trimmingCharacters(in: .whitespacesAndNewlines)
         let byCompound = filter.isEmpty ? logs : logs.filter { $0.peptideId == filter }
         let shown = words.isEmpty ? byCompound : byCompound.filter { logMatches($0, query: words, peptideName: data.peptide($0.peptideId)?.name ?? $0.peptideId) }
-        let palette = assignColors(colorSubjects(mine.protocols.filter(\.active), resolve: { data.peptide($0) }, nowMs: now))
+        let palette = TodayModel.palette(data, now: now)
         // A check-in belongs to a day and not to a compound, so a filtered list leaves them out.
         let searching = !filter.isEmpty || !words.isEmpty
         let checkIns = searching ? [] : mine.checkIns

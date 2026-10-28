@@ -66,6 +66,7 @@ let GUIDE_TOPICS: [GuideTopic] = [
         .points([
             "**Ring and week strip:** the ring counts today's doses; the strip shows the last week. Tap a day to see what was logged or missed. A red outline marks a day with a missed dose.",
             "**Circulating now:** each compound's estimated level over three weeks, drawn from your logged doses and its published half-life. The axis is **× one dose's peak**: 1.0 is how high one of your usual doses would peak on its own, and a line above the dashed 1.0 means doses are stacking up. Each line is scaled to its own compound, so lines cannot be compared with each other. Triangles are logged doses; a dashed line means the half-life is an estimate.",
+            "**One-off doses:** a compound you took without a protocol (a dose logged by hand) still shows in **Circulating now**, marked one-off, and under **Recent one-off doses** with when you last took it. It stays for two weeks after the last dose. **Active protocols** lists plans only.",
             "**Active protocols:** each card shows a status (such as Peak or Cleared), the level as a percentage of a single-dose peak, your last dose and site, and your stock. A blend shows each of its parts on its own.",
             "**Worth sorting:** low stock and vials nearing their use-by date.",
             "The sort button on **Now** and **Plan** orders your protocols by next dose (soonest first, paused ones after), by name, or as you added them. One choice covers both screens.",
