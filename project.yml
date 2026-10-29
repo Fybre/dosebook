@@ -13,7 +13,7 @@ settings:
     # be deleted or renamed. The BenchTest target carries the team instead.
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
 packages:
   BenchCore:
@@ -45,6 +45,8 @@ targets:
     info:
       path: Bench/Info.plist
       properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         CFBundleDisplayName: Dosebook
         UILaunchScreen: {}
         UIBackgroundModes: [remote-notification]
@@ -185,6 +187,8 @@ targets:
     info:
       path: MacSupport/Info-Release.plist
       properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         CFBundleDisplayName: Dosebook
         CFBundleName: Dosebook
         LSApplicationCategoryType: public.app-category.healthcare-fitness
