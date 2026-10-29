@@ -31,7 +31,8 @@ jobs:
 
   build:
     name: Build apps (unsigned)
-    runs-on: macos-latest
+    # GitHub's image with Xcode 27 (macOS 27, Apple Silicon). The app needs Xcode 27's compiler.
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v4
 
@@ -42,9 +43,9 @@ jobs:
           [ -n "$latest" ] && sudo xcode-select -s "$latest/Contents/Developer"
           xcodebuild -version
           major=$(xcodebuild -version | awk '/^Xcode/ {print $2}' | cut -d. -f1)
-          # The app currently needs the compiler in Xcode 27: Swift 6.2, in Xcode 26.x, crashes while
-          # generating code for it (tried on 26.2 to 26.6). Until the runners have Xcode 27, the build
-          # is skipped rather than failed. The tests above do not depend on it.
+          # The app needs the compiler in Xcode 27: Swift 6.2, in Xcode 26.x, crashes while generating
+          # code for it (tried on 26.2 to 26.6). If the runner ever has an older Xcode, the build is
+          # skipped rather than failed. The tests above do not depend on it.
           if [ "${major:-0}" -ge 27 ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else
             echo "ok=false" >> "$GITHUB_OUTPUT"
             echo "::notice title=App build skipped::The runner has Xcode ${major}; the apps need Xcode 27 or later."
