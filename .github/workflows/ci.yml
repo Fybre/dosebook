@@ -55,7 +55,7 @@ jobs:
           xcodebuild -project Bench.xcodeproj -scheme Bench \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build 2>&1 | tee "$RUNNER_TEMP/ios-build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
-          grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/ios-build.log"
+          grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/ios-build.log" || { grep -v -E "^\s*(cd|export|/Applications|builtin|/usr/bin|env )|-sdk |-I/|-F/" "$RUNNER_TEMP/ios-build.log" | tail -80; exit 1; }
         shell: bash
       - name: Build the Mac app
         run: |
@@ -63,5 +63,5 @@ jobs:
           xcodebuild -project Bench.xcodeproj -scheme BenchMac \
             -destination 'platform=macOS' \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build 2>&1 | tee "$RUNNER_TEMP/mac-build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
-          grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/mac-build.log"
+          grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/mac-build.log" || { grep -v -E "^\s*(cd|export|/Applications|builtin|/usr/bin|env )|-sdk |-I/|-F/" "$RUNNER_TEMP/mac-build.log" | tail -80; exit 1; }
         shell: bash
