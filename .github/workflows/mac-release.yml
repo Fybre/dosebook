@@ -34,6 +34,9 @@ jobs:
           latest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | grep -vi beta | sort -V | tail -1)
           [ -n "$latest" ] && sudo xcode-select -s "$latest/Contents/Developer"
           xcodebuild -version
+          major=$(xcodebuild -version | awk '/^Xcode/ {print $2}' | cut -d. -f1)
+          # Swift 6.2 (Xcode 26.x) crashes compiling this app; it builds with Xcode 27.
+          [ "${major:-0}" -ge 27 ] || { echo "::error::Xcode $major on this runner cannot build the app; it needs Xcode 27 or later."; exit 1; }
 
       - name: Work out the version
         id: ver

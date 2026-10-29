@@ -1,7 +1,0 @@
-name: List Xcode versions
-on: workflow_dispatch
-jobs:
-  list:
-    runs-on: macos-latest
-    steps:
-      - run: ls -d /Applications/Xcode*.app; ls /Library/Developer/Toolchains 2>/dev/null; xcodebuild -version
