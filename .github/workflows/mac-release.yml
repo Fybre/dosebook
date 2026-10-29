@@ -1,0 +1,146 @@
+name: Mac release
+
+# Builds the Mac app, signs it with a Developer ID certificate, has Apple notarise it, and attaches
+# a DMG to a GitHub release. Runs when a version tag such as v1.0.0 is pushed, or by hand.
+#
+# It needs secrets that only the repository owner can add; see docs/RELEASING.md. It has not been
+# run end to end: the first run will probably need small fixes, so try it with "Run workflow" on a
+# throwaway tag before relying on it.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build, for example 1.0.0 (a tag push uses the tag)'
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  BUNDLE_ID: me.fybre.dosebook
+  TEAM_ID: 8BD49F6FX5
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          latest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | grep -vi beta | sort -V | tail -1)
+          [ -n "$latest" ] && sudo xcode-select -s "$latest/Contents/Developer"
+          xcodebuild -version
+
+      - name: Work out the version
+        id: ver
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then v="${GITHUB_REF_NAME#v}"; else v="${{ inputs.version }}"; fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Import the signing certificate and profile
+        env:
+          CERT_P12: ${{ secrets.DEVELOPER_ID_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.DEVELOPER_ID_CERT_PASSWORD }}
+          PROFILE: ${{ secrets.DEVELOPER_ID_PROFILE }}
+        run: |
+          set -euo pipefail
+          for name in CERT_P12 CERT_PASSWORD PROFILE; do
+            [ -n "${!name}" ] || { echo "Missing secret for $name. See docs/RELEASING.md."; exit 1; }
+          done
+          KEYCHAIN="$RUNNER_TEMP/build.keychain-db"
+          KEYCHAIN_PASSWORD=$(uuidgen)
+          echo "$CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -P "$CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          echo "$PROFILE" | base64 --decode > "$RUNNER_TEMP/profile.provisionprofile"
+          uuid=$(grep -a -A1 UUID "$RUNNER_TEMP/profile.provisionprofile" | grep -io '[0-9A-F-]\{36\}' | head -1)
+          name=$(security cms -D -i "$RUNNER_TEMP/profile.provisionprofile" | plutil -extract Name raw -o - -)
+          cp "$RUNNER_TEMP/profile.provisionprofile" "$HOME/Library/MobileDevice/Provisioning Profiles/$uuid.provisionprofile"
+          echo "PROFILE_NAME=$name" >> "$GITHUB_ENV"
+          echo "KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
+
+      - name: Generate the project
+        run: xcodegen generate
+
+      - name: Release entitlements
+        # The checked-in file asks for the development push environment, which a distributed app must not.
+        run: |
+          sed 's#<string>development</string>#<string>production</string>#' MacSupport/Dosebook.entitlements > "$RUNNER_TEMP/Dosebook.release.entitlements"
+          grep -A1 aps-environment "$RUNNER_TEMP/Dosebook.release.entitlements"
+
+      - name: Archive
+        run: |
+          set -euo pipefail
+          xcodebuild archive -project Bench.xcodeproj -scheme BenchMac -configuration Release \
+            -archivePath "$RUNNER_TEMP/Dosebook.xcarchive" \
+            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Developer ID Application" \
+            DEVELOPMENT_TEAM="$TEAM_ID" PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            CODE_SIGN_ENTITLEMENTS="$RUNNER_TEMP/Dosebook.release.entitlements" \
+            OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN --timestamp" \
+            MARKETING_VERSION="${{ steps.ver.outputs.version }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+
+      - name: Export
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/export.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>developer-id</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>Developer ID Application</string>
+            <key>provisioningProfiles</key><dict><key>$BUNDLE_ID</key><string>$PROFILE_NAME</string></dict>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Dosebook.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export"
+          codesign --verify --deep --strict --verbose=2 "$RUNNER_TEMP/export/Dosebook.app"
+
+      - name: Notarise and staple
+        env:
+          API_KEY: ${{ secrets.APPLE_API_KEY_P8 }}
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          for name in API_KEY API_KEY_ID API_ISSUER; do
+            [ -n "${!name}" ] || { echo "Missing secret for $name. See docs/RELEASING.md."; exit 1; }
+          done
+          echo "$API_KEY" | base64 --decode > "$RUNNER_TEMP/AuthKey.p8"
+          ditto -c -k --keepParent "$RUNNER_TEMP/export/Dosebook.app" "$RUNNER_TEMP/Dosebook.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/Dosebook.zip" --key "$RUNNER_TEMP/AuthKey.p8" \
+            --key-id "$API_KEY_ID" --issuer "$API_ISSUER" --wait
+          xcrun stapler staple "$RUNNER_TEMP/export/Dosebook.app"
+          spctl --assess --type execute --verbose "$RUNNER_TEMP/export/Dosebook.app"
+
+      - name: Make the DMG
+        run: |
+          set -euo pipefail
+          mkdir -p dist "$RUNNER_TEMP/dmg"
+          cp -R "$RUNNER_TEMP/export/Dosebook.app" "$RUNNER_TEMP/dmg/"
+          ln -s /Applications "$RUNNER_TEMP/dmg/Applications"
+          hdiutil create -volname "Dosebook" -srcfolder "$RUNNER_TEMP/dmg" -ov -format UDZO "dist/Dosebook-${{ steps.ver.outputs.version }}.dmg"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Dosebook-${{ steps.ver.outputs.version }}
+          path: dist/*.dmg
+
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.dmg --title "Dosebook ${{ steps.ver.outputs.version }}" --generate-notes

@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Use the newest stable Xcode on the runner; the project needs Swift 6 and the iOS 18 / macOS 15 SDKs.
+  PICK_XCODE: |
+    latest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | grep -vi beta | sort -V | tail -1)
+    [ -n "$latest" ] && sudo xcode-select -s "$latest/Contents/Developer"
+    xcodebuild -version
+
+jobs:
+  test:
+    name: Tests (${{ matrix.tz }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      # The dose maths is local time, so it is tested in several zones, one with daylight saving
+      # in the other hemisphere and one with a half-hour offset.
+      matrix:
+        tz: [America/New_York, Europe/London, Asia/Kolkata, Australia/Sydney]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: eval "$PICK_XCODE"
+      - name: Test BenchCore
+        env:
+          TZ: ${{ matrix.tz }}
+        run: swift test --package-path BenchCore
+
+  build:
+    name: Build (unsigned)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: eval "$PICK_XCODE"
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate the project
+        run: xcodegen generate
+      - name: Build the iPhone and iPad app
+        run: |
+          xcodebuild -project Bench.xcodeproj -scheme Bench \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build | tail -20
+          exit "${PIPESTATUS[0]}"
+        shell: bash
+      - name: Build the Mac app
+        run: |
+          xcodebuild -project Bench.xcodeproj -scheme BenchMac \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build | tail -20
+          exit "${PIPESTATUS[0]}"
+        shell: bash

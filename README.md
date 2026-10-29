@@ -1,5 +1,9 @@
 # Dosebook
 
+[![CI](https://github.com/Fybre/dosebook/actions/workflows/ci.yml/badge.svg)](https://github.com/Fybre/dosebook/actions/workflows/ci.yml)
+
+**[dosebook.app](https://dosebook.app)**
+
 A private tracker for protocols, vials and doses, for iPhone, iPad and Mac. Dosebook is a native
 Swift port of [Bench](https://github.com/ArunNGun/Bench) by Arun, with the same library, arithmetic
 and backup format, so a backup moves between the two.
@@ -50,6 +54,8 @@ The dose maths is local-time, so it is tested across zones and daylight saving.
 ## Documentation
 
 `docs/PLAN.md` records the design, what is deliberately different from Bench, and how sync works.
+`docs/RELEASING.md` covers building and notarising the Mac download. The website is in
+[dosebook-web](https://github.com/Fybre/dosebook-web).
 
 ## Licence
 
