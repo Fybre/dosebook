@@ -2,10 +2,6 @@ MIT License
 
 Copyright (c) 2026 Dosebook contributors
 
-Dosebook includes the compound and marker library, the translations and the calculation
-logic of Bench (https://github.com/ArunNGun/Bench), which is also MIT licensed. Its notice is
-in THIRD_PARTY_LICENSES.txt and must stay with any copy of that material.
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
