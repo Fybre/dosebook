@@ -61,10 +61,23 @@ jobs:
       - name: What happened to the compiler
         if: failure()
         run: |
-          echo "--- crash reports"; ls -la ~/Library/Logs/DiagnosticReports 2>/dev/null | tail -8
-          for f in $(ls -t ~/Library/Logs/DiagnosticReports/*swift* 2>/dev/null | head -1); do head -c 3000 "$f"; done
-          echo "--- memory"; vm_stat | head -6; sysctl hw.memsize hw.ncpu
-          echo "--- system log"; log show --last 8m --predicate 'process == "kernel" AND eventMessage CONTAINS[c] "swift"' --style compact 2>/dev/null | tail -8
+          f=$(ls -t ~/Library/Logs/DiagnosticReports/swift-frontend*.ips 2>/dev/null | head -1)
+          [ -n "$f" ] || { echo "no compiler crash report"; exit 0; }
+          python3 - "$f" <<'PY'
+          import json, sys
+          raw = open(sys.argv[1]).read()
+          body = json.loads(raw.split("\n", 1)[1])
+          print("exception:", body.get("exception"))
+          print("termination:", body.get("termination"))
+          print("asi:", json.dumps(body.get("asi"))[:800])
+          images = body.get("usedImages", [])
+          for t in body.get("threads", []):
+              if t.get("triggered"):
+                  for fr in t["frames"][:30]:
+                      name = fr.get("symbol") or "?"
+                      img = images[fr["imageIndex"]].get("name") if "imageIndex" in fr else ""
+                      print(f"  {img}: {name}")
+          PY
       - name: Build the Mac app
         run: |
           set -o pipefail
