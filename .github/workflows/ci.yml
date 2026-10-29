@@ -58,6 +58,13 @@ jobs:
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build 2>&1 | tee "$RUNNER_TEMP/ios-build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
           grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/ios-build.log" || { xcrun xcresulttool get build-results --path "$RUNNER_TEMP/ios.xcresult" | head -c 12000; exit 1; }
         shell: bash
+      - name: What happened to the compiler
+        if: failure()
+        run: |
+          echo "--- crash reports"; ls -la ~/Library/Logs/DiagnosticReports 2>/dev/null | tail -8
+          for f in $(ls -t ~/Library/Logs/DiagnosticReports/*swift* 2>/dev/null | head -1); do head -c 3000 "$f"; done
+          echo "--- memory"; vm_stat | head -6; sysctl hw.memsize hw.ncpu
+          echo "--- system log"; log show --last 8m --predicate 'process == "kernel" AND eventMessage CONTAINS[c] "swift"' --style compact 2>/dev/null | tail -8
       - name: Build the Mac app
         run: |
           set -o pipefail
