@@ -118,7 +118,7 @@ Principles from the original that the port must keep:
 ```
 bench2/
   project.yml                 XcodeGen spec: iOS app target (+ macOS later), tests
-  PLAN.md
+  docs/PLAN.md
   README.md
   tools/
     export-library.mjs        TS library -> JSON (copies data files to a temp dir, rewrites

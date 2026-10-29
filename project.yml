@@ -90,7 +90,7 @@ targets:
       # permanent identifier, so it waits on the name). To turn them on: add
       # `- target: BenchWidgets` here and
       # `com.apple.security.application-groups: [group.me.fybre.dosebook.test]` below,
-      # and register that group. See PLAN.md.
+      # and register that group. See docs/PLAN.md.
     entitlements:
       path: Bench/BenchTest.entitlements
       properties:

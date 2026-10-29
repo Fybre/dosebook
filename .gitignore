@@ -5,3 +5,18 @@ DerivedData/
 xcuserdata/
 .DS_Store
 screenshots/
+# Scratch work and anything signing- or secret-shaped never belongs in the repo.
+/output/
+/tmp/
+*.p12
+*.p8
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.provisionprofile
+*.keychain
+*.xcuserstate
+.env
+.env.*
+*.bundle.tar
+

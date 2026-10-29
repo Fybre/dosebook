@@ -4,7 +4,9 @@ set -e
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 cd "$(dirname "$0")/.."
 TAB=$1; OUT=$2; shift 2
-UDID=${UDID:-2162CFF6-A08E-480E-9A7B-71A62914182E}
+# Any simulator: UDID=<id>, or the first booted one, or the first iPhone.
+UDID=${UDID:-$(xcrun simctl list devices booted | grep -Eo '[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}' | head -1)}
+[ -n "$UDID" ] || UDID=$(xcrun simctl list devices available | grep iPhone | grep -Eo '[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}' | head -1)
 xcodegen generate >/dev/null
 xcodebuild -project Bench.xcodeproj -scheme BenchTest -destination "id=$UDID" -derivedDataPath "${TMPDIR:-/tmp}/bench2-dd" build CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error:|BUILD FAILED" && exit 1
 xcrun simctl boot "$UDID" 2>/dev/null || true
