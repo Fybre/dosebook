@@ -56,7 +56,7 @@ jobs:
             -destination 'generic/platform=iOS Simulator' ARCHS=arm64 ONLY_ACTIVE_ARCH=NO OTHER_SWIFT_FLAGS=-disable-batch-mode \
             -resultBundlePath "$RUNNER_TEMP/ios.xcresult" \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build 2>&1 | tee "$RUNNER_TEMP/ios-build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
-          grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/ios-build.log" || { xcrun xcresulttool get build-results --path "$RUNNER_TEMP/ios.xcresult" | head -c 12000; exit 1; }
+          grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/ios-build.log" || { grep -a -A6 "The following build commands failed" "$RUNNER_TEMP/ios-build.log" | cut -c1-400; exit 1; }
         shell: bash
       - name: What happened to the compiler
         if: failure()
