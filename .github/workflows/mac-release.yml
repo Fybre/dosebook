@@ -148,4 +148,7 @@ jobs:
         if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/*.dmg --title "Dosebook ${{ steps.ver.outputs.version }}" --generate-notes
+        run: |
+          # An unversioned copy gives the website a stable link: /releases/latest/download/Dosebook.dmg
+          cp "dist/Dosebook-${{ steps.ver.outputs.version }}.dmg" dist/Dosebook.dmg
+          gh release create "$GITHUB_REF_NAME" dist/*.dmg --title "Dosebook ${{ steps.ver.outputs.version }}" --generate-notes
