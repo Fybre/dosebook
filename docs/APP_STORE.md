@@ -74,7 +74,10 @@ Local files, not committed (`screenshots/` is ignored):
 - iPhone 6.9": `screenshots/appstore/iphone-6.9/` (1320x2868): Now, Plan, Log, Stock.
 - iPad 13": `screenshots/appstore/ipad-13/` (2752x2064): Now, Plan, Log, Stock.
 
-Made with `tools/shot.sh` on demo data. A Mac listing needs its own build and is not part of this submission.
+Upload the framed versions (`framed-iphone-6.9/`, `framed-ipad-13/`: gradient, headline and subtitle round the
+screenshot); the plain ones are the source. Both are made with `tools/shot.sh` on demo data, and
+`python3 -I tools/store-frames.py <raw-dir> <out-dir> iphone|ipad` adds the frames. Change the headlines in
+that script. The Simulator cannot write into the project folder, so shoot into a scratch folder and copy. A Mac listing needs its own build and is not part of this submission.
 
 ## Notes for the reviewer
 
