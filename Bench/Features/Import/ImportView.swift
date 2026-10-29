@@ -222,6 +222,18 @@ struct ImportView: View {
 
     // MARK: Lab report
 
+    /// Split out of the view: written inline, the compiler of an older Xcode gives up type-checking it.
+    private func labRecognisedText(_ report: LabReport, markers: String, when: String) -> String {
+        var text: String
+        if let lab = report.lab {
+            text = t("import_lab_recognised_from", ["markers": .string(markers), "lab": .string(lab), "date": .string(when)])
+        } else {
+            text = t("import_lab_recognised", ["markers": .string(markers), "date": .string(when)])
+        }
+        if report.collectedAt == nil { text += " " + t("import_lab_no_date") }
+        return text + " " + t("import_lab_check")
+    }
+
     @ViewBuilder private func labPreview(_ report: LabReport, lineCount: Int) -> some View {
         let keeping = report.candidates.filter { !skipped.contains($0.markerId) && !duplicate($0, report) }
         let suspect = report.candidates.filter { $0.confidence == .unitMismatch }
@@ -230,10 +242,7 @@ struct ImportView: View {
         Section {
             Label(t("import_lab_report"), systemImage: "drop.fill").font(.subheadline.bold()).foregroundStyle(Tone.sky.color)
             Text("\(fileName) · \(t("import_lines_read", ["n": .number(Double(lineCount))]))").font(.caption).foregroundStyle(.secondary)
-            Text((report.lab.map { t("import_lab_recognised_from", ["markers": .string(markers), "lab": .string($0), "date": .string(when)]) }
-                  ?? t("import_lab_recognised", ["markers": .string(markers), "date": .string(when)]))
-                 + (report.collectedAt == nil ? " " + t("import_lab_no_date") : "") + " " + t("import_lab_check"))
-                .font(.footnote)
+            Text(labRecognisedText(report, markers: markers, when: when)).font(.footnote)
         }
         if !suspect.isEmpty {
             Section {
