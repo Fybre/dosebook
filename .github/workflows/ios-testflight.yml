@@ -1,0 +1,82 @@
+name: iOS TestFlight
+
+# Builds the iPhone and iPad app, signs it for the App Store with Apple's cloud signing, and uploads it
+# to TestFlight. Run by hand: Actions -> iOS TestFlight -> Run workflow.
+#
+# It needs an app record in App Store Connect and an API key that is allowed to manage signing; see
+# docs/RELEASING.md. It has not been run yet, so expect the first run to need small fixes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build, for example 1.0.1'
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  TEAM_ID: 8BD49F6FX5
+
+jobs:
+  testflight:
+    runs-on: xcode-27
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          latest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | grep -vi beta | sort -V | tail -1)
+          [ -n "$latest" ] && sudo xcode-select -s "$latest/Contents/Developer"
+          xcodebuild -version
+          major=$(xcodebuild -version | awk '/^Xcode/ {print $2}' | cut -d. -f1)
+          [ "${major:-0}" -ge 27 ] || { echo "::error::Xcode $major on this runner cannot build the app; it needs Xcode 27 or later."; exit 1; }
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Write the API key
+        env:
+          API_KEY: ${{ secrets.APPLE_API_KEY_P8 }}
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          for name in API_KEY API_KEY_ID API_ISSUER; do
+            [ -n "${!name}" ] || { echo "Missing secret for $name. See docs/RELEASING.md."; exit 1; }
+          done
+          echo "$API_KEY" | base64 --decode > "$RUNNER_TEMP/AuthKey.p8"
+          echo "AUTH=-authenticationKeyPath $RUNNER_TEMP/AuthKey.p8 -authenticationKeyID $API_KEY_ID -authenticationKeyIssuerID $API_ISSUER" >> "$GITHUB_ENV"
+
+      - name: Generate the project
+        run: xcodegen generate
+
+      - name: Archive
+        # Automatic signing with the API key: Apple creates the distribution certificate and the App Store
+        # profile in the cloud, so no certificate is stored here.
+        run: |
+          set -euo pipefail
+          xcodebuild archive -project Bench.xcodeproj -scheme Bench -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/Dosebook.xcarchive" \
+            -allowProvisioningUpdates $AUTH \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            MARKETING_VERSION="${{ inputs.version }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+
+      - name: Export and upload to TestFlight
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/export.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Dosebook.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates $AUTH

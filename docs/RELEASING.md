@@ -43,3 +43,30 @@ and say so if a runner ever has an older Xcode. The cause inside the app has not
 The workflow has not been run end to end. The likeliest places for a first run to fail are the profile
 name lookup, the export options, and the push environment: the checked-in entitlements ask for the
 *development* push environment, so the workflow writes a copy that says *production* and signs with that.
+
+# Releasing the iPhone and iPad app (TestFlight)
+
+The `iOS TestFlight` workflow archives the app, signs it for the App Store, and uploads it to TestFlight.
+A distributed iOS build uses CloudKit's **Production** environment, the same as the Mac download, so the
+two sync with each other (the development-signed builds sync only among themselves).
+
+## What you need first
+
+1. **An app record in App Store Connect** (My Apps -> + -> New App): platform iOS, bundle ID
+   `me.fybre.dosebook`, name Dosebook. It cannot be created through the API. The bundle ID must already
+   exist under Identifiers with iCloud (CloudKit, `iCloud.me.fybre.dosebook`), HealthKit and Push
+   Notifications; it does if you have run a signed build on a device.
+2. **An API key that may manage signing.** The workflow reuses `APPLE_API_KEY_P8`, `APPLE_API_KEY_ID` and
+   `APPLE_API_ISSUER_ID`. Cloud signing creates the distribution certificate and profile, which needs the
+   key's role to be **Admin** (a key made only for notarisation may be set lower; make a new key if so and
+   update the three secrets).
+3. The CloudKit schema deployed to Production (already done for the Mac).
+
+## Uploading a build
+
+Actions -> iOS TestFlight -> Run workflow, enter a version. The build number is the workflow run number.
+When it finishes, the build appears in App Store Connect under TestFlight after a few minutes of Apple
+processing. Add yourself under Internal Testing (no review needed), then install through the TestFlight app.
+
+Health data and Face ID need no review for internal testing. Public TestFlight links and the App Store
+need a review, which looks at the health wording and the privacy policy.
