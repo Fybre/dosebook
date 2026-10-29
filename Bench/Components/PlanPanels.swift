@@ -57,7 +57,7 @@ struct StackWarningsView: View {
         let issues = stackIssues(active, resolve: { data.peptide($0) }, nowMs: nowMs)
         if active.count >= 2 {
             if issues.isEmpty {
-                Label(t("stack_all_clear", ["protocols": .string(t("count_protocols", ["n": .number(Double(active.count))]))]), systemImage: "checkmark.shield")
+                Label(t("stack_all_clear", ["protocols": .string(String(active.count))]), systemImage: "checkmark.shield")
                     .font(.footnote.weight(.medium)).foregroundStyle(Tone.leaf.color)
             } else if compact {
                 let high = issues.contains { $0.severity == .high }
