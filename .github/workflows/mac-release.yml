@@ -79,18 +79,20 @@ jobs:
 
       - name: Release entitlements
         # The checked-in file asks for the development push environment, which a distributed app must not.
+        # It is edited in place, after XcodeGen has written it, so only the app target picks it up.
         run: |
-          sed 's#<string>development</string>#<string>production</string>#' MacSupport/Dosebook.entitlements > "$RUNNER_TEMP/Dosebook.release.entitlements"
-          grep -A1 aps-environment "$RUNNER_TEMP/Dosebook.release.entitlements"
+          sed -i '' 's#<string>development</string>#<string>production</string>#' MacSupport/Dosebook.entitlements
+          grep -A1 aps-environment MacSupport/Dosebook.entitlements
 
       - name: Archive
+        # Settings given here apply to every target, packages included, so the profile goes through
+        # DOSEBOOK_PROFILE_SPECIFIER, which only the app target reads (see project.yml).
         run: |
           set -euo pipefail
           xcodebuild archive -project Bench.xcodeproj -scheme BenchMac -configuration Release \
             -archivePath "$RUNNER_TEMP/Dosebook.xcarchive" \
             CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Developer ID Application" \
-            DEVELOPMENT_TEAM="$TEAM_ID" PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
-            CODE_SIGN_ENTITLEMENTS="$RUNNER_TEMP/Dosebook.release.entitlements" \
+            DEVELOPMENT_TEAM="$TEAM_ID" DOSEBOOK_PROFILE_SPECIFIER="$PROFILE_NAME" \
             OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN --timestamp" \
             MARKETING_VERSION="${{ steps.ver.outputs.version }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
 

@@ -196,6 +196,9 @@ targets:
         PRODUCT_NAME: Dosebook
         DEVELOPMENT_TEAM: "8BD49F6FX5"
         CODE_SIGN_STYLE: Automatic
+        # Empty locally. The release workflow sets it, so the profile reaches only this target and
+        # not the package's resource bundle, which rejects a provisioning profile.
+        PROVISIONING_PROFILE_SPECIFIER: $(DOSEBOOK_PROFILE_SPECIFIER)
         ENABLE_HARDENED_RUNTIME: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
