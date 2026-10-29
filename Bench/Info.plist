@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BenchAppGroup</key>
+	<string>group.me.fybre.dosebook</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -30,6 +32,8 @@
 	<string>Dosebook asks for Face ID to open, when you have turned the lock on.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Dosebook reads your weight, sleep and resting heart rate so they can sit beside your doses and check-ins. Nothing is ever written back.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Dosebook never writes to Health. It only reads your weight, sleep and resting heart rate.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

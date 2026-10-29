@@ -1,16 +1,19 @@
 name: iOS TestFlight
 
 # Builds the iPhone and iPad app, signs it for the App Store with Apple's cloud signing, and uploads it
-# to TestFlight. Run by hand: Actions -> iOS TestFlight -> Run workflow.
+# to TestFlight. Runs when a version tag such as v1.0.2 is pushed (alongside the Mac release), or by
+# hand: Actions -> iOS TestFlight -> Run workflow.
 #
 # It needs an app record in App Store Connect and an API key that is allowed to manage signing; see
 # docs/RELEASING.md. It has not been run yet, so expect the first run to need small fixes.
 
 on:
+  push:
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to build, for example 1.0.1'
+        description: 'Version to build, for example 1.0.1 (a tag push uses the tag)'
         required: true
 
 permissions:
@@ -32,6 +35,12 @@ jobs:
           xcodebuild -version
           major=$(xcodebuild -version | awk '/^Xcode/ {print $2}' | cut -d. -f1)
           [ "${major:-0}" -ge 27 ] || { echo "::error::Xcode $major on this runner cannot build the app; it needs Xcode 27 or later."; exit 1; }
+
+      - name: Work out the version
+        id: ver
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then v="${GITHUB_REF_NAME#v}"; else v="${{ inputs.version }}"; fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -61,7 +70,7 @@ jobs:
             -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/Dosebook.xcarchive" \
             -allowProvisioningUpdates $AUTH \
             DEVELOPMENT_TEAM="$TEAM_ID" \
-            MARKETING_VERSION="${{ inputs.version }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+            MARKETING_VERSION="${{ steps.ver.outputs.version }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
 
       - name: Export and upload to TestFlight
         run: |

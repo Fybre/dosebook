@@ -64,7 +64,8 @@ two sync with each other (the development-signed builds sync only among themselv
 
 ## Uploading a build
 
-Actions -> iOS TestFlight -> Run workflow, enter a version. The build number is the workflow run number.
+Push a version tag (`git tag v1.0.2 && git push origin v1.0.2`): the Mac release and the TestFlight upload both
+run from it. Or use Actions -> iOS TestFlight -> Run workflow and enter a version. The build number is the workflow run number.
 When it finishes, the build appears in App Store Connect under TestFlight after a few minutes of Apple
 processing. Add yourself under Internal Testing (no review needed), then install through the TestFlight app.
 

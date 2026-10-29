@@ -34,9 +34,11 @@ targets:
         product: BenchCore
       - package: BenchCore
         product: BenchStore
+      - target: DosebookWidgets
     entitlements:
       path: Bench/Bench.entitlements
       properties:
+        com.apple.security.application-groups: [group.me.fybre.dosebook]
         com.apple.developer.icloud-container-identifiers: [iCloud.me.fybre.dosebook]
         com.apple.developer.icloud-services: [CloudKit]
         aps-environment: development
@@ -48,6 +50,7 @@ targets:
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         CFBundleDisplayName: Dosebook
+        BenchAppGroup: group.me.fybre.dosebook
         UILaunchScreen: {}
         UIBackgroundModes: [remote-notification]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
@@ -207,6 +210,33 @@ targets:
         ENABLE_HARDENED_RUNTIME: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+  # The release app's widget: same code as BenchWidgets, under the release bundle id and App Group.
+  DosebookWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets
+        excludes: [BenchWidgets.entitlements, Info.plist, DosebookWidgets.entitlements]
+      - path: Shared
+    entitlements:
+      path: Widgets/DosebookWidgets.entitlements
+      properties:
+        com.apple.security.application-groups: [group.me.fybre.dosebook]
+    info:
+      path: Widgets/Info-Release.plist
+      properties:
+        CFBundleDisplayName: Dosebook
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        BenchAppGroup: group.me.fybre.dosebook
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: me.fybre.dosebook.widgets
+        DEVELOPMENT_TEAM: "8BD49F6FX5"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SKIP_INSTALL: YES
   # The Home Screen and Lock Screen widget: the next dose, today's ring, and a Log
   # button. Test build only; the release app gets one when its name is settled.
   BenchWidgets:
