@@ -36,11 +36,9 @@ The build number is the workflow run number.
 
 ## Known gaps
 
-The app currently builds only with Xcode 27 or later. Swift 6.2, in every Xcode 26.x tried (26.2 to 26.6),
-crashes while generating code for it, and GitHub's macOS runners did not have Xcode 27 when this was written.
-The CI build job skips itself on older Xcodes, and this workflow stops early with a message. Until a runner has
-Xcode 27, build and notarise the Mac app on your own Mac. The cause inside the app has not been found; it is
-in the code generation of a call with a very large argument list, in a file of the `Bench/` target.
+The app needs Xcode 27 or later: Swift 6.2, in every Xcode 26.x tried (26.2 to 26.6), crashes while generating
+code for it. The release workflow and the CI build job run on GitHub's `xcode-27` runner image for that reason,
+and say so if a runner ever has an older Xcode. The cause inside the app has not been found.
 
 The workflow has not been run end to end. The likeliest places for a first run to fail are the profile
 name lookup, the export options, and the push environment: the checked-in entitlements ask for the
