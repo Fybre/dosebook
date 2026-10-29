@@ -61,6 +61,7 @@ jobs:
       - name: What happened to the compiler
         if: failure()
         run: |
+          sleep 20   # the report is written a moment after the crash
           f=$(ls -t ~/Library/Logs/DiagnosticReports/swift-frontend*.ips 2>/dev/null | head -1)
           [ -n "$f" ] || { echo "no compiler crash report"; exit 0; }
           python3 - "$f" <<'PY'
