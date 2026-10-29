@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Fybre/dosebook/actions/workflows/ci.yml/badge.svg)](https://github.com/Fybre/dosebook/actions/workflows/ci.yml)
 
-**[dosebook.app](https://dosebook.app)**
+Website: **[dosebook.app](https://dosebook.app)**
 
 A private tracker for protocols, vials and doses, for iPhone, iPad and Mac. Dosebook is a native
 Swift port of [Bench](https://github.com/ArunNGun/Bench) by Arun, with the same library, arithmetic
