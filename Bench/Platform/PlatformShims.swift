@@ -173,6 +173,12 @@ enum RunLoopNudge {
     /// alone leaves it inside the wait for the next event.
     @MainActor private static func wake() {
         CFRunLoopWakeUp(CFRunLoopGetMain())
+        // What moving the window sets going: a layout and display pass of the windows we show.
+        for window in NSApp.windows where window.isVisible {
+            window.contentView?.layoutSubtreeIfNeeded()
+            window.displayIfNeeded()
+        }
+        CATransaction.flush()
         if let e = NSEvent.otherEvent(with: .applicationDefined, location: .zero, modifierFlags: [], timestamp: 0,
                                       windowNumber: 0, context: nil, subtype: 0, data1: 0, data2: 0) {
             NSApp.postEvent(e, atStart: false)
