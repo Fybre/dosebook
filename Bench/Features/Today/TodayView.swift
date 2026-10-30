@@ -70,7 +70,11 @@ struct TodayView: View {
             if c.mine.protocols.isEmpty {
                 HistoryWithoutPlanCard(now: now)
             } else {
-                if let q = lastQuickLog { quickLogNote(q) }
+                if let q = lastQuickLog {
+                    // The track is looked up afresh each time, so its stock already counts the dose just logged.
+                    let track = c.mine.logs.first { $0.id == q.id }.flatMap { l in c.tracks.first { $0.protocol_.id == l.protocolId } }
+                    quickLogNote(q, track: track, data: c.data)
+                }
                 ForEach(c.attention) { attentionRow($0, logs: c.mine.logs) }
             }
             ForEach(panels.filter { !$0.isToday }, id: \.self) { panelView($0, c) }
@@ -227,13 +231,17 @@ struct TodayView: View {
         return "\(t("now_vial_label", ["name": .string(name)])) \(conc.isFinite ? formatConcentration(conc) : t("now_not_reconstituted"))"
     }
 
-    private func quickLogNote(_ q: (id: String, name: String, dose: String, at: Millis)) -> some View {
+    private func quickLogNote(_ q: (id: String, name: String, dose: String, at: Millis), track: Track?, data: AppData) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
                 Label {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(t("now_quick_logged_note", ["name": .string(q.name)])).font(.subheadline)
                         Text("\(q.dose) · \(formatTime(q.at))").font(.caption).foregroundStyle(.secondary)
+                        // Doses left at the protocol's current amount, in the same words as the compound's own card.
+                        if let track, track.targetMcg > 0 {
+                            stockLine(track, low: stockIsLow(track.stock, supplyDays: track.supplyDays, data.settings)).font(.caption)
+                        }
                     }
                 } icon: {
                     Image(systemName: "checkmark").foregroundStyle(Tone.leaf.color)
