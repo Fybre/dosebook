@@ -26,6 +26,19 @@ private func makeStore() throws -> (AppStore, RecordStore, URL) {
         #expect(back.vials.count == 1)
     }
 
+    @Test func aBurstOfRemoteChangesIsReadOnce() async throws {
+        let (store, records, _) = try makeStore()
+        // Another device's vial arrives behind the store's back, announced many times over.
+        let other = AppStore(records: records, defaults: UserDefaults(suiteName: "bench-test-\(UUID().uuidString)")!, rescueURL: nil, clock: { 2_000_000 })
+        other.mutate { $0.addVial(Vial(id: "", profileId: "", peptideId: "bpc-157", strengthMg: 5, state: .sealed)) }
+        #expect(store.data.vials.isEmpty)
+        for _ in 0..<50 { store.reloadSoon(quiet: 0.05, longest: 1) }
+        #expect(store.data.vials.isEmpty)
+        // Read once the burst has stopped; wait for it rather than for a fixed time.
+        for _ in 0..<100 where store.data.vials.isEmpty { try await Task.sleep(for: .milliseconds(50)) }
+        #expect(store.data.vials.count == 1)
+    }
+
     @Test func bookkeepingDoesNotStamp() throws {
         let (store, _, _) = try makeStore()
         store.markBackedUp()

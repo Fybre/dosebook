@@ -71,6 +71,25 @@ public final class AppStore {
         }
     }
 
+    @ObservationIgnored private var reloadTask: Task<Void, Never>?
+    @ObservationIgnored private var reloadWaitingSince: Date?
+
+    /// A reload once a burst of changes from iCloud has quietened. Each change used to re-read every row on
+    /// the main thread, and a catch-up delivers dozens in a row, which froze the window. A short quiet period
+    /// collapses them into one read; a long burst is still read at least every two seconds.
+    public func reloadSoon(quiet: Double = 0.4, longest: Double = 2) {
+        let since = reloadWaitingSince ?? Date()
+        reloadWaitingSince = since
+        let wait = max(0, min(quiet, longest - Date().timeIntervalSince(since)))
+        reloadTask?.cancel()
+        reloadTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(wait))
+            guard !Task.isCancelled, let self else { return }
+            self.reloadWaitingSince = nil
+            self.reload()
+        }
+    }
+
     /// Re-read after a change arrived from another device.
     public func reload() {
         do {

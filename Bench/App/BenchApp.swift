@@ -48,7 +48,7 @@ struct BenchApp: App {
                 // does not reliably hand control back to the system.
                 .onChange(of: store.data.settings.theme, initial: true) { _, theme in theme.apply() }
                 .onReceive(NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)) { _ in
-                    store.reload()
+                    store.reloadSoon()
                 }
                 #if os(macOS)
                 .appLockCover()
