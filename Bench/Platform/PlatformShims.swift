@@ -1,4 +1,5 @@
 import SwiftUI
+import os
 #if canImport(UIKit)
 import UIKit
 #else
@@ -156,12 +157,22 @@ struct FooterRow<Content: View>: View {
 /// dialog sits unshown until the next event (a click on the title bar, a window move) comes along. A few
 /// wake-ups after each click or key press make sure queued work runs straight away. Harmless when not needed.
 enum RunLoopNudge {
+    static let log = Logger(subsystem: "me.fybre.dosebook", category: "nudge")
+
     @MainActor private static var installed = false
 
     @MainActor static func install() {
         guard !installed else { return }
         installed = true
+        for name in [NSWindow.didMoveNotification, NSWindow.willMoveNotification, NSWindow.didBecomeKeyNotification,
+                     NSWindow.didResignKeyNotification, NSWindow.didChangeOcclusionStateNotification, NSWindow.didUpdateNotification,
+                     NSWindow.didChangeScreenNotification] where name != NSWindow.didUpdateNotification {
+            NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { n in
+                log.notice("window \(n.name.rawValue, privacy: .public)")
+            }
+        }
         NSEvent.addLocalMonitorForEvents(matching: [.leftMouseUp, .rightMouseUp, .keyUp]) { event in
+            log.notice("mouse/key up seen")
             for delay in [0.03, 0.12, 0.35, 0.9, 2.0] {
                 DispatchQueue.main.asyncAfter(deadline: .now() + delay) { wake() }
             }
@@ -172,6 +183,7 @@ enum RunLoopNudge {
     /// An event of our own, which makes the event loop return and run what is queued; waking the run loop
     /// alone leaves it inside the wait for the next event.
     @MainActor private static func wake() {
+        log.notice("wake")
         CFRunLoopWakeUp(CFRunLoopGetMain())
         // What moving the window sets going: a layout and display pass of the windows we show.
         for window in NSApp.windows where window.isVisible {
