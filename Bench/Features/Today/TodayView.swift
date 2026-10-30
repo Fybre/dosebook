@@ -102,8 +102,10 @@ struct TodayView: View {
             case .chart:
                 if !c.series.isEmpty {
                     PkChartView(series: c.series, now: now,
-                                weights: data.settings.plotWeightOnChart == true ? mine.measurements : [],
-                                weightUnit: data.settings.weightUnit, describeVial: { describeVial($0, data) })
+                                weights: mine.measurements, weightUnit: data.settings.weightUnit,
+                                showWeight: data.settings.plotWeightOnChart == true,
+                                onToggleWeight: { store.mutate { $0.settings.plotWeightOnChart = !($0.settings.plotWeightOnChart ?? false) } },
+                                describeVial: { describeVial($0, data) })
                         .card()
                         .id("chart")
                     notes(c.tracks, data: data)

@@ -175,11 +175,6 @@ struct WeightCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 CardHeader(title: t("weight_title"), systemImage: "scalemass")
-                Button(data.settings.plotWeightOnChart == true ? t("weight_on_chart") : t("weight_chart_toggle")) {
-                    store.mutate { $0.settings.plotWeightOnChart = !($0.settings.plotWeightOnChart ?? false) }
-                }
-                .font(.caption).buttonStyle(.bordered).controlSize(.mini)
-                .accessibilityLabel(data.settings.plotWeightOnChart == true ? t("weight_hide_on_chart") : t("weight_show_on_chart"))
                 Button { trend = true } label: { Label(t("ios_trend_button"), systemImage: "chart.xyaxis.line") }.font(.caption).buttonStyle(.bordered).controlSize(.mini)
                     .disabled(series.count < 2)
                 Button { adding = true } label: { Label(t("add"), systemImage: "plus") }.font(.caption).buttonStyle(.bordered).controlSize(.mini)
