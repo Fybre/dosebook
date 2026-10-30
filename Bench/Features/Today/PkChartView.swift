@@ -7,8 +7,6 @@ import BenchCore
 struct PkChartView: View {
     var series: [PkSeries]
     var now: Millis
-    var weights: [BodyMeasurement] = []
-    var weightUnit: WeightUnit = .kg
     var describeVial: (String) -> String? = { _ in nil }
     /// Defaults to the last fortnight and the coming week.
     var range: ClosedRange<Millis>? = nil
