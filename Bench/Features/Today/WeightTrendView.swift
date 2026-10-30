@@ -49,7 +49,7 @@ struct WeightTrendView: View {
                     }
                     .chartXScale(domain: Date(millis: lo)...Date(millis: hi))
                     .chartYScale(domain: .automatic(includesZero: false))
-                    .frame(height: 220)
+                    .frame(height: 220).chartWhenActive(height: 220)
                     .padding(.top, 12)
                 }
                 Section {

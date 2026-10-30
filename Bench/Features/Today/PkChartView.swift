@@ -53,7 +53,7 @@ struct PkChartView: View {
             .chartYAxis { AxisMarks(position: .leading) }
             .chartYAxisLabel(t("ios_chart_axis"), position: .leading)
             .chartXSelection(value: $picked)
-            .frame(height: 200)
+            .frame(height: 200).chartWhenActive(height: 200)
             readout(at)
             if !compact { Text(t("now_curve_note")).font(.caption2).foregroundStyle(.secondary) }
         }

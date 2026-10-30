@@ -26,28 +26,28 @@ struct RootView: View {
             if next == tab { reselects[next, default: 0] += 1 }
             tab = next
         })) {
-            Tab(t("nav_now"), systemImage: "waveform.path.ecg", value: "now") { NavigationStack { TodayView() } }
-            Tab(t("nav_plan"), systemImage: "checklist", value: "plan") { NavigationStack { PlanView() } }
-            Tab(t("nav_log"), systemImage: "book.pages", value: "log") { NavigationStack { LogView() } }
-            Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView() } }
+            Tab(t("nav_now"), systemImage: "waveform.path.ecg", value: "now") { NavigationStack { TodayView() }.environment(\.screenActive, tab == "now") }
+            Tab(t("nav_plan"), systemImage: "checklist", value: "plan") { NavigationStack { PlanView() }.environment(\.screenActive, tab == "plan") }
+            Tab(t("nav_log"), systemImage: "book.pages", value: "log") { NavigationStack { LogView() }.environment(\.screenActive, tab == "log") }
+            Tab(t("nav_stock"), systemImage: "flask", value: "stock") { NavigationStack { StockView() }.environment(\.screenActive, tab == "stock") }
             // On a wide screen the sidebar lists everything; on a phone these sit under More.
             // Left out entirely when narrow: hidden tabs still count, and past five the
             // system adds its own More tab around ours.
             if sizeClass != .compact {
                 TabSection(t("more")) {
-                    Tab(t("nav_calc"), systemImage: "function", value: "calculator") { NavigationStack { CalculatorView() } }
-                    Tab(t("nav_library"), systemImage: "books.vertical", value: "library") { NavigationStack { LibraryView() } }
-                    Tab(t("nav_bloodwork"), systemImage: "drop", value: "labs") { NavigationStack { LabsView() } }
-                    Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView() } }
-                    Tab(t("nav_settings_label"), systemImage: "gear", value: "settings") { NavigationStack { SettingsView() } }
-                    Tab(t("nav_about"), systemImage: "info.circle", value: "about") { NavigationStack { AboutView() } }
-                    Tab(t("ios_guide_title"), systemImage: "questionmark.circle", value: "guide") { NavigationStack { GuideView() } }
+                    Tab(t("nav_calc"), systemImage: "function", value: "calculator") { NavigationStack { CalculatorView() }.environment(\.screenActive, tab == "calculator") }
+                    Tab(t("nav_library"), systemImage: "books.vertical", value: "library") { NavigationStack { LibraryView() }.environment(\.screenActive, tab == "library") }
+                    Tab(t("nav_bloodwork"), systemImage: "drop", value: "labs") { NavigationStack { LabsView() }.environment(\.screenActive, tab == "labs") }
+                    Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView() }.environment(\.screenActive, tab == "report") }
+                    Tab(t("nav_settings_label"), systemImage: "gear", value: "settings") { NavigationStack { SettingsView() }.environment(\.screenActive, tab == "settings") }
+                    Tab(t("nav_about"), systemImage: "info.circle", value: "about") { NavigationStack { AboutView() }.environment(\.screenActive, tab == "about") }
+                    Tab(t("ios_guide_title"), systemImage: "questionmark.circle", value: "guide") { NavigationStack { GuideView() }.environment(\.screenActive, tab == "guide") }
                 }
                 .defaultVisibility(.hidden, for: .tabBar)
             }
             #if os(iOS)
             // The phone's way to the screens above; the Mac always has its sidebar.
-            Tab(t("more"), systemImage: "ellipsis.circle", value: "more") { MoreStack() }
+            Tab(t("more"), systemImage: "ellipsis.circle", value: "more") { MoreStack().environment(\.screenActive, tab == "more") }
                 .defaultVisibility(.hidden, for: .sidebar)
             #endif
         }
@@ -64,6 +64,11 @@ struct RootView: View {
             let args = ProcessInfo.processInfo.arguments
             if let i = args.firstIndex(of: "-tab"), i + 1 < args.count {
                 try? await Task.sleep(for: .milliseconds(300))
+                tab = args[i + 1]
+            }
+            // `-thenTab stock`: after four seconds, on to a second screen, as a person who opens Now first and then moves on.
+            if let i = args.firstIndex(of: "-thenTab"), i + 1 < args.count {
+                try? await Task.sleep(for: .seconds(4))
                 tab = args[i + 1]
             }
         }

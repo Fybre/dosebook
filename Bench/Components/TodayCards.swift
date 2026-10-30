@@ -213,7 +213,7 @@ struct WeightCard: View {
                     }
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
-                .frame(height: 120)
+                .frame(height: 120).chartWhenActive(height: 120)
                 .contentShape(Rectangle())
                 .onTapGesture { trend = true }
             }
@@ -492,7 +492,7 @@ struct InsightsView: View {
                         .accessibilityLabel(t("now_week_tooltip", ["date": .string(formatDate(w.weekStart)), "total": .string(formatDose(w.totalMcg)), "doses": .string(t("count_doses", ["n": .number(Double(w.doses))]))]))
                 }
                 .chartYAxis(.hidden)
-                .frame(height: 110)
+                .frame(height: 110).chartWhenActive(height: 110)
                 (Text(t("now_this_week") + " ") + Text(formatDose(weeks.last!.totalMcg)).bold()
                  + Text(" " + t("now_across_doses", ["doses": .string(t("count_doses", ["n": .number(Double(weeks.last!.doses))]))])))
                     .font(.footnote).foregroundStyle(.secondary)

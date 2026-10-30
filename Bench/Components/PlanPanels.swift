@@ -216,7 +216,7 @@ struct ProjectionPreviewView: View {
                 }
             }
             .chartYAxis(.hidden)
-            .frame(height: 110)
+            .frame(height: 110).chartWhenActive(height: 110)
             .accessibilityLabel(t("projection_chart_label", ["name": .string(peptide.name), "days": .string(t("count_days", ["n": .number(jsRound((p.series.last!.t - from) / DAY_MS))]))]))
             HStack(spacing: 8) {
                 figure(t("projection_settle"), formatDuration(p.hoursToSteady), t("projection_from_first"))

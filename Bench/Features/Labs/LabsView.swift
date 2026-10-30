@@ -106,7 +106,7 @@ private struct MarkerHistory: View {
                     PointMark(x: .value("at", Date(millis: p.at)), y: .value(marker.unit, p.value)).foregroundStyle(Tone.sky.color)
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
-                .frame(height: 120)
+                .frame(height: 120).chartWhenActive(height: 120)
                 .accessibilityLabel(t("labs_chart_label", ["marker": .string(marker.name), "from": .string(trim(series[0].value, marker.decimals)),
                                                            "to": .string(trim(series[series.count - 1].value, marker.decimals)), "unit": .string(marker.unit)]))
             }
