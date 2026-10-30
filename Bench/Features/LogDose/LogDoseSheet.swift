@@ -12,6 +12,8 @@ struct LogDoseSheet: View {
     var defaultPeptideId: String?
     var editId: String?
     var anySite = false
+    /// Called with the new log's id after a dose is added (not an edit, not a skip), so the screen behind can say so.
+    var onLogged: ((String) -> Void)?
 
     @State private var peptideId = ""
     @State private var protocolId = ""
@@ -419,7 +421,8 @@ struct LogDoseSheet: View {
         if let e = editing {
             store.mutate { $0.updateLog(e.id) { var l = log; l.extra = $0.extra; $0 = l } }
         } else {
-            store.mutate { $0.addLog(log) }
+            let id = store.mutate { $0.addLog(log) }
+            if !skipped { onLogged?(id) }
         }
         dismiss()
     }

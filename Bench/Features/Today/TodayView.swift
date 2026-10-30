@@ -72,7 +72,9 @@ struct TodayView: View {
             } else {
                 if let q = lastQuickLog {
                     // The track is looked up afresh each time, so its stock already counts the dose just logged.
-                    let track = c.mine.logs.first { $0.id == q.id }.flatMap { l in c.tracks.first { $0.protocol_.id == l.protocolId } }
+                    let track = c.mine.logs.first { $0.id == q.id }.flatMap { l in
+                        c.tracks.first { $0.protocol_.id == l.protocolId } ?? c.tracks.first { $0.protocol_.peptideId == l.peptideId }
+                    }
                     quickLogNote(q, track: track, data: c.data)
                 }
                 ForEach(c.attention) { attentionRow($0, logs: c.mine.logs) }
@@ -187,7 +189,7 @@ struct TodayView: View {
             #endif
         }
         .sheet(item: $logRequest) { req in
-            NavigationStack { LogDoseSheet(defaultPeptideId: req.peptideId, anySite: req.anySite) }
+            NavigationStack { LogDoseSheet(defaultPeptideId: req.peptideId, anySite: req.anySite, onLogged: noteLogged) }
         }
         .sheet(item: $addingVial) { v in NavigationStack { AddVialForm(startingPeptideId: v.peptideId, alreadyMixed: v.mixed) } }
     }
@@ -282,6 +284,15 @@ struct TodayView: View {
                              route: p.route, site: routeHasSite(p.route) ? site : nil))
         }
         lastQuickLog = (id, track.name, doseLabel(track.targetMcg, track.peptide), loggedAt)
+        now = nowMillis()
+    }
+
+    /// A dose added from the + sheet gets the same card as one logged from a due row.
+    private func noteLogged(_ id: String) {
+        let d = store.data
+        guard let l = d.mine.logs.first(where: { $0.id == id }), !l.isSkipped else { return }
+        let pep = d.peptide(l.peptideId)
+        lastQuickLog = (id, pep?.name ?? l.peptideId, doseLabel(l.doseMcg, pep), l.at)
         now = nowMillis()
     }
 
