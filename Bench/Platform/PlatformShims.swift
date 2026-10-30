@@ -162,10 +162,20 @@ enum RunLoopNudge {
         guard !installed else { return }
         installed = true
         NSEvent.addLocalMonitorForEvents(matching: [.leftMouseUp, .rightMouseUp, .keyUp]) { event in
-            for delay in [0.03, 0.12, 0.35, 0.9] {
-                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { CFRunLoopWakeUp(CFRunLoopGetMain()) }
+            for delay in [0.03, 0.12, 0.35, 0.9, 2.0] {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { wake() }
             }
             return event
+        }
+    }
+
+    /// An event of our own, which makes the event loop return and run what is queued; waking the run loop
+    /// alone leaves it inside the wait for the next event.
+    @MainActor private static func wake() {
+        CFRunLoopWakeUp(CFRunLoopGetMain())
+        if let e = NSEvent.otherEvent(with: .applicationDefined, location: .zero, modifierFlags: [], timestamp: 0,
+                                      windowNumber: 0, context: nil, subtype: 0, data1: 0, data2: 0) {
+            NSApp.postEvent(e, atStart: false)
         }
     }
 }
