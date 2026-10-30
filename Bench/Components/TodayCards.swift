@@ -164,9 +164,7 @@ struct WeightCard: View {
     var now: Millis
     @State private var adding = false
     @State private var trend = false
-    #if DEBUG
     @State private var showHistory = false
-    #endif
 
     var body: some View {
         let data = store.data
@@ -215,13 +213,20 @@ struct WeightCard: View {
                 .contentShape(Rectangle())
                 .onTapGesture { trend = true }
             }
-            if !series.isEmpty { WeightGoalRow(now: now) }
+            if !series.isEmpty {
+                Button { showHistory = true } label: {
+                    HStack { Text(t("ios_weight_history")); Spacer(); Image(systemName: "chevron.right").font(.caption2.weight(.semibold)).foregroundStyle(.tertiary) }
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain).font(.footnote).foregroundStyle(.secondary)
+                WeightGoalRow(now: now)
+            }
         }
         .card()
         .sheet(isPresented: $adding) { NavigationStack { WeightEntry() } }
         .sheet(isPresented: $trend) { NavigationStack { WeightTrendView(now: now) } }
+        .sheet(isPresented: $showHistory) { NavigationStack { WeightHistorySheet() } }
         #if DEBUG
-        .sheet(isPresented: $showHistory) { NavigationStack { WeightHistoryView() } }
         .onAppear { if ProcessInfo.processInfo.arguments.contains("-weightHistory") { DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { showHistory = true } } }
         .onAppear { if ProcessInfo.processInfo.arguments.contains("-weightTrend") { DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { trend = true } } }
         #endif
@@ -529,5 +534,13 @@ struct InsightsView: View {
             }
             .card()
         }
+    }
+}
+
+/// The history as a sheet, with a way to close it.
+private struct WeightHistorySheet: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        WeightHistoryView().toolbar { ToolbarItem(placement: .cancellationAction) { Button(t("done")) { dismiss() } } }
     }
 }
