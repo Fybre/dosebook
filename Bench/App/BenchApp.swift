@@ -31,6 +31,9 @@ struct BenchApp: App {
         // Doses logged from a widget or Shortcut, recorded as soon as the app can.
         LogInbox.apply = { [store] in WidgetSync.applyPending(store) }
         WidgetSync.applyPending(store)
+        #if os(macOS)
+        RunLoopNudge.install()
+        #endif
     }
 
     var body: some Scene {

@@ -150,3 +150,23 @@ struct FooterRow<Content: View>: View {
         #endif
     }
 }
+
+#if os(macOS)
+/// SwiftUI on the Mac sometimes queues a sheet's presentation on the main run loop without waking it, so the
+/// dialog sits unshown until the next event (a click on the title bar, a window move) comes along. A few
+/// wake-ups after each click or key press make sure queued work runs straight away. Harmless when not needed.
+enum RunLoopNudge {
+    @MainActor private static var installed = false
+
+    @MainActor static func install() {
+        guard !installed else { return }
+        installed = true
+        NSEvent.addLocalMonitorForEvents(matching: [.leftMouseUp, .rightMouseUp, .keyUp]) { event in
+            for delay in [0.03, 0.12, 0.35, 0.9] {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { CFRunLoopWakeUp(CFRunLoopGetMain()) }
+            }
+            return event
+        }
+    }
+}
+#endif
