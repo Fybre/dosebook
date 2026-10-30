@@ -85,6 +85,7 @@ jobs:
           grep -A1 aps-environment MacSupport/Dosebook.entitlements
 
       - name: Archive
+        # STRIP_STYLE=debugging keeps function names in the binary, so a `sample` of the shipped app is readable.
         # Settings given here apply to every target, packages included, so the profile goes through
         # DOSEBOOK_PROFILE_SPECIFIER, which only the app target reads (see project.yml).
         run: |
@@ -93,6 +94,7 @@ jobs:
             -archivePath "$RUNNER_TEMP/Dosebook.xcarchive" \
             CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Developer ID Application" \
             DEVELOPMENT_TEAM="$TEAM_ID" DOSEBOOK_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            STRIP_STYLE=debugging \
             OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN --timestamp" \
             MARKETING_VERSION="${{ steps.ver.outputs.version }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}"
 
