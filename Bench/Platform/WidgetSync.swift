@@ -23,8 +23,10 @@ enum WidgetSync {
             let due = dueStatus(p, now, DueOptions(lastLoggedAt: answered.map(\.at).max()))
             if due.state != .none, let at = due.at, at <= now + horizonMs, !times.contains(at) { times.append(at) }
             for at in times {
+                let mcg = scheduledDoseMcg(p, at)
+                let left = mcg > 0 ? Int(stockFor(mine.vials, p.peptideId, mcg, now, containerForDose(peptide?.preparation, p.route)).dosesRemaining) : nil
                 doses.append(WidgetDose(protocolId: p.id, name: peptide?.name ?? p.peptideId,
-                                        amount: doseLabel(scheduledDoseMcg(p, at), peptide, resolve: { data.peptide($0) }), at: at))
+                                        amount: doseLabel(mcg, peptide, resolve: { data.peptide($0) }), at: at, dosesLeft: left))
             }
         }
         doses.sort { $0.at != $1.at ? $0.at < $1.at : $0.name < $1.name }
@@ -39,7 +41,7 @@ enum WidgetSync {
                 "dueNow": t("ios_widget_due_now"), "overdue": t("ios_widget_overdue"), "next": t("ios_widget_next"),
                 "log": t("ios_widget_log"), "doseWord": t("ios_widget_a_dose"), "allDone": t("ios_widget_all_done"),
                 "nothing": t("ios_widget_nothing"), "open": t("ios_widget_open"), "today": t("ios_widget_today"),
-                "paused": t("ios_widget_paused"),
+                "paused": t("ios_widget_paused"), "dosesLeft": t("ios_widget_doses_left"),
             ],
             generatedAt: now)
     }

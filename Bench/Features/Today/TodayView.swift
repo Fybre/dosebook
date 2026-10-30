@@ -241,10 +241,16 @@ struct TodayView: View {
                         // Doses left at the protocol's current amount, in the same words as the compound's own card.
                         if let track, track.targetMcg > 0 {
                             (stockLine(track, low: stockIsLow(track.stock, supplyDays: track.supplyDays, data.settings)) + openVialPart(track.stock)).font(.caption)
+                            // The open vial has a little left but not a whole dose, and a sealed one is waiting.
+                            if track.stock.openCount > 0, track.stock.dosesInOpenVials == 0, track.stock.sealedCount > 0 {
+                                Text(t("ios_open_vial_short")).font(.caption).foregroundStyle(Tone.tangerine.color)
+                            }
                         }
                     }
+                    // One spoken sentence rather than a line at a time.
+                    .accessibilityElement(children: .combine)
                 } icon: {
-                    Image(systemName: "checkmark").foregroundStyle(Tone.leaf.color)
+                    Image(systemName: "checkmark").foregroundStyle(Tone.leaf.color).accessibilityHidden(true)
                 }
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                 Button { lastQuickLog = nil } label: {

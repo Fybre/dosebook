@@ -229,25 +229,28 @@ public func stockFor(_ vials: [Vial], _ peptideId: String, _ doseMcg: Double, _ 
                      _ container: ContainerKind = .vial) -> Stock {
     let mine = vials.filter { $0.peptideId == peptideId && matchesContainer($0, container) }
     let usable = mine.filter { vialUsable($0, nowMs) }
-    let expiredMcg = mine
-        .filter { !UNAVAILABLE_STATES.contains($0.state) && vialExpired($0, nowMs) && vialRemainingMcg($0) > 0 }
-        .reduce(0) { $0 + vialRemainingMcg($1) }
     let openPastDate = mine.contains { $0.state == .reconstituted && vialExpired($0, nowMs) && vialRemainingMcg($0) > 0 }
 
-    var availableMcg = 0.0, openMcg = 0.0
+    // Whole doses are counted vial by vial: a dose is drawn from one vial, so two vials with 100 mcg
+    // left each cannot make one 150 mcg dose, though their sum would suggest it.
+    let per: (Double) -> Double = { doseMcg > 0 ? ($0 / doseMcg).rounded(.down) : 0 }
+    var availableMcg = 0.0, doses = 0.0, openDoses = 0.0
     var sealedCount = 0, openCount = 0
     for v in usable {
         let remaining = vialRemainingMcg(v)
         availableMcg += remaining
-        if v.state == .reconstituted { openMcg += remaining; openCount += 1 }
+        doses += per(remaining)
+        if v.state == .reconstituted { openDoses += per(remaining); openCount += 1 }
         else if v.state == .sealed { sealedCount += 1 }
     }
-    let per: (Double) -> Double = { doseMcg > 0 ? ($0 / doseMcg).rounded(.down) : 0 }
+    let expiredDoses = mine
+        .filter { !UNAVAILABLE_STATES.contains($0.state) && vialExpired($0, nowMs) && vialRemainingMcg($0) > 0 }
+        .reduce(0) { $0 + per(vialRemainingMcg($1)) }
     return Stock(
         availableMcg: availableMcg, sealedCount: sealedCount, openCount: openCount,
-        dosesRemaining: per(availableMcg), dosesInOpenVials: per(openMcg),
+        dosesRemaining: doses, dosesInOpenVials: openDoses,
         needsReconstitution: container == .vial && openCount == 0 && sealedCount > 0 && !openPastDate,
-        dosesExpired: per(expiredMcg)
+        dosesExpired: expiredDoses
     )
 }
 

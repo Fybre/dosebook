@@ -18,6 +18,8 @@ struct WidgetDose: Codable, Equatable, Identifiable {
     var amount: String
     /// When it is scheduled, in milliseconds.
     var at: Double
+    /// Whole doses of this amount left in stock, counted vial by vial. nil from an older snapshot.
+    var dosesLeft: Int?
     var id: String { "\(protocolId)@\(Int64(at))" }
 }
 

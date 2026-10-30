@@ -132,6 +132,20 @@ private let DAY = DAY_MS
         #expect(s.dosesInOpenVials == 10 && s.dosesRemaining == 30 && !s.needsReconstitution)
     }
 
+    @Test func countsWholeDosesVialByVial() {
+        // 100 mcg left in each of two vials: together 200, but no 150 mcg dose fits in either.
+        let two = [vial("a", strengthMg: 10, state: .reconstituted, diluentMl: 2, drawnMcg: 9900),
+                   vial("b", strengthMg: 10, state: .reconstituted, diluentMl: 2, drawnMcg: 9900)]
+        let s = stockFor(two, "klow", 150, NOW)
+        #expect(s.availableMcg == 200 && s.dosesRemaining == 0 && s.dosesInOpenVials == 0)
+        // Whole doses add up across vials: 2 + 1 (and 0 in a vial too empty for one).
+        let mixed = [vial("a", strengthMg: 10, state: .reconstituted, diluentMl: 2, drawnMcg: 9700),
+                     vial("b", strengthMg: 10, state: .reconstituted, diluentMl: 2, drawnMcg: 9850),
+                     vial("c", strengthMg: 10, state: .reconstituted, diluentMl: 2, drawnMcg: 9900)]
+        #expect(stockFor(mixed, "klow", 100, NOW).dosesRemaining == 3 + 1 + 1)
+        #expect(stockFor(mixed, "klow", 100, NOW).dosesInOpenVials == 5)
+    }
+
     @Test func excludesAndRounds() {
         let vials = [vial("good"), vial("expired", state: .reconstituted, diluentMl: 4, budAt: NOW - DAY), vial("done", state: .finished)]
         #expect(stockFor(vials, "klow", 4000, NOW).dosesRemaining == 20)

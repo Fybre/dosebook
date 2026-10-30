@@ -391,7 +391,9 @@
     "ios_guide_none": "Nothing matches that.",
     "ios_guide_open": "Open {screen}",
     "ios_guide_link": "How to use Dosebook",
-    "ios_stock_in_open_vial": "{n} in the open vial"
+    "ios_stock_in_open_vial": "{n} in the open vial",
+    "ios_open_vial_short": "The open vial can't cover your next dose. Make up a new one.",
+    "ios_widget_doses_left": "{n} left"
   },
   "de": {
     "ios_weight_none_yet_neutral": "Noch nichts erfasst. Trage Gewichtswerte ein, um eine Verlaufslinie neben den erfassten Dosen zu sehen. Aus dem zeitlichen Zusammenhang allein lässt sich keine Ursache ableiten.",
@@ -785,7 +787,9 @@
     "ios_guide_none": "Nichts passt dazu.",
     "ios_guide_open": "{screen} öffnen",
     "ios_guide_link": "So nutzt du Dosebook",
-    "ios_stock_in_open_vial": "{n} im geöffneten Fläschchen"
+    "ios_stock_in_open_vial": "{n} im geöffneten Fläschchen",
+    "ios_open_vial_short": "Das geöffnete Fläschchen reicht für die nächste Dosis nicht. Setze ein neues an.",
+    "ios_widget_doses_left": "{n} übrig"
   },
   "sl": {
     "ios_weight_none_yet_neutral": "Ni še podatkov. Dodaj meritve teže za prikaz trenda ob zabeleženih odmerkih. Samo časovno sovpadanje ne pokaže vzroka spremembe.",
@@ -1187,7 +1191,9 @@
     "ios_guide_none": "Nič se ne ujema.",
     "ios_guide_open": "Odpri {screen}",
     "ios_guide_link": "Kako uporabljati Dosebook",
-    "ios_stock_in_open_vial": "{n} v odprti viali"
+    "ios_stock_in_open_vial": "{n} v odprti viali",
+    "ios_open_vial_short": "Odprta viala ne zadošča za naslednji odmerek. Pripravite novo.",
+    "ios_widget_doses_left": "še {n}"
   },
   "pl": {
     "ios_weight_none_yet_neutral": "Nie ma jeszcze pomiarów. Dodaj pomiary wagi, aby zobaczyć trend obok zapisanych dawek. Sama zbieżność w czasie nie wskazuje przyczyny zmiany.",
@@ -1589,6 +1595,8 @@
     "ios_guide_none": "Nic nie pasuje.",
     "ios_guide_open": "Otwórz {screen}",
     "ios_guide_link": "Jak używać Dosebook",
-    "ios_stock_in_open_vial": "{n} w otwartej fiolce"
+    "ios_stock_in_open_vial": "{n} w otwartej fiolce",
+    "ios_open_vial_short": "Otwarta fiolka nie wystarczy na następną dawkę. Przygotuj nową.",
+    "ios_widget_doses_left": "zostało {n}"
   }
 }

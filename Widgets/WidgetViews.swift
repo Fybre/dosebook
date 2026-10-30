@@ -15,6 +15,10 @@ struct DoseWidgetView: View {
 
     private var nowMs: Double { date.timeIntervalSince1970 * 1000 }
     private func label(_ key: String, _ fallback: String) -> String { snapshot?.labels[key] ?? fallback }
+    /// "12 left": whole doses in stock, in the app's words. nil when the app did not say.
+    private func leftText(_ d: WidgetDose) -> String? {
+        d.dosesLeft.map { label("dosesLeft", "{n} left").replacingOccurrences(of: "{n}", with: "\($0)") }
+    }
     /// Not yet logged, and not so long ago it has stopped meaning anything.
     private var doses: [WidgetDose] { (snapshot?.doses ?? []).filter { $0.at > nowMs - 12 * 3_600_000 } }
     private var showNames: Bool { snapshot?.showNames ?? false }
@@ -94,6 +98,7 @@ struct DoseWidgetView: View {
                 Text(phaseText(p).uppercased()).font(.system(size: 10, weight: .bold)).foregroundStyle(phaseColor(p))
                 time(d).font(.title3.bold())
                 Text(name(d)).font(.caption).lineLimit(1).privacySensitive()
+                if let left = leftText(d) { Text(left).font(.caption2).foregroundStyle(.secondary).lineLimit(1) }
                 if p != .next { logButton(d) }
             } else {
                 Text(emptyText).font(.footnote.weight(.semibold)).foregroundStyle(.secondary)
@@ -116,8 +121,9 @@ struct DoseWidgetView: View {
                         HStack(spacing: 8) {
                             Circle().fill(phaseColor(p)).frame(width: 7, height: 7)
                             time(d).font(.subheadline.weight(.semibold).monospacedDigit()).lineLimit(1).fixedSize()
-                            Text(showNames ? "\(d.name)" : label("doseWord", "A dose")).font(.caption).lineLimit(1).truncationMode(.tail).privacySensitive()
+                            Text(showNames ? "\(d.name)" : label("doseWord", "A dose")).font(.caption).lineLimit(1).truncationMode(.tail).privacySensitive().layoutPriority(1)
                             Spacer(minLength: 0)
+                            if let left = leftText(d) { Text(left).font(.caption2).foregroundStyle(.secondary).lineLimit(1).minimumScaleFactor(0.7) }
                             if p != .next { logButton(d) }
                         }
                     }
