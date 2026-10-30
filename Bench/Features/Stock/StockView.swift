@@ -221,6 +221,8 @@ struct StockView: View {
         .onAppear {
             let args = ProcessInfo.processInfo.arguments
             if sheet == nil, args.contains("-stockScan") { sheet = .scan }
+            // `-addVial`: the add-a-bottle form, as the button opens it.
+            if sheet == nil, args.contains("-addVial") { sheet = .add }
             // `-vialLeft`: the amount-left form for the first open vial.
             if sheet == nil, args.contains("-vialLeft"), let v = store.data.mine.vials.first(where: { $0.state == .reconstituted && !isPack($0) }) { sheet = .left(v) }
         }

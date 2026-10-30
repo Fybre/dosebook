@@ -26,6 +26,21 @@ extension View {
         #endif
     }
 
+    /// Selects the whole text when the field takes focus, as a Mac field does, so a new number can simply be typed over it.
+    func selectAllWhenFocused(_ focused: Bool) -> some View {
+        #if os(iOS)
+        onChange(of: focused) { _, now in
+            guard now else { return }
+            // After the caret has been placed by the tap, or the selection is undone by it.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+            }
+        }
+        #else
+        self
+        #endif
+    }
+
     /// A row's actions: swiped to on iOS, a right-click menu on the Mac, where rows
     /// do not swipe.
     func rowActions<A: View>(@ViewBuilder _ actions: () -> A) -> some View {

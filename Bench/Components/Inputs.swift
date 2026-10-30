@@ -25,6 +25,7 @@ struct NumberField: View {
                 .fieldTitleHidden()
                 .multilineTextAlignment(.trailing)
                 .focused($focused)
+                .selectAllWhenFocused(focused)
                 .monospacedDigit()
             if let suffix { Text(suffix).foregroundStyle(.secondary) }
         }
@@ -151,10 +152,13 @@ struct OptionalNumberField: View {
     var suffix: String? = nil
     @State private var text = ""
     @State private var loaded = false
+    @FocusState private var focused: Bool
 
     var body: some View {
         HStack(spacing: 6) {
             TextField(title, text: $text)
+                .focused($focused)
+                .selectAllWhenFocused(focused)
                 .decimalKeyboard()
                 .fieldTitleHidden()
                 .multilineTextAlignment(.trailing)
