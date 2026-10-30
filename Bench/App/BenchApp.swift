@@ -152,7 +152,6 @@ enum Bootstrap {
                                                                schedule: Schedule(kind: .daily, timeOfDay: "21:00"))) }
             }
             if let i = args.firstIndex(of: "-theme"), i + 1 < args.count { store.mutate { $0.settings.theme = ThemeSetting(rawValue: args[i + 1]) } }
-            if args.contains("-plotWeight") { store.mutate { $0.settings.plotWeightOnChart = true } }
             if args.contains("-demoGoal") { store.mutate { $0.settings.weightGoal = WeightGoal(kg: 88, startKg: 98) } }
             if args.contains("-demoProfiles") {
                 // A second profile, with the first still showing.
