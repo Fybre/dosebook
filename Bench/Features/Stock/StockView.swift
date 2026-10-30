@@ -227,6 +227,8 @@ struct StockView: View {
             if sheet == nil, args.contains("-vialLeft"), let v = store.data.mine.vials.first(where: { $0.state == .reconstituted && !isPack($0) }) { sheet = .left(v) }
         }
         #endif
+        // Deliberately empty. With these two handlers in place the Mac shows the first sheet at once; without
+        // them it sat unshown until the window was moved. Found by bisecting; the cause is not understood.
         .onChange(of: sheet?.id) { }
         .sheet(item: $sheet) { s in
             NavigationStack {
@@ -244,7 +246,7 @@ struct StockView: View {
                 case .useBottle(let b): UseElsewhereForm(bottle: b)
                 }
             }
-            .onAppear { }
+            .onAppear { } // see the onChange above
         }
         .confirmationDialog(t("stock_mark_empty"), isPresented: Binding(get: { finishing != nil }, set: { if !$0 { finishing = nil } }), titleVisibility: .visible) {
             Button(t("stock_mark_empty")) {
