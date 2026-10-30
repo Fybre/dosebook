@@ -240,7 +240,7 @@ struct TodayView: View {
                         Text("\(q.dose) · \(formatTime(q.at))").font(.caption).foregroundStyle(.secondary)
                         // Doses left at the protocol's current amount, in the same words as the compound's own card.
                         if let track, track.targetMcg > 0 {
-                            stockLine(track, low: stockIsLow(track.stock, supplyDays: track.supplyDays, data.settings)).font(.caption)
+                            (stockLine(track, low: stockIsLow(track.stock, supplyDays: track.supplyDays, data.settings)) + openVialPart(track.stock)).font(.caption)
                         }
                     }
                 } icon: {
@@ -546,6 +546,12 @@ struct TodayView: View {
             .font(.caption)
         }
         .card()
+    }
+
+    /// " · 4 in the open vial", when there are sealed vials as well, so the total above is not read as one vial's worth.
+    private func openVialPart(_ stock: Stock) -> Text {
+        guard stock.openCount > 0, stock.dosesInOpenVials < stock.dosesRemaining else { return Text("") }
+        return Text(" · " + t("ios_stock_in_open_vial", ["n": .number(stock.dosesInOpenVials)])).foregroundColor(.secondary)
     }
 
     private func stockLine(_ track: Track, low: Bool) -> Text {

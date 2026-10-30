@@ -390,7 +390,8 @@
     "ios_guide_subtitle": "Short how-tos for each part of the app. The guide is in English for now.",
     "ios_guide_none": "Nothing matches that.",
     "ios_guide_open": "Open {screen}",
-    "ios_guide_link": "How to use Dosebook"
+    "ios_guide_link": "How to use Dosebook",
+    "ios_stock_in_open_vial": "{n} in the open vial"
   },
   "de": {
     "ios_weight_none_yet_neutral": "Noch nichts erfasst. Trage Gewichtswerte ein, um eine Verlaufslinie neben den erfassten Dosen zu sehen. Aus dem zeitlichen Zusammenhang allein lässt sich keine Ursache ableiten.",
@@ -783,7 +784,8 @@
     "ios_guide_subtitle": "Kurze Anleitungen zu jedem Teil der App. Die Anleitung ist vorerst nur auf Englisch.",
     "ios_guide_none": "Nichts passt dazu.",
     "ios_guide_open": "{screen} öffnen",
-    "ios_guide_link": "So nutzt du Dosebook"
+    "ios_guide_link": "So nutzt du Dosebook",
+    "ios_stock_in_open_vial": "{n} im geöffneten Fläschchen"
   },
   "sl": {
     "ios_weight_none_yet_neutral": "Ni še podatkov. Dodaj meritve teže za prikaz trenda ob zabeleženih odmerkih. Samo časovno sovpadanje ne pokaže vzroka spremembe.",
@@ -1184,7 +1186,8 @@
     "ios_guide_subtitle": "Kratka navodila za vsak del aplikacije. Vodnik je zaenkrat samo v angleščini.",
     "ios_guide_none": "Nič se ne ujema.",
     "ios_guide_open": "Odpri {screen}",
-    "ios_guide_link": "Kako uporabljati Dosebook"
+    "ios_guide_link": "Kako uporabljati Dosebook",
+    "ios_stock_in_open_vial": "{n} v odprti viali"
   },
   "pl": {
     "ios_weight_none_yet_neutral": "Nie ma jeszcze pomiarów. Dodaj pomiary wagi, aby zobaczyć trend obok zapisanych dawek. Sama zbieżność w czasie nie wskazuje przyczyny zmiany.",
@@ -1585,6 +1588,7 @@
     "ios_guide_subtitle": "Krótkie instrukcje do każdej części aplikacji. Przewodnik jest na razie tylko po angielsku.",
     "ios_guide_none": "Nic nie pasuje.",
     "ios_guide_open": "Otwórz {screen}",
-    "ios_guide_link": "Jak używać Dosebook"
+    "ios_guide_link": "Jak używać Dosebook",
+    "ios_stock_in_open_vial": "{n} w otwartej fiolce"
   }
 }
