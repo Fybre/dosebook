@@ -164,6 +164,9 @@ struct WeightCard: View {
     var now: Millis
     @State private var adding = false
     @State private var trend = false
+    #if DEBUG
+    @State private var showHistory = false
+    #endif
 
     var body: some View {
         let data = store.data
@@ -218,6 +221,8 @@ struct WeightCard: View {
         .sheet(isPresented: $adding) { NavigationStack { WeightEntry() } }
         .sheet(isPresented: $trend) { NavigationStack { WeightTrendView(now: now) } }
         #if DEBUG
+        .sheet(isPresented: $showHistory) { NavigationStack { WeightHistoryView() } }
+        .onAppear { if ProcessInfo.processInfo.arguments.contains("-weightHistory") { DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { showHistory = true } } }
         .onAppear { if ProcessInfo.processInfo.arguments.contains("-weightTrend") { DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { trend = true } } }
         #endif
     }
@@ -239,10 +244,17 @@ struct WeightCard: View {
 struct WeightEntry: View {
     @Environment(AppStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+    /// A reading being corrected, or nil for a new one.
+    var editing: BodyMeasurement? = nil
     @State private var value: Double?
     @State private var at = Date()
     /// The newest reading from Apple Health, offered as the starting value.
     @State private var prefilled: HealthSample?
+
+    init(editing: BodyMeasurement? = nil) {
+        self.editing = editing
+        if let e = editing { _at = State(initialValue: Date(millis: e.at)) }
+    }
 
     var body: some View {
         let unit = store.data.settings.weightUnit
@@ -250,13 +262,15 @@ struct WeightEntry: View {
             OptionalNumberRow(label: t("weight_title"), value: Binding(get: { value }, set: { value = $0; prefilled = nil }), suffix: unit.rawValue)
             DatePicker(t("weight_when"), selection: Binding(get: { at }, set: { at = $0; prefilled = nil }))
         }
-        .navigationTitle(t("weight_title")).inlineTitle()
+        .navigationTitle(t(editing == nil ? "weight_title" : "ios_weight_edit")).inlineTitle()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
                 Button(t("save")) {
                     guard let v = value, v > 0 else { return }
-                    if let p = prefilled {
+                    if let e = editing {
+                        store.mutate { $0.updateMeasurement(e.id) { $0.weightKg = fromDisplayWeight(v, unit); $0.at = at.millis } }
+                    } else if let p = prefilled {
                         // Untouched: the platform's exact value and record id, not the rounded one shown.
                         store.mutate { $0.addMeasurement(BodyMeasurement(id: "", profileId: "", at: p.at, weightKg: p.weightKg, source: .healthConnect, externalId: p.externalId)) }
                     } else {
@@ -266,8 +280,11 @@ struct WeightEntry: View {
                 }.disabled((value ?? 0) <= 0)
             }
         }
+        .onAppear {
+            if let kg = editing?.weightKg, value == nil { value = jsRound(toDisplayWeight(kg, store.data.settings.weightUnit) * 10) / 10 }
+        }
         .task {
-            guard await HealthKitAdapter.availability() == .asked,
+            guard editing == nil, await HealthKitAdapter.availability() == .asked,
                   let sample = newestSample((try? await HealthKitAdapter.readWeight(since: nowMillis() - 30 * DAY_MS)) ?? []),
                   value == nil,
                   !store.data.mine.measurements.contains(where: { $0.externalId == sample.externalId }) else { return }

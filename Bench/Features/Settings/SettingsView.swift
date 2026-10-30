@@ -250,7 +250,12 @@ private struct ProfilesSection: View {
                         Text(reading == nil ? t("ios_profile_weight_none")
                              : reading!.at.map { t(reading!.fromHealth ? "ios_profile_weight_health" : "ios_profile_weight_entered", ["date": .string(formatDate($0))]) } ?? t("ios_profile_weight_imported"))
                             .font(.caption).foregroundStyle(.secondary)
-                        if active { Button(t("ios_profile_weight_add")) { addingWeight = true }.buttonStyle(.bordered).controlSize(.small) }
+                        if active {
+                            HStack {
+                                Button(t("ios_profile_weight_add")) { addingWeight = true }.buttonStyle(.bordered).controlSize(.small)
+                                NavigationLink(t("ios_weight_history")) { WeightHistoryView() }.font(.footnote)
+                            }
+                        }
                     }
                 }
                 .padding(.vertical, 4)
