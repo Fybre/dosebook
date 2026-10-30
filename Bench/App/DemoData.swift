@@ -20,6 +20,13 @@ enum DemoData {
                 }
                 d.measurements.append(BodyMeasurement(id: "bigw-\(i)", profileId: d.activeProfileId, at: at + 7 * HOUR_MS, weightKg: 98 + Double(i) / 200))
             }
+            // A vial every ten days for three years, each finished, so lists and totals have as much to walk as a real history.
+            for k in 1...110 {
+                let at = now - Double(k) * 10 * day
+                d.vials.append(Vial(id: "bigv-\(k)", profileId: d.activeProfileId, peptideId: "bpc-157", strengthMg: 10, state: .finished,
+                                    supplier: "Demo Labs", cost: 40, currency: "EUR", acquiredAt: at - 5 * day,
+                                    reconstitutedAt: at, diluentMl: 2, diluent: .bacteriostatic))
+            }
             d.logs.sort { $0.at > $1.at }
         }
     }
