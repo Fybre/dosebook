@@ -287,6 +287,16 @@ struct TodayView: View {
         now = nowMillis()
     }
 
+    /// A skipped dose is a record, not a gap: nothing comes out of a vial and the streak is not broken.
+    /// Dated at the time it was due, so it answers that slot and not another.
+    private func skip(_ track: Track, due: Millis) {
+        store.mutate { d in
+            d.addLog(DoseLog(id: "", profileId: "", protocolId: track.protocol_.id, peptideId: track.protocol_.peptideId, at: due,
+                             doseMcg: track.targetMcg, route: track.protocol_.route, skipped: true))
+        }
+        now = nowMillis()
+    }
+
     /// A dose added from the + sheet gets the same card as one logged from a due row.
     private func noteLogged(_ id: String) {
         let d = store.data
@@ -349,6 +359,14 @@ struct TodayView: View {
         }
         .card()
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder((overdue ? Tone.rose : Tone.tangerine).color.opacity(0.45)))
+        .contextMenu {
+            Button { log(track, site: options.first?.site) } label: { Label(t("ios_now_log_now"), systemImage: "plus") }
+            Button { logRequest = LogRequest(peptideId: track.protocol_.peptideId) } label: { Label(t("now_details"), systemImage: "square.and.pencil") }
+            Button { skip(track, due: track.due.at ?? nowMillis()) } label: { Label(t("ios_now_skip"), systemImage: "arrow.uturn.right.circle") }
+        }
+        .accessibilityAction(named: Text(t("ios_now_log_now"))) { log(track, site: options.first?.site) }
+        .accessibilityAction(named: Text(t("now_details"))) { logRequest = LogRequest(peptideId: track.protocol_.peptideId) }
+        .accessibilityAction(named: Text(t("ios_now_skip"))) { skip(track, due: track.due.at ?? nowMillis()) }
     }
 
     @ViewBuilder private func laterToday(_ tracks: [Track], logs: [DoseLog], attention: [Track]) -> some View {
@@ -399,6 +417,12 @@ struct TodayView: View {
                         }
                     }
                     .padding(.vertical, 8)
+                    .contextMenu {
+                        Button { confirmEarly = key } label: { Label(t("now_log_ahead_title", ["time": .string(formatTime(row.at))]), systemImage: "plus.circle") }
+                        Button { skip(row.track, due: row.at) } label: { Label(t("ios_now_skip"), systemImage: "arrow.uturn.right.circle") }
+                    }
+                    .accessibilityAction(named: Text(t("now_log_ahead_title", ["time": .string(formatTime(row.at))]))) { confirmEarly = key }
+                    .accessibilityAction(named: Text(t("ios_now_skip"))) { skip(row.track, due: row.at) }
                     Divider()
                 }
             }
