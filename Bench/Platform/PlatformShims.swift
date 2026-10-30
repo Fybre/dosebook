@@ -179,6 +179,11 @@ enum RunLoopNudge {
             window.displayIfNeeded()
         }
         CATransaction.flush()
+        // Moving a window runs the loop in its tracking mode; work queued only for a mode other than the
+        // default waits for that. A short turn of each lets it through.
+        for mode in [RunLoop.Mode.eventTracking, .modalPanel] {
+            _ = RunLoop.main.run(mode: mode, before: Date())
+        }
         if let e = NSEvent.otherEvent(with: .applicationDefined, location: .zero, modifierFlags: [], timestamp: 0,
                                       windowNumber: 0, context: nil, subtype: 0, data1: 0, data2: 0) {
             NSApp.postEvent(e, atStart: false)
