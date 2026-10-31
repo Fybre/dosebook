@@ -418,9 +418,11 @@ struct TodayView: View {
                     .padding(.vertical, 8)
                     .contextMenu {
                         Button { confirmEarly = key } label: { Label(t("now_log_ahead_title", ["time": .string(formatTime(row.at))]), systemImage: "plus.circle") }
+                        Button { logRequest = LogRequest(peptideId: row.track.protocol_.peptideId) } label: { Label(t("now_details"), systemImage: "square.and.pencil") }
                         Button { skip(row.track, due: row.at) } label: { Label(t("ios_now_skip"), systemImage: "arrow.uturn.right.circle") }
                     }
                     .accessibilityAction(named: Text(t("now_log_ahead_title", ["time": .string(formatTime(row.at))]))) { confirmEarly = key }
+                    .accessibilityAction(named: Text(t("now_details"))) { logRequest = LogRequest(peptideId: row.track.protocol_.peptideId) }
                     .accessibilityAction(named: Text(t("ios_now_skip"))) { skip(row.track, due: row.at) }
                     Divider()
                 }
