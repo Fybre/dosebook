@@ -4,7 +4,7 @@ import BenchCore
 /// The cards on the Now screen that can be switched off. Due and overdue doses, the
 /// pause banner, tips and warnings always show: they are about something to do.
 enum NowPanel: String, CaseIterable, Identifiable {
-    case today, interactions, laterToday, chart, protocols, oneOffs, weight, checkIn, bloodwork, trends, worthSorting
+    case today, interactions, laterToday, comingUp, chart, protocols, oneOffs, weight, checkIn, bloodwork, trends, worthSorting
     var id: String { rawValue }
 
     var isToday: Bool { self == .today }
@@ -12,7 +12,7 @@ enum NowPanel: String, CaseIterable, Identifiable {
     /// Where it sits when there is room for two columns.
     var inLeftColumn: Bool {
         switch self {
-        case .today, .interactions, .laterToday, .chart, .protocols, .oneOffs: true
+        case .today, .interactions, .laterToday, .comingUp, .chart, .protocols, .oneOffs: true
         case .weight, .checkIn, .bloodwork, .trends, .worthSorting: false
         }
     }
@@ -22,6 +22,7 @@ enum NowPanel: String, CaseIterable, Identifiable {
         case .today: t("ios_panel_today")
         case .interactions: t("ios_panel_interactions")
         case .laterToday: t("now_later_today")
+        case .comingUp: t("ios_panel_comingup")
         case .chart: t("now_circulating")
         case .protocols: t("now_active_protocols")
         case .oneOffs: t("ios_panel_oneoffs")
@@ -38,6 +39,7 @@ enum NowPanel: String, CaseIterable, Identifiable {
         case .today: "checkmark.circle"
         case .interactions: "exclamationmark.shield"
         case .laterToday: "clock"
+        case .comingUp: "calendar"
         case .chart: "waveform.path.ecg"
         case .protocols: "syringe"
         case .oneOffs: "clock.arrow.circlepath"

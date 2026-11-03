@@ -172,12 +172,18 @@ struct ProtocolCard: View {
 struct UpcomingView: View {
     @Environment(AppStore.self) private var store
     var nowMs: Millis
+    /// The short version for Now: tomorrow on, a few days and a few doses, with a way to the full list.
+    var comingUp = false
+    @Environment(\.goToTab) private var goToTab
     @State private var showAll = false
     /// Wide enough for "11:00 PM" at the user's text size, so it never breaks.
     @ScaledMetric(relativeTo: .caption) private var timeWidth: CGFloat = 70
 
     /// The days shown before "show more".
     private static let firstDays = 3
+    /// Coming up on Now: how many days ahead, and the most doses it lists.
+    private static let comingUpDays = 3
+    private static let comingUpRows = 5
 
     private struct Row: Identifiable { var id: String; var at: Millis; var protocolId: String; var peptideId: String; var name: String; var route: Route; var doseMcg: Double }
 
@@ -185,22 +191,28 @@ struct UpcomingView: View {
         let data = store.data
         let active = data.mine.protocols.filter(\.active)
         let palette = assignColors(colorSubjects(active, resolve: { data.peptide($0) }, nowMs: nowMs))
-        let to = endOfLocalDay(nowMs + 13 * DAY_MS)
-        let rows = active.flatMap { p in
-            protocolDoseTimesBetween(p, nowMs, to).map {
+        // Today's doses are Now's own cards, so the short version starts tomorrow.
+        let from = comingUp ? endOfLocalDay(nowMs) : nowMs
+        let to = endOfLocalDay(nowMs + (comingUp ? Double(Self.comingUpDays) : 13) * DAY_MS)
+        let all = active.flatMap { p in
+            protocolDoseTimesBetween(p, from, to).filter { $0 > from || !comingUp }.map {
                 Row(id: "\(p.id)-\($0)", at: $0, protocolId: p.id, peptideId: p.peptideId, name: data.peptide(p.peptideId)?.name ?? p.peptideId, route: p.route, doseMcg: scheduledDoseMcg(p, $0))
             }
         }.sorted { $0.at < $1.at }
+        let rows = comingUp ? Array(all.prefix(Self.comingUpRows)) : all
         let days = Dictionary(grouping: rows) { startOfLocalDay($0.at) }.sorted { $0.key < $1.key }
-        let shown = showAll ? days : Array(days.prefix(Self.firstDays))
+        let shown = showAll || comingUp ? days : Array(days.prefix(Self.firstDays))
         if !days.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                CardHeader(title: t("plan_next_two_weeks"))
+                CardHeader(title: comingUp ? t("ios_panel_comingup") : t("plan_next_two_weeks"))
                 ForEach(Array(shown.enumerated()), id: \.element.key) { index, entry in
                     if index > 0 { Divider() }
                     dayBlock(entry.key, entry.value, data: data, palette: palette)
                 }
-                if days.count > Self.firstDays {
+                if comingUp {
+                    Button { goToTab("plan") } label: { Text(t("ios_comingup_all")).font(.footnote.weight(.medium)) }
+                        .padding(.top, 2)
+                } else if days.count > Self.firstDays {
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) { showAll.toggle() }
                     } label: {

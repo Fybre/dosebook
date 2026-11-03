@@ -99,6 +99,8 @@ struct TodayView: View {
                 if !mine.protocols.isEmpty, c.active.count >= 2 { StackWarningsView(compact: true, nowMs: now).card() }
             case .laterToday:
                 if !mine.protocols.isEmpty { laterToday(c.tracks, logs: mine.logs, attention: c.attention) }
+            case .comingUp:
+                if !c.active.isEmpty { UpcomingView(nowMs: now, comingUp: true) }
             case .chart:
                 if !c.series.isEmpty {
                     PkChartView(series: c.series, now: now,
