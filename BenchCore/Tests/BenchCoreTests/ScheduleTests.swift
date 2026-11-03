@@ -636,3 +636,27 @@ import Testing
         #expect(!hasStarted(p, local(2026, 9, 13, 23, 59, 59)))
     }
 }
+
+@Suite struct MovedIntoToday {
+    // Wednesday 2026-09-09; the plan was Thursdays at 08:00 and is moved to Wednesdays.
+    func plan(_ days: [Int], _ time: String = "08:00") -> DoseProtocol {
+        makeProtocol(peptideId: "bpc-157", startedAt: local(2026, 8, 1, 7), doseMcg: 250, schedule: Schedule(kind: .daysOfWeek, daysOfWeek: days, timeOfDay: time))
+    }
+    let afternoon = local(2026, 9, 9, 14)
+
+    @Test func askedWhenTheNewDayIsTodayAndItsTimePassed() {
+        #expect(slotsMovedIntoToday(from: plan([4]), to: plan([3]), [LogStamp](), afternoon) == [local(2026, 9, 9, 8)])
+    }
+    @Test func notAskedWhenTheTimeIsStillAhead() {
+        #expect(slotsMovedIntoToday(from: plan([4]), to: plan([3], "18:00"), [LogStamp](), afternoon).isEmpty)
+    }
+    @Test func notAskedWhenTodayWasAlreadyADoseDay() {
+        #expect(slotsMovedIntoToday(from: plan([3]), to: plan([3]), [LogStamp](), afternoon).isEmpty)
+    }
+    @Test func notAskedWhenItIsAlreadyLogged() {
+        #expect(slotsMovedIntoToday(from: plan([4]), to: plan([3]), [LogStamp(at: local(2026, 9, 9, 8, 10))], afternoon).isEmpty)
+    }
+    @Test func notAskedWhenNothingFallsToday() {
+        #expect(slotsMovedIntoToday(from: plan([4]), to: plan([5]), [LogStamp](), afternoon).isEmpty)
+    }
+}

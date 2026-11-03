@@ -35,6 +35,8 @@ struct ProtocolForm: View {
     @State private var loaded = false
     @State private var addingCompound = false
     @State private var askVial = false
+    /// Set when the edit moved a dose onto today at a time that has already passed.
+    @State private var movedToday: Millis?
     @State private var addingVial: VialFor?
 
     private var peptides: [Peptide] { store.data.allPeptides }
@@ -206,7 +208,7 @@ struct ProtocolForm: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button(t("cancel")) { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
-                Button(initial == nil ? t("plan_create_protocol") : t("plan_save_changes"), action: save).disabled(peptideId.isEmpty)
+                Button(initial == nil ? t("plan_create_protocol") : t("plan_save_changes"), action: trySave).disabled(peptideId.isEmpty)
             }
         }
         .sheet(isPresented: $addingCompound) {
@@ -218,6 +220,12 @@ struct ProtocolForm: View {
             if routeHasSite(route) { Button(t("ios_novial_mixed")) { addingVial = VialFor(peptideId: peptideId, mixed: true) } }
             Button(t("ios_novial_later"), role: .cancel) { dismiss() }
         } message: { Text(t("ios_novial_message")) }
+        // The edit put a dose earlier today that nothing is logged against: ask what it means.
+        .confirmationDialog(t("ios_moved_title", ["time": .string(movedToday.map(formatTime) ?? "")]), isPresented: Binding(get: { movedToday != nil }, set: { if !$0 { movedToday = nil } }), titleVisibility: .visible) {
+            Button(t("ios_moved_due")) { save(changedAt: startOfLocalDay(nowMillis())) }
+            Button(t("ios_moved_next")) { save(changedAt: nowMillis()) }
+            Button(t("cancel"), role: .cancel) { }
+        } message: { Text(t("ios_moved_message")) }
         .sheet(item: $addingVial, onDismiss: { dismiss() }) { v in
             NavigationStack { AddVialForm(startingPeptideId: v.peptideId, alreadyMixed: v.mixed) }
         }
@@ -275,7 +283,17 @@ struct ProtocolForm: View {
         }
     }
 
-    private func save() {
+    /// Saves, unless the edit moved a dose onto today at a time already gone: then it asks first.
+    private func trySave() {
+        if let initial, rewritesHistory {
+            let logs = logsForProtocol(initial, store.data.logs)
+            if let slot = slotsMovedIntoToday(from: initial, to: draft, logs, nowMillis()).first { movedToday = slot; return }
+        }
+        save(changedAt: nowMillis())
+    }
+
+    /// `changedAt` is where the past stops counting when the timing moved: a slot before it is not called missed.
+    private func save(changedAt: Millis) {
         var p = initial ?? DoseProtocol(id: "", profileId: "", peptideId: peptideId, name: "", startedAt: 0, doseMcg: 0, route: route, schedule: schedule)
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         p.peptideId = peptideId
@@ -285,9 +303,7 @@ struct ProtocolForm: View {
         p.route = route
         p.schedule = schedule
         // Stamped only when the timing moved, so a rename does not make the past unknowable.
-        // From the start of today, not this moment: moving a dose onto today should show it
-        // today, even if its time has passed, rather than wait for next week.
-        p.scheduleChangedAt = rewritesHistory ? startOfLocalDay(nowMillis()) : initial?.scheduleChangedAt
+        p.scheduleChangedAt = rewritesHistory ? changedAt : initial?.scheduleChangedAt
         p.titration = titrationSteps
         p.titrationAutoAdvance = titrationAutoAdvance
         p.phases = planMode == .phases ? renumbered(phases) : nil

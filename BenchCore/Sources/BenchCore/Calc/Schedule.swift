@@ -493,6 +493,24 @@ public func slotIsKnowable(_ p: DoseProtocol, _ atMs: Millis) -> Bool {
     return atMs >= changed
 }
 
+/// Today's doses that an edit has put earlier than now and that nothing is logged against:
+/// slots the new schedule has and the old one did not. Worth asking about, because the app
+/// cannot tell a dose that was moved onto today from one that was already taken.
+public func slotsMovedIntoToday<L: LogLike>(from old: DoseProtocol, to new: DoseProtocol, _ logs: [L], _ nowMs: Millis) -> [Millis] {
+    var fresh = new
+    fresh.scheduleChangedAt = nil
+    let start = startOfLocalDay(nowMs)
+    let before = Set(protocolDoseTimesBetween(old, start, nowMs))
+    let tolerance = 12 * HOUR_MS
+    return protocolDoseTimesBetween(fresh, start, nowMs).filter { at in
+        if before.contains(at) { return false }
+        let previous = protocolPreviousDoseTime(fresh, at - 1)
+        let early = earlyWindowMs(previous.map { at - $0 }, tolerance)
+        // Taken a little early, on time or late: any log from then on is this dose.
+        return !logs.contains { $0.at >= at - early }
+    }
+}
+
 public enum DueState: String, Sendable {
     case overdue, dueNow = "due-now", upcoming, scheduled, none
 }
