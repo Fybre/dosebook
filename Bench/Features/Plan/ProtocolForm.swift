@@ -285,7 +285,9 @@ struct ProtocolForm: View {
         p.route = route
         p.schedule = schedule
         // Stamped only when the timing moved, so a rename does not make the past unknowable.
-        p.scheduleChangedAt = rewritesHistory ? nowMillis() : initial?.scheduleChangedAt
+        // From the start of today, not this moment: moving a dose onto today should show it
+        // today, even if its time has passed, rather than wait for next week.
+        p.scheduleChangedAt = rewritesHistory ? startOfLocalDay(nowMillis()) : initial?.scheduleChangedAt
         p.titration = titrationSteps
         p.titrationAutoAdvance = titrationAutoAdvance
         p.phases = planMode == .phases ? renumbered(phases) : nil
