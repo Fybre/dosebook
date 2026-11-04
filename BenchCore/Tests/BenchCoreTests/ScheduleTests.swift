@@ -660,3 +660,17 @@ import Testing
         #expect(slotsMovedIntoToday(from: plan([4]), to: plan([5]), [LogStamp](), afternoon).isEmpty)
     }
 }
+
+@Suite struct ShortNames {
+    @Test func dropsTheTrailingQualifier() {
+        #expect(shortName("Testosterone undecanoate (injectable)") == "Testosterone undecanoate")
+        #expect(shortName("Somatropin (HGH) (pen)") == "Somatropin")
+    }
+    @Test func leavesPlainNamesAlone() {
+        #expect(shortName("BPC-157") == "BPC-157")
+        #expect(shortName("  Anastrozole ") == "Anastrozole")
+    }
+    @Test func neverLeavesNothing() {
+        #expect(shortName("(blend)") == "(blend)")
+    }
+}

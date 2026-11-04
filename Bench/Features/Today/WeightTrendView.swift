@@ -35,7 +35,7 @@ struct WeightTrendView: View {
                             RectangleMark(xStart: .value("from", Date(millis: max(s.from, lo))), xEnd: .value("to", Date(millis: min(s.to, hi))))
                                 .foregroundStyle(tones[i % tones.count].color.opacity(0.12))
                                 .annotation(position: .top, alignment: .leading) {
-                                    Text(formatDose(s.doseMcg)).font(.system(size: 9, weight: .semibold)).foregroundStyle(tones[i % tones.count].color)
+                                    Text(formatDose(s.doseMcg)).font(.caption2.weight(.semibold)).foregroundStyle(tones[i % tones.count].color)
                                 }
                         }
                         if let goal = data.settings.weightGoal {

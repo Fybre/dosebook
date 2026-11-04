@@ -4,11 +4,14 @@ import BenchStore
 
 /// Today's ring, the greeting, the streak and the week strip.
 struct TodayCard: View {
+    @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiate
     var protocols: [DoseProtocol]
     var logs: [DoseLog]
     var now: Millis
     var earlyHours: Double = 0
     @State private var detailDay: DetailDay?
+    /// Grows with the text so the figures inside the ring keep fitting.
+    @ScaledMetric(relativeTo: .title2) private var ring: CGFloat = 84
 
     struct DetailDay: Identifiable { var id: Millis }
 
@@ -18,7 +21,7 @@ struct TodayCard: View {
         let week = recentDays(protocols, logs, now, days: 7, earlyHours: earlyHours)
         let tone: Tone = today.complete ? .leaf : today.taken > 0 ? .mint : .neutral
         VStack(spacing: 18) {
-            HStack(spacing: 18) {
+            AdaptiveStack(spacing: 18) {
                 ZStack {
                     Circle().stroke(Color(.systemFill), lineWidth: 9)
                     Circle().trim(from: 0, to: today.fraction).stroke(tone.color, style: StrokeStyle(lineWidth: 9, lineCap: .round)).rotationEffect(.degrees(-90))
@@ -33,7 +36,7 @@ struct TodayCard: View {
                         }
                     }
                 }
-                .frame(width: 84, height: 84)
+                .frame(width: min(ring, 140), height: min(ring, 140))
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(t("now_done_today", ["taken": .number(Double(today.taken)), "expected": .number(Double(today.owed))]))
                 VStack(alignment: .leading, spacing: 4) {
@@ -47,9 +50,9 @@ struct TodayCard: View {
                             .background(Tone.tangerine.color.opacity(0.15), in: Capsule())
                     }
                 }
-                Spacer(minLength: 0)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            HStack(alignment: .bottom, spacing: 6) {
+            HStack(alignment: .top, spacing: 6) {
                 ForEach(week, id: \.day) { d in
                     let isToday = d.day == startOfLocalDay(now)
                     let idle = d.owed == 0
@@ -68,11 +71,15 @@ struct TodayCard: View {
                                     }
                                 }
                                 if isToday { RoundedRectangle(cornerRadius: 8).strokeBorder(Color.secondary, lineWidth: 1.5) }
-                                if missed { RoundedRectangle(cornerRadius: 8).strokeBorder(Tone.rose.color, lineWidth: 2) }
+                                if missed {
+                                    RoundedRectangle(cornerRadius: 8).strokeBorder(Tone.rose.color, lineWidth: 2)
+                                    // Colour alone says "missed"; with Differentiate Without Color on, a mark says it too.
+                                    if differentiate { Image(systemName: "exclamationmark").font(.caption.bold()).foregroundStyle(Tone.rose.color).frame(maxHeight: .infinity) }
+                                }
                             }
                             .frame(height: 36)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            Text(String(formatWeekday(d.day).prefix(2))).font(.system(size: 10, weight: .semibold))
+                            Text(String(formatWeekday(d.day).prefix(2))).font(.caption2.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.5)
                                 .foregroundStyle(isToday ? .primary : missed ? Tone.rose.color : .secondary)
                         }
                         .contentShape(Rectangle())

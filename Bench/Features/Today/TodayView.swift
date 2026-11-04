@@ -15,7 +15,11 @@ struct LogRequest: Identifiable {
 struct TodayView: View {
     @Environment(AppStore.self) private var store
     @State private var now = nowMillis()
+    /// Wide enough for "11:00 PM" at the user's text size.
+    @ScaledMetric(relativeTo: .caption) private var timeColumn: CGFloat = 64
     @State private var lastQuickLog: (id: String, name: String, dose: String, at: Millis)?
+    /// The dose just skipped, so a slip can be taken back.
+    @State private var lastSkip: (id: String, name: String, shownAt: Millis)?
     @State private var logRequest: LogRequest?
     @State private var confirmEarly: String?
     @State private var addingVial: VialFor?
@@ -77,6 +81,7 @@ struct TodayView: View {
                     }
                     quickLogNote(q, track: track, data: c.data)
                 }
+                if let k = lastSkip { skipNote(k) }
                 ForEach(c.attention) { attentionRow($0, logs: c.mine.logs) }
             }
             ForEach(panels.filter { !$0.isToday }, id: \.self) { panelView($0, c) }
@@ -175,7 +180,13 @@ struct TodayView: View {
             catch { return }
             if lastQuickLog?.id == q.id { lastQuickLog = nil }
         }
-        .onChange(of: store.data.activeProfileId) { lastQuickLog = nil }
+        .task(id: lastSkip?.id) {
+            guard let k = lastSkip else { return }
+            do { try await Task.sleep(for: .milliseconds(max(0, k.shownAt + 15_000 - nowMillis()))) }
+            catch { return }
+            if lastSkip?.id == k.id { lastSkip = nil }
+        }
+        .onChange(of: store.data.activeProfileId) { lastQuickLog = nil; lastSkip = nil }
         .onChange(of: logDoseRequests) { _, _ in answerLogDoseRequest() }
         .onAppear {
             now = nowMillis()
@@ -277,6 +288,27 @@ struct TodayView: View {
         .card()
     }
 
+    /// Shown for a few seconds after a skip, with a way back: Skip sits one long-press from Log now.
+    private func skipNote(_ k: (id: String, name: String, shownAt: Millis)) -> some View {
+        HStack(spacing: 12) {
+            Label {
+                Text(t("ios_now_skipped", ["name": .string(k.name)])).font(.subheadline)
+            } icon: {
+                Image(systemName: "arrow.uturn.right.circle").foregroundStyle(.secondary).accessibilityHidden(true)
+            }
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            Button {
+                store.mutate { $0.removeLog(k.id) }
+                lastSkip = nil
+                now = nowMillis()
+            } label: {
+                Text(t("now_undo")).frame(minWidth: 72, minHeight: 44).contentShape(Rectangle())
+            }
+            .buttonStyle(.bordered)
+        }
+        .card()
+    }
+
     private func log(_ track: Track, site: InjectionSite?) {
         let p = track.protocol_
         let loggedAt = nowMillis()
@@ -291,10 +323,11 @@ struct TodayView: View {
     /// A skipped dose is a record, not a gap: nothing comes out of a vial and the streak is not broken.
     /// Dated at the time it was due, so it answers that slot and not another.
     private func skip(_ track: Track, due: Millis) {
-        store.mutate { d in
+        let id = store.mutate { d in
             d.addLog(DoseLog(id: "", profileId: "", protocolId: track.protocol_.id, peptideId: track.protocol_.peptideId, at: due,
                              doseMcg: track.targetMcg, route: track.protocol_.route, skipped: true))
         }
+        lastSkip = (id, track.name, nowMillis())
         now = nowMillis()
     }
 
@@ -317,7 +350,7 @@ struct TodayView: View {
         let overdue = track.due.state == .overdue
         let options = choices(track, logs: logs)
         return VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 6) {
+            AdaptiveStack(spacing: 6) {
                 Pill(text: t(DUE_KEY[track.due.label] ?? "due_now"), tone: overdue ? .rose : .tangerine)
                 Circle().fill(track.tone.color).frame(width: 7, height: 7)
                 Text(track.name).font(.subheadline.weight(.semibold)).foregroundStyle(track.tone.color)
@@ -384,8 +417,8 @@ struct TodayView: View {
                 ForEach(rows, id: \.key) { row in
                     let key = "\(row.track.id):\(row.at)"
                     VStack(alignment: .leading, spacing: 6) {
-                        HStack(spacing: 6) {
-                            Text(formatTime(row.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(width: 64, alignment: .leading)
+                        AdaptiveStack(spacing: 6) {
+                            Text(formatTime(row.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(minWidth: timeColumn, alignment: .leading)
                             Circle().fill(row.track.tone.color).frame(width: 7, height: 7)
                             Text(row.track.name).font(.subheadline.weight(.medium)).foregroundStyle(row.track.tone.color)
                             Text(doseLabel(row.track.targetMcg, row.track.peptide)).font(.footnote.monospacedDigit())

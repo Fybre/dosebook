@@ -214,7 +214,7 @@ struct UpcomingView: View {
                         .padding(.top, 2)
                 } else if days.count > Self.firstDays {
                     Button {
-                        withAnimation(.easeInOut(duration: 0.2)) { showAll.toggle() }
+                        withMotion(.easeInOut(duration: 0.2)) { showAll.toggle() }
                     } label: {
                         Text(showAll ? t("ios_upcoming_fewer") : t("ios_upcoming_more", ["days": .string(t("count_days", ["n": .number(Double(days.count - Self.firstDays))]))]))
                             .font(.footnote.weight(.medium))
@@ -243,7 +243,8 @@ struct UpcomingView: View {
                             VStack(alignment: .leading, spacing: 1) {
                                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                                     if let tone { Circle().fill(tone.color).frame(width: 7, height: 7) }
-                                    Text(r.name).font(.footnote.weight(.medium)).foregroundStyle(tone?.color ?? .primary)
+                                    Text(shortName(r.name)).font(.footnote.weight(.medium)).foregroundStyle(tone?.color ?? .primary).lineLimit(1)
+                                        .accessibilityLabel(r.name)
                                 }
                                 HStack(spacing: 6) {
                                     Text(doseLabel(r.doseMcg, peptide, resolve: { data.peptide($0) })).monospacedDigit()

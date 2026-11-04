@@ -5,6 +5,7 @@ import BenchCore
 /// for a skip, and a bar under any day that was rated. Swipe or use the arrows
 /// to move between months; tap a day to see it below.
 struct LogCalendarView: View {
+    @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiate
     var logs: [DoseLog]
     var checkIns: [CheckIn]
     var palette: Palette
@@ -72,6 +73,7 @@ struct LogCalendarView: View {
             VStack(spacing: 3) {
                 Text(String(LocalTime.calendar.component(.day, from: Date(millis: day))))
                     .font(.subheadline.weight(isToday ? .bold : .regular).monospacedDigit())
+                    .underline(missedDays.contains(day) && !isSelected && differentiate)
                     .foregroundStyle(isSelected ? Color.white : future ? Color.secondary.opacity(0.5) : missedDays.contains(day) ? Tone.rose.color : isToday ? Color.accentColor : Color.primary)
                     .frame(width: 30, height: 30)
                     .background(isSelected ? Color.accentColor : .clear, in: Circle())
@@ -84,7 +86,7 @@ struct LogCalendarView: View {
                             Circle().fill(color).frame(width: 6, height: 6)
                         }
                     }
-                    if marks.count > 4 { Text("+").font(.system(size: 8, weight: .bold)).foregroundStyle(.secondary) }
+                    if marks.count > 4 { Text("+").font(.caption2.weight(.bold)).foregroundStyle(.secondary) }
                 }
                 .frame(height: 6)
                 Capsule().fill(tone?.color ?? .clear).frame(width: 14, height: 2)

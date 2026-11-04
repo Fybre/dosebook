@@ -4,6 +4,8 @@ import BenchStore
 
 /// Every dose, a day at a time, with how each day went beside the doses taken on it.
 struct LogView: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @ScaledMetric(relativeTo: .caption) private var timeColumn: CGFloat = 64
     @Environment(AppStore.self) private var store
     @Environment(\.tabReselects) private var reselects
     @AppStorage("bench.logMode") private var mode = Mode.list
@@ -176,11 +178,11 @@ struct LogView: View {
         }
         .readableWidth()
         .onScrollGeometryChange(for: Bool.self) { $0.contentOffset.y > 1500 } action: { _, far in
-            withAnimation(.easeOut(duration: 0.2)) { farDown = far }
+            withMotion(.easeOut(duration: 0.2)) { farDown = far }
         }
         .overlay(alignment: .bottomTrailing) {
             if farDown && mode == .list {
-                Button { withAnimation { proxy.scrollTo("top", anchor: .top) } } label: {
+                Button { withMotion { proxy.scrollTo("top", anchor: .top) } } label: {
                     Image(systemName: "arrow.up").font(.headline).padding(14)
                 }
                 .buttonStyle(.borderedProminent)
@@ -192,7 +194,7 @@ struct LogView: View {
             }
         }
         // Tapping the Log tab while already on it goes back to the top.
-        .onChange(of: reselects["log"] ?? 0) { _, _ in withAnimation { proxy.scrollTo("top", anchor: .top) } }
+        .onChange(of: reselects["log"] ?? 0) { _, _ in withMotion { proxy.scrollTo("top", anchor: .top) } }
         .debugAnchor(proxy)
         }
     }
@@ -201,17 +203,17 @@ struct LogView: View {
     private func missedRow(_ m: MissedDose, data: AppData, palette: Palette) -> some View {
         let p = data.peptide(m.peptideId)
         let tone = doseColor(palette, protocolId: m.protocolId, peptideId: m.peptideId)
-        return HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Text(formatTime(m.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(width: 64, alignment: .leading)
+        return AdaptiveStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(formatTime(m.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(minWidth: timeColumn, alignment: .leading)
             VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 6) {
+                AdaptiveStack(spacing: 6) {
                     Image(systemName: "xmark.circle.fill").foregroundStyle(Tone.rose.color).font(.caption)
                     Text(p?.name ?? m.peptideId).font(.subheadline.weight(.medium)).foregroundStyle(tone?.color ?? .primary)
                     Text(doseLabel(m.doseMcg, p)).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                 }
-                HStack(spacing: 8) {
+                AdaptiveStack(spacing: 8) {
                     Pill(text: t("ios_missed"), tone: .rose)
-                    Spacer()
+                    if !typeSize.isAccessibilitySize { Spacer() }
                     Button(t("ios_missed_skip")) { store.mutate { _ = $0.logMissed(m, skipped: true) } }
                         .buttonStyle(.bordered).controlSize(.small)
                     Button(t("ios_missed_log")) { store.mutate { _ = $0.logMissed(m) } }
@@ -296,15 +298,17 @@ private struct LogRow: View {
     var peptide: Peptide? = nil
     /// The earlier day this dose counts toward, when it was taken in the early hours.
     var countedFor: Millis? = nil
+    /// Wide enough for "11:00 PM" at the user's text size.
+    @ScaledMetric(relativeTo: .caption) private var timeColumn: CGFloat = 64
 
     var body: some View {
         let l = log
         // Only a dose that went into tissue shows a site; old records carry one whatever the route.
         let site = l.site.flatMap { !l.isSkipped && routeHasSite(l.route) ? siteLabel($0) : nil }
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Text(formatTime(l.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(width: 64, alignment: .leading)
+        AdaptiveStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(formatTime(l.at)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(minWidth: timeColumn, alignment: .leading)
             VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
+                AdaptiveStack(spacing: 6) {
                     if let tone { Circle().fill(tone.color).frame(width: 8, height: 8) }
                     Text(name).font(.subheadline.weight(.medium)).foregroundStyle(tone?.color ?? .primary)
                     if l.isSkipped { Pill(text: t("log_skipped"), tone: .rose) }
@@ -333,7 +337,7 @@ private struct LogRow: View {
                 }
                 if let notes = l.notes { Text(notes).font(.caption).foregroundStyle(.secondary) }
             }
-            Spacer(minLength: 0)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .contentShape(Rectangle())
     }

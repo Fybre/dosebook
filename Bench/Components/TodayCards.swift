@@ -234,12 +234,12 @@ struct WeightCard: View {
 
     private func stat(_ label: String, _ value: String, _ unit: String, _ tone: Tone?, _ hint: String?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(label.uppercased()).font(.system(size: 9, weight: .semibold)).foregroundStyle(.secondary)
+            Text(label.uppercased()).font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(value).font(.headline.monospacedDigit()).foregroundStyle(tone?.color ?? .primary)
                 Text(unit).font(.caption2).foregroundStyle(.secondary)
             }
-            if let hint { Text(hint).font(.system(size: 9)).foregroundStyle(.secondary) }
+            if let hint { Text(hint).font(.caption2).foregroundStyle(.secondary) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(8).background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 8))

@@ -230,9 +230,9 @@ struct ProjectionPreviewView: View {
 
     private func figure(_ label: String, _ value: String, _ hint: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(label.uppercased()).font(.system(size: 9, weight: .semibold)).foregroundStyle(.secondary).lineLimit(2)
+            Text(label.uppercased()).font(.caption2.weight(.semibold)).foregroundStyle(.secondary).lineLimit(2)
             Text(value).font(.headline.monospacedDigit())
-            Text(hint).font(.system(size: 9)).foregroundStyle(.secondary)
+            Text(hint).font(.caption2).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(8).background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 8))
