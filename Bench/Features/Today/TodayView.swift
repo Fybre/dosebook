@@ -124,7 +124,7 @@ struct TodayView: View {
             case .checkIn: CheckInCard(now: now)
             case .bloodwork: LabsCard()
             case .trends:
-                if !mine.protocols.isEmpty { InsightsView(tracks: c.tracks, logs: mine.logs, now: now) }
+                if !mine.protocols.isEmpty { InsightsView(tracks: c.tracks, logs: mine.logs, now: now).id("trends") }
             case .worthSorting: worthSorting(c.tracks, data: data)
             }
         }

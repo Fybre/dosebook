@@ -495,21 +495,54 @@ struct InsightsView: View {
     var tracks: [Track]
     var logs: [DoseLog]
     var now: Millis
+    /// The compound the bars are for; until one is picked, the one logged most recently.
+    @State private var chosenId: String?
+
+    /// One entry per compound on a protocol, in the order of the protocols.
+    private var compounds: [(id: String, name: String)] {
+        var seen = Set<String>()
+        return tracks.compactMap { track in
+            let id = track.protocol_.peptideId
+            return seen.insert(id).inserted ? (id, track.peptide?.name ?? track.name) : nil
+        }
+    }
 
     var body: some View {
-        let weeks = weeklyExposure(logs, now)
-        if !tracks.isEmpty, weeks.contains(where: { $0.totalMcg > 0 }) {
+        let options = compounds
+        let latest = options.max { a, b in
+            (logs.filter { $0.peptideId == a.id && !$0.isSkipped }.map(\.at).max() ?? 0) < (logs.filter { $0.peptideId == b.id && !$0.isSkipped }.map(\.at).max() ?? 0)
+        }?.id
+        let current = options.contains(where: { $0.id == chosenId }) ? chosenId : latest
+        let weeks = weeklyExposure(logs, now, peptideId: current)
+        if !tracks.isEmpty, logs.contains(where: { l in !l.isSkipped && options.contains { $0.id == l.peptideId } }) {
             Text(t("now_trends").uppercased()).font(.caption.bold()).foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 8) {
-                HStack { Text(t("now_weekly_exposure")).font(.subheadline.bold()); Spacer(); Text(t("now_last_8_weeks")).font(.caption).foregroundStyle(.secondary) }
+                HStack {
+                    Text(t("now_weekly_exposure")).font(.subheadline.bold())
+                    Spacer()
+                    Text(t("ios_last_8_weeks")).font(.caption).foregroundStyle(.secondary)
+                }
+                if options.count > 1 {
+                    Picker(t("ios_exposure_compound"), selection: Binding(get: { current ?? "" }, set: { chosenId = $0 })) {
+                        ForEach(options, id: \.id) { Text($0.name).tag($0.id) }
+                    }
+                    .pickerStyle(.menu).labelsHidden()
+                } else if let only = options.first {
+                    Text(only.name).font(.footnote.weight(.semibold))
+                }
                 Text(t("now_weekly_desc")).font(.caption).foregroundStyle(.secondary)
                 Chart(Array(weeks.enumerated()), id: \.offset) { i, w in
-                    BarMark(x: .value("week", "\(LocalTime.calendar.component(.day, from: Date(millis: w.weekStart)))"), y: .value("mcg", w.totalMcg))
+                    // The week's first day, which is what tells the bars apart.
+                    BarMark(x: .value("week", formatDate(w.weekStart)), y: .value("mcg", w.totalMcg))
                         .foregroundStyle(Color.accentColor.opacity(i == weeks.count - 1 ? 1 : 0.4))
+                        .annotation(position: .top) {
+                            if w.totalMcg > 0 { Text(formatDose(w.totalMcg)).font(.caption2.monospacedDigit()).foregroundStyle(.secondary).lineLimit(1).minimumScaleFactor(0.6) }
+                        }
                         .accessibilityLabel(t("now_week_tooltip", ["date": .string(formatDate(w.weekStart)), "total": .string(formatDose(w.totalMcg)), "doses": .string(t("count_doses", ["n": .number(Double(w.doses))]))]))
                 }
                 .chartYAxis(.hidden)
-                .frame(height: 110).chartWhenActive(height: 110)
+                .chartXAxis { AxisMarks { _ in AxisValueLabel().font(.caption2) } }
+                .frame(height: 130).chartWhenActive(height: 130)
                 (Text(t("now_this_week") + " ") + Text(formatDose(weeks.last!.totalMcg)).bold()
                  + Text(" " + t("now_across_doses", ["doses": .string(t("count_doses", ["n": .number(Double(weeks.last!.doses))]))])))
                     .font(.footnote).foregroundStyle(.secondary)
