@@ -90,7 +90,7 @@ jobs:
         # DOSEBOOK_PROFILE_SPECIFIER, which only the app target reads (see project.yml).
         run: |
           set -euo pipefail
-          xcodebuild archive -project Bench.xcodeproj -scheme BenchMac -configuration Release \
+          xcodebuild archive -project Dosebook.xcodeproj -scheme DosebookMac -configuration Release \
             -archivePath "$RUNNER_TEMP/Dosebook.xcarchive" \
             CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Developer ID Application" \
             DEVELOPMENT_TEAM="$TEAM_ID" DOSEBOOK_PROFILE_SPECIFIER="$PROFILE_NAME" \

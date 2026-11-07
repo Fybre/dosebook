@@ -1,4 +1,4 @@
-// Draws the app icon: swift tools/make-icon.swift Bench/Assets.xcassets/AppIcon.appiconset
+// Draws the app icon: swift tools/make-icon.swift Dosebook/Assets.xcassets/AppIcon.appiconset
 import AppKit
 
 func color(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {

@@ -1,4 +1,4 @@
-name: Bench
+name: Dosebook
 options:
   bundleIdPrefix: me.fybre
   deploymentTarget:
@@ -10,33 +10,33 @@ settings:
     SWIFT_VERSION: "6.0"
     # No team here: the release target stays unsigned until its name is settled,
     # because its first signed build creates an iCloud container, which can never
-    # be deleted or renamed. The BenchTest target carries the team instead.
+    # be deleted or renamed. The DosebookTest target carries the team instead.
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
 packages:
-  BenchCore:
-    path: BenchCore
+  DosebookCore:
+    path: DosebookCore
 targets:
-  Bench:
+  Dosebook:
     type: application
     scheme: {}
     platform: iOS
     sources:
-      - path: Bench
-        excludes: [Info-Test.plist, BenchTest.entitlements]
+      - path: Dosebook
+        excludes: [Info-Test.plist, DosebookTest.entitlements]
       - path: Shared
       - path: Widgets
         includes: [WidgetViews.swift]
     dependencies:
-      - package: BenchCore
-        product: BenchCore
-      - package: BenchCore
-        product: BenchStore
+      - package: DosebookCore
+        product: DosebookCore
+      - package: DosebookCore
+        product: DosebookStore
       - target: DosebookWidgets
     entitlements:
-      path: Bench/Bench.entitlements
+      path: Dosebook/Dosebook.entitlements
       properties:
         com.apple.security.application-groups: [group.me.fybre.dosebook]
         com.apple.developer.icloud-container-identifiers: [iCloud.me.fybre.dosebook]
@@ -45,12 +45,12 @@ targets:
         com.apple.developer.healthkit: true
         com.apple.developer.healthkit.access: []
     info:
-      path: Bench/Info.plist
+      path: Dosebook/Info.plist
       properties:
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         CFBundleDisplayName: Dosebook
-        BenchAppGroup: group.me.fybre.dosebook
+        DosebookAppGroup: group.me.fybre.dosebook
         UILaunchScreen: {}
         UIBackgroundModes: [remote-notification]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
@@ -77,36 +77,36 @@ targets:
   # A test build for real devices: its own bundle id, no iCloud (nothing permanent
   # in the Apple account), data on the phone only. Moves to the release app later
   # through an exported backup.
-  BenchTest:
+  DosebookTest:
     type: application
     scheme: {}
     platform: iOS
     sources:
-      - path: Bench
-        excludes: [Info.plist, Bench.entitlements]
+      - path: Dosebook
+        excludes: [Info.plist, Dosebook.entitlements]
       - path: Shared
       - path: Widgets
         includes: [WidgetViews.swift]
     dependencies:
-      - package: BenchCore
-        product: BenchCore
-      - package: BenchCore
-        product: BenchStore
+      - package: DosebookCore
+        product: DosebookCore
+      - package: DosebookCore
+        product: DosebookStore
       # Widgets are off until an App Group is registered for the account (it makes a
       # permanent identifier, so it waits on the name). To turn them on: add
-      # `- target: BenchWidgets` here and
+      # `- target: DosebookTestWidgets` here and
       # `com.apple.security.application-groups: [group.me.fybre.dosebook.test]` below,
       # and register that group. See docs/PLAN.md.
     entitlements:
-      path: Bench/BenchTest.entitlements
+      path: Dosebook/DosebookTest.entitlements
       properties:
         com.apple.developer.healthkit: true
         com.apple.developer.healthkit.access: []
     info:
-      path: Bench/Info-Test.plist
+      path: Dosebook/Info-Test.plist
       properties:
         CFBundleDisplayName: Dosebook Test
-        BenchAppGroup: group.me.fybre.dosebook.test
+        DosebookAppGroup: group.me.fybre.dosebook.test
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UISupportedInterfaceOrientations~ipad:
@@ -128,21 +128,21 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         TARGETED_DEVICE_FAMILY: "1,2"
-  # The Mac app, on the same test track as BenchTest: local data only, no iCloud
+  # The Mac app, on the same test track as DosebookTest: local data only, no iCloud
   # and no team, signed only to run on this Mac. It shares every view with iOS.
-  BenchTestMac:
+  DosebookTestMac:
     type: application
     scheme: {}
     platform: macOS
     sources:
-      - path: Bench
-        excludes: [Info.plist, Info-Test.plist, Bench.entitlements, BenchTest.entitlements]
+      - path: Dosebook
+        excludes: [Info.plist, Info-Test.plist, Dosebook.entitlements, DosebookTest.entitlements]
       - path: Shared
     dependencies:
-      - package: BenchCore
-        product: BenchCore
-      - package: BenchCore
-        product: BenchStore
+      - package: DosebookCore
+        product: DosebookCore
+      - package: DosebookCore
+        product: DosebookStore
     info:
       path: MacSupport/Info.plist
       properties:
@@ -165,19 +165,19 @@ targets:
   # The Mac release app: sandboxed, signed with the team, and entitled to the same iCloud
   # container as the iPhone app, so the two sync. No LOCAL_ONLY, so it uses iCloud when
   # the Mac is signed in. Shares every view with iOS.
-  BenchMac:
+  DosebookMac:
     type: application
     scheme: {}
     platform: macOS
     sources:
-      - path: Bench
-        excludes: [Info.plist, Info-Test.plist, Bench.entitlements, BenchTest.entitlements]
+      - path: Dosebook
+        excludes: [Info.plist, Info-Test.plist, Dosebook.entitlements, DosebookTest.entitlements]
       - path: Shared
     dependencies:
-      - package: BenchCore
-        product: BenchCore
-      - package: BenchCore
-        product: BenchStore
+      - package: DosebookCore
+        product: DosebookCore
+      - package: DosebookCore
+        product: DosebookStore
     entitlements:
       path: MacSupport/Dosebook.entitlements
       properties:
@@ -210,13 +210,13 @@ targets:
         ENABLE_HARDENED_RUNTIME: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-  # The release app's widget: same code as BenchWidgets, under the release bundle id and App Group.
+  # The release app's widget: same code as DosebookTestWidgets, under the release bundle id and App Group.
   DosebookWidgets:
     type: app-extension
     platform: iOS
     sources:
       - path: Widgets
-        excludes: [BenchWidgets.entitlements, Info.plist, DosebookWidgets.entitlements]
+        excludes: [DosebookTestWidgets.entitlements, Info.plist, DosebookWidgets.entitlements]
       - path: Shared
     entitlements:
       path: Widgets/DosebookWidgets.entitlements
@@ -228,7 +228,7 @@ targets:
         CFBundleDisplayName: Dosebook
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
-        BenchAppGroup: group.me.fybre.dosebook
+        DosebookAppGroup: group.me.fybre.dosebook
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
@@ -239,22 +239,22 @@ targets:
         SKIP_INSTALL: YES
   # The Home Screen and Lock Screen widget: the next dose, today's ring, and a Log
   # button. Test build only; the release app gets one when its name is settled.
-  BenchWidgets:
+  DosebookTestWidgets:
     type: app-extension
     platform: iOS
     sources:
       - path: Widgets
-        excludes: [BenchWidgets.entitlements]
+        excludes: [DosebookTestWidgets.entitlements]
       - path: Shared
     entitlements:
-      path: Widgets/BenchWidgets.entitlements
+      path: Widgets/DosebookTestWidgets.entitlements
       properties:
         com.apple.security.application-groups: [group.me.fybre.dosebook.test]
     info:
       path: Widgets/Info.plist
       properties:
         CFBundleDisplayName: Dosebook Test
-        BenchAppGroup: group.me.fybre.dosebook.test
+        DosebookAppGroup: group.me.fybre.dosebook.test
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:

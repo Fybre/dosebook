@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Exports the Bench reference library and UI copy (TypeScript) to JSON resources for BenchCore.
+// Exports the Bench reference library and UI copy (TypeScript) to JSON resources for DosebookCore.
 //
 //   node tools/export-library.mjs <path-to-Bench-clone>
 //
@@ -17,7 +17,7 @@ if (!src) {
   process.exit(1);
 }
 const here = dirname(fileURLToPath(import.meta.url));
-const out = resolve(here, "../BenchCore/Sources/BenchCore/Resources");
+const out = resolve(here, "../DosebookCore/Sources/DosebookCore/Resources");
 const work = mkdtempSync(join(tmpdir(), "bench-lib-"));
 const groups = ["metabolic", "repair", "growth", "anabolic", "ancillary"];
 

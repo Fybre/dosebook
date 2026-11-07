@@ -26,8 +26,8 @@ team to sign for a device.
 
 ```sh
 brew install xcodegen
-xcodegen generate          # makes Bench.xcodeproj from project.yml (it is not committed)
-open Bench.xcodeproj
+xcodegen generate          # makes Dosebook.xcodeproj from project.yml (it is not committed)
+open Dosebook.xcodeproj
 ```
 
 `project.yml` carries the author's team id and bundle ids (`me.fybre.dosebook`). To build your own copy,
@@ -35,18 +35,18 @@ change `DEVELOPMENT_TEAM`, the bundle ids and the iCloud container to ones in yo
 
 | Scheme | What it is |
 | --- | --- |
-| `Bench` | The iPhone and iPad app, with iCloud. |
-| `BenchMac` | The Mac app: sandboxed, signed, same iCloud container. |
-| `BenchTest`, `BenchTestMac` | Local-only test builds: no iCloud, nothing in your Apple account beyond the app id. |
+| `Dosebook` | The iPhone and iPad app, with iCloud. |
+| `DosebookMac` | The Mac app: sandboxed, signed, same iCloud container. |
+| `DosebookTest`, `DosebookTestMac` | Local-only test builds: no iCloud, nothing in your Apple account beyond the app id. |
 
-The Swift sources are in `Bench/` (screens), `BenchCore/` (a Swift package: the calculations, the
+The Swift sources are in `Dosebook/` (screens), `DosebookCore/` (a Swift package: the calculations, the
 library, and the SwiftData/CloudKit store), `Shared/` and `Widgets/`. Widgets and Shortcuts are written
 but switched off until an App Group is registered; see `docs/PLAN.md`.
 
 ## Tests
 
 ```sh
-tools/test.sh              # the BenchCore suite, in four time zones
+tools/test.sh              # the DosebookCore suite, in four time zones
 ```
 
 The dose maths is local-time, so it is tested across zones and daylight saving.

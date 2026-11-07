@@ -1,10 +1,10 @@
 #!/bin/sh
-# Runs the BenchCore suite in several time zones. The original runs its tests in
+# Runs the DosebookCore suite in several time zones. The original runs its tests in
 # America/New_York; DST bugs only show in some zones, so check more than one.
 set -e
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
-cd "$(dirname "$0")/../BenchCore"
+cd "$(dirname "$0")/../DosebookCore"
 for tz in America/New_York Europe/London Asia/Kolkata Australia/Sydney; do
   echo "== TZ=$tz"
-  TZ=$tz swift test --scratch-path "${TMPDIR:-/tmp}/bench2-build" "$@" 2>&1 | sed "s/\x1b\[[0-9;]*m//g" | grep -E "[.]swift:[0-9]+:[0-9]+:? (error|invalid)|error: /|recorded an issue|Test run with" | tail -40
+  TZ=$tz swift test --scratch-path "${TMPDIR:-/tmp}/dosebook-build" "$@" 2>&1 | sed "s/\x1b\[[0-9;]*m//g" | grep -E "[.]swift:[0-9]+:[0-9]+:? (error|invalid)|error: /|recorded an issue|Test run with" | tail -40
 done

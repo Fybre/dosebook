@@ -46,7 +46,7 @@ struct PendingLog: Codable { var protocolId: String; var doseAt: Double; var log
 
 enum SharedStore {
     /// Named in each target's Info.plist, so the test and release builds keep apart.
-    static var group: String? { Bundle.main.object(forInfoDictionaryKey: "BenchAppGroup") as? String }
+    static var group: String? { Bundle.main.object(forInfoDictionaryKey: "DosebookAppGroup") as? String }
     static var directory: URL? { group.flatMap { FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: $0) } }
     private static var snapshotURL: URL? { directory?.appendingPathComponent("widget-snapshot.json") }
     private static var pendingDirectory: URL? {

@@ -47,7 +47,7 @@ Defaults chosen by me, which the user can override:
 **Renamed to Dosebook (decided with the user; no reply had come from the original's author).** User-facing
 name, bundle ids (`me.fybre.dosebook`, `.test`), the planned iCloud container `iCloud.me.fybre.dosebook`
 and the planned App Group `group.me.fybre.dosebook.test` are all changed in `project.yml`. Internal names
-(targets `Bench`/`BenchTest`, folders, `BenchCore`) stay as they are. Deliberately unchanged: the SwiftData store
+(targets, folders and the `DosebookCore` package) were renamed to match in a later pass. Deliberately unchanged: the SwiftData store
 name "Bench" (so on-disk data keeps its place), `bench.*` UserDefaults keys, and every mention of the original
 Bench project (About, credits, "a Dosebook or Bench backup"). Auto-backups go to `Documents/Dosebook`. The
 test app now installs as a **new** app (new bundle id), so move data across with an exported backup. Still not
@@ -116,24 +116,24 @@ Principles from the original that the port must keep:
 ## 4. Architecture
 
 ```
-bench2/
+dosebook/
   project.yml                 XcodeGen spec: iOS app target (+ macOS later), tests
   docs/PLAN.md
   README.md
   tools/
     export-library.mjs        TS library -> JSON (copies data files to a temp dir, rewrites
                               extensionless imports to .ts, runs with node type stripping)
-  BenchCore/                  Swift package, pure logic, no SwiftUI, no I/O
+  DosebookCore/                  Swift package, pure logic, no SwiftUI, no I/O
     Package.swift
-    Sources/BenchCore/
+    Sources/DosebookCore/
       Model/                  Codable structs mirroring types.ts (JSON-compatible with Bench backups)
       Calc/                   1:1 ports of src/lib/calc/*.ts
       Data/                   Library loader; Resources/peptides.json, labs.json
       Import/                 CSV/TSV/JSON/XLSX/PDF readers
       Migrate.swift, Format.swift, Rescue.swift
-    Tests/BenchCoreTests/     ports of the key test files
-  Bench/                      SwiftUI app
-    App/                      BenchApp, root TabView, theme (teal accent)
+    Tests/DosebookCoreTests/     ports of the key test files
+  Dosebook/                   SwiftUI app
+    App/                      DosebookApp, root TabView, theme (teal accent)
     Persistence/              SwiftData + CloudKit store, AppStore
     Features/                 Today, Plan, Log, Stock, Calculator, Library, Labs, CheckIns,
                               Settings, Report, About, Import
@@ -141,7 +141,7 @@ bench2/
     Platform/                 HealthKit (read only), local notifications, ICS export, share/export
 ```
 
-### Domain model (BenchCore)
+### Domain model (DosebookCore)
 - Port every type in `types.ts` as an `Equatable, Codable` struct or enum. Use the **same JSON keys**,
   so a Bench backup (`.json` export) imports directly and exports stay compatible with the web/Android app.
 - Rename `Protocol` to `DoseProtocol`, because `Protocol` collides with a Swift keyword.
@@ -183,7 +183,7 @@ bench2/
 - `activeProfileId` is **per device** (UserDefaults). It is still written into exports.
 - Fallback: if CloudKit is unavailable (no account or entitlement, or an unsigned simulator), use a
   local-only store and show the sync state in Settings.
-- The future macOS app reuses BenchCore + Persistence + most views as a multiplatform target.
+- The future macOS app reuses DosebookCore + Persistence + most views as a multiplatform target.
 
 ### Theme
 System colours and grouped `List`/`Form` styles. A teal accent (for example `Color.teal`, or a custom
@@ -205,14 +205,14 @@ body site map are hand-drawn with SwiftUI `Canvas`/`Shape`, porting `barrel.ts` 
 
 ## 5. Work order (phases)
 
-Each phase ends with `swift test` (BenchCore) and an app build for the simulator:
-`xcodebuild -scheme Bench -destination 'platform=iOS Simulator,name=iPhone 17' build`.
+Each phase ends with `swift test` (DosebookCore) and an app build for the simulator:
+`xcodebuild -scheme Dosebook -destination 'platform=iOS Simulator,name=iPhone 17' build`.
 
-1. **Scaffold.** Run `git init`, create `project.yml`, the BenchCore package, the app shell with a TabView
+1. **Scaffold.** Run `git init`, create `project.yml`, the DosebookCore package, the app shell with a TabView
    (Today, Plan, Log, Stock, More), the teal theme, and entitlements (iCloud/CloudKit, HealthKit,
    background remote notifications for CloudKit).
 2. **Library export.** Write `tools/export-library.mjs` to produce `peptides.json` (49 compounds) and `labs.json`
-   (16 markers) as BenchCore resources, plus a test that every compound decodes and the ids are unique.
+   (16 markers) as DosebookCore resources, plus a test that every compound decodes and the ids are unique.
 3. **Model + migrate + format.** Port `types.ts`, `migrate.ts` (incl. the v2 vial drawnMl→drawnMcg,
    orphan adoption, check-in day dedupe, note dedupe, sane overrides/orders/bottles), and `format.ts`.
    Add a round-trip test with a real Bench export.
@@ -241,8 +241,8 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
 ## 6. Where the last session stopped
 
 **Done (all committed, `./tools/test.sh` green in four time zones):**
-- `git init`, `.gitignore`, `BenchCore` Swift package (`swift-tools-version 6.0`, iOS 18 / macOS 15).
-- `tools/export-library.mjs` → `BenchCore/Sources/BenchCore/Resources/{peptides,labs}.json`
+- `git init`, `.gitignore`, `DosebookCore` Swift package (`swift-tools-version 6.0`, iOS 18 / macOS 15).
+- `tools/export-library.mjs` → `DosebookCore/Sources/DosebookCore/Resources/{peptides,labs}.json`
   (50 compounds, not 49; 16 markers). `Library` loads them.
 - Model (`Model/`): all of `types.ts`. Design decisions taken while porting:
   - String unions are `StringEnum` **structs** (raw string + static constants), so an unknown value
@@ -265,7 +265,7 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
 **Build/test notes:**
 - Use the Xcode toolchain (`DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`), or
   `import Testing` fails.
-- Build outside `~/Documents` (`--scratch-path $TMPDIR/bench2-build`): iCloud-synced Documents
+- Build outside `~/Documents` (`--scratch-path $TMPDIR/dosebook-build`): iCloud-synced Documents
   adds extended attributes and codesign of the test bundle fails. `tools/test.sh` does both.
 
 - Remaining calc ported with tests (custom, infer, reminders, ics, rescue, backupnag, document,
@@ -274,14 +274,14 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
   Not ported on purpose: firstBackup and sync (hosted sync), recover.ts (web chunk recovery),
   changelog.ts (iOS gets its own).
 - `Store/Actions.swift`: every store.ts action as an `AppData` mutation.
-- `BenchStore`: envelope records in SwiftData (CloudKit private DB when signed in, local
+- `DosebookStore`: envelope records in SwiftData (CloudKit private DB when signed in, local
   otherwise), per-row diff writes, dedupe on load, row order kept across reloads, rescue copy,
   `AppStore.mutate {}`.
-- App (XcodeGen `project.yml`, `Bench.xcodeproj` is generated and ignored): every screen of the
+- App (XcodeGen `project.yml`, `Dosebook.xcodeproj` is generated and ignored): every screen of the
   original. Now, Plan, Log a dose (drawn syringe), Log (diary), Stock (vials, groups, orders, packs,
   sprays, water shelf), Calculator, Library + peptide detail, Bloodwork, Report (PDF via
   UIMarkupTextPrintFormatter), Settings, About (iOS changelog, MIT notice for the original).
-- Import (`BenchCore/Import`): CSV/TSV, JSON (ordered keys), xlsx (own zip reader + Compression
+- Import (`DosebookCore/Import`): CSV/TSV, JSON (ordered keys), xlsx (own zip reader + Compression
   inflate), PDF text layer, lab reports, Shotsy and generic profiles, import plan. All original
   tests ported. The app adds a PDFKit fallback for PDFs the built-in reader cannot follow.
 - Platform: local notifications re-armed on every change (`Platform/ReminderScheduler`), ICS via the
@@ -289,14 +289,14 @@ Each phase ends with `swift test` (BenchCore) and an app build for the simulator
   stored with source `health-connect` for file compatibility, ids prefixed `hk:`), rotating backups
   in Documents/Bench (visible in Files), app icon (`tools/make-icon.swift`).
 - Hardening done: performance over three years of history (chart prefilters doses, Stock outlook
-  cached; tests in BenchStoreTests), Dynamic Type at accessibility sizes, VoiceOver labels.
+  cached; tests in DosebookStoreTests), Dynamic Type at accessibility sizes, VoiceOver labels.
 - Debug launch args: `-demo`, `-demoLarge`, `-tab now|plan|log|stock|more|calculator|library|labs|report|settings|about`, `-anchor <id>`,
   `-log [peptideId]`, `-more calculator|library|labs|report|settings|about|importer [peptideId]`,
   `-importFile <path>`, `-editCompound <id>`, `-theme light|dark`, `-dayDetail <days ago>`, `-injectlyFiles a.csv,b.csv` (with `-more importer`), `-weightTrend`, `-scanImage <png>` (opens Plan's scan), `-stockScan` (Stock's scan), `-vialLeft`, `-seedInjectly a.csv,...`. `tools/shot.sh <tab> out.png [args]` builds, launches and screenshots.
 
-**Test builds on a phone:** scheme `BenchTest` (bundle `me.fybre.dosebook.test`, shown as "Dosebook Test",
+**Test builds on a phone:** scheme `DosebookTest` (bundle `me.fybre.dosebook.test`, shown as "Dosebook Test",
 signed with team 8BD49F6FX5, no iCloud entitlement, `LOCAL_ONLY` so the store is this device only).
-Data moves to the release app through an exported backup. The release `Bench` target has no team on
+Data moves to the release app through an exported backup. The release `Dosebook` target has no team on
 purpose, so it cannot be signed until its name is settled.
 
 **Needs the user / real devices:** `DEVELOPMENT_TEAM` is set (8BD49F6FX5). Waiting on the app's
@@ -306,7 +306,7 @@ between two devices on one Apple ID, HealthKit permission and reads on a phone, 
 delivery, and Files visibility of Documents/Bench.
 
 **iPad and Mac (started 2026-10-24):**
-- Scheme `BenchTestMac` (macOS 15, bundle `me.fybre.dosebook.test`, "Dosebook Test"): the same `Bench/`
+- Scheme `DosebookTestMac` (macOS 15, bundle `me.fybre.dosebook.test`, "Dosebook Test"): the same `Dosebook/`
   sources, `LOCAL_ONLY`, ad-hoc signed to run on this Mac, no team and no iCloud. Its Info.plist is
   in `MacSupport/`. A release Mac target waits on the app's name, like the iOS one.
 - `Platform/PlatformShims.swift` holds the few iOS/macOS differences (`inlineTitle()`,
@@ -333,9 +333,9 @@ delivery, and Files visibility of Documents/Bench.
   Lock Screen faces, with a Log button). The app writes `widget-snapshot.json` into an App Group
   (`WidgetSync`) and applies doses logged from outside (`applyPending`). They need
   `group.me.fybre.dosebook.test` registered on the Apple account, which Xcode here cannot do (no
-  signed-in account) and which is permanent, so BenchTest neither embeds the widget nor holds the
+  signed-in account) and which is permanent, so DosebookTest neither embeds the widget nor holds the
   entitlement; without a group the shared code does nothing. To turn on: register the group,
-  add `- target: BenchWidgets` and the `application-groups` entitlement to BenchTest in
+  add `- target: DosebookTestWidgets` and the `application-groups` entitlement to DosebookTest in
   project.yml. `-widgetPreview` draws every face in the app.
 - Also done: pause everything, weight goal, app lock (Settings > Privacy).
 - Not done yet: a Stock table.
