@@ -33,6 +33,7 @@ struct DosebookApp: App {
         WidgetSync.applyPending(store)
         #if os(macOS)
         RunLoopNudge.install()
+        MacUpdates.shared.start()
         #endif
     }
 
@@ -61,6 +62,9 @@ struct DosebookApp: App {
                 }
                 .onChange(of: scenePhase, initial: true) { _, phase in
                     if phase == .active {
+                        #if os(macOS)
+                        Task { await MacUpdates.shared.check() }
+                        #endif
                         store.reload(); BackupFolder.runIfDue(store)
                         WidgetSync.applyPending(store)
                         // Bring all permitted Health readings in when Dosebook opens or returns.
