@@ -23,6 +23,8 @@ struct DoseProvider: TimelineProvider {
             // The moment it is due, and the moment it has been waiting an hour.
             for moment in [at.addingTimeInterval(-3600), at, at.addingTimeInterval(3600)] where moment > now { dates.append(moment) }
         }
+        // Midnight, when "Tomorrow" becomes today.
+        if let midnight = Calendar.current.nextDate(after: now, matching: DateComponents(hour: 0, minute: 0), matchingPolicy: .nextTime) { dates.append(midnight) }
         let unique = Array(Set(dates)).sorted().prefix(24)
         completion(Timeline(entries: unique.map { DoseEntry(date: $0, snapshot: snapshot) }, policy: .after(now.addingTimeInterval(30 * 60))))
     }
@@ -60,6 +62,6 @@ struct DoseWidget: Widget {
 }
 
 @main
-struct BenchWidgetBundle: WidgetBundle {
+struct DosebookWidgetBundle: WidgetBundle {
     var body: some Widget { DoseWidget() }
 }

@@ -37,6 +37,22 @@ struct DoseWidgetView: View {
     }
     private func phaseColor(_ p: Phase) -> Color { p == .overdue ? .red : p == .dueNow ? .orange : widgetTeal }
     private func time(_ d: WidgetDose) -> Text { Text(Date(timeIntervalSince1970: d.at / 1000), style: .time) }
+    /// "Tomorrow", or the weekday for later days. nil for a dose due today, so only the
+    /// ones that are not today carry a mark.
+    private func day(_ d: WidgetDose) -> String? {
+        let cal = Calendar.current, at = Date(timeIntervalSince1970: d.at / 1000)
+        if cal.isDate(at, inSameDayAs: date) { return nil }
+        if cal.isDate(at, inSameDayAs: cal.date(byAdding: .day, value: 1, to: date) ?? date) {
+            let f = DateFormatter()
+            f.dateStyle = .short; f.timeStyle = .none; f.doesRelativeDateFormatting = true
+            return f.string(from: at)
+        }
+        return at.formatted(.dateTime.weekday(.abbreviated))
+    }
+    /// The phase word, with the day after it when the dose is not today.
+    private func phaseLine(_ d: WidgetDose, _ p: Phase) -> String {
+        [phaseText(p), day(d)].compactMap { $0 }.joined(separator: " · ")
+    }
     private func name(_ d: WidgetDose) -> String { showNames ? d.name : label("doseWord", "A dose") }
 
     var body: some View {
@@ -95,7 +111,7 @@ struct DoseWidgetView: View {
             Spacer(minLength: 0)
             if let d = doses.first {
                 let p = phase(d)
-                Text(phaseText(p).uppercased()).font(.system(size: 10, weight: .bold)).foregroundStyle(phaseColor(p))
+                Text(phaseLine(d, p).uppercased()).font(.system(size: 10, weight: .bold)).foregroundStyle(phaseColor(p))
                 time(d).font(.title3.bold())
                 Text(name(d)).font(.caption).lineLimit(1).privacySensitive()
                 if let left = leftText(d) { Text(left).font(.caption2).foregroundStyle(.secondary).lineLimit(1) }
@@ -120,6 +136,7 @@ struct DoseWidgetView: View {
                         let p = phase(d)
                         HStack(spacing: 8) {
                             Circle().fill(phaseColor(p)).frame(width: 7, height: 7)
+                            if let day = day(d) { Text(day).font(.caption2.weight(.semibold)).foregroundStyle(.secondary).lineLimit(1).fixedSize() }
                             time(d).font(.subheadline.weight(.semibold).monospacedDigit()).lineLimit(1).fixedSize()
                             Text(showNames ? "\(d.name)" : label("doseWord", "A dose")).font(.caption).lineLimit(1).truncationMode(.tail).privacySensitive().layoutPriority(1)
                             Spacer(minLength: 0)
@@ -136,7 +153,7 @@ struct DoseWidgetView: View {
         VStack(alignment: .leading, spacing: 1) {
             if let d = doses.first {
                 let p = phase(d)
-                Text(phaseText(p)).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
+                Text(phaseLine(d, p)).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
                 time(d).font(.headline)
                 Text(name(d)).font(.caption).lineLimit(1).privacySensitive()
             } else {
@@ -158,7 +175,7 @@ struct DoseWidgetView: View {
 
     private var inline: some View {
         Group {
-            if let d = doses.first { Text("\(phaseText(phase(d))) \(Text(Date(timeIntervalSince1970: d.at / 1000), style: .time))") }
+            if let d = doses.first { Text("\(phaseLine(d, phase(d))) \(Text(Date(timeIntervalSince1970: d.at / 1000), style: .time))") }
             else { Text(emptyText) }
         }
     }
