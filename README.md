@@ -13,8 +13,14 @@ what you did (doses), with a calculator for reconstitution, estimated levels fro
 half-lives, missed-dose handling, reminders you can log from, bloodwork, weight and how you feel.
 
 **There is no account, no server and no analytics.** Records live on your device and, when you are
-signed in to iCloud, in your own private iCloud database. Apple Health is read-only. Nothing is
-sent anywhere else.
+signed in to iCloud, in your own private iCloud database. Apple Health is read-only. Health records
+are not sent anywhere else. Optional Mac update checks contact GitHub for public release information.
+
+On Mac, **Settings → App updates** offers **Automatically check for updates** (off by default) and
+**Check now**. Automatic checks run daily while the app is running, including when it returns to
+the foreground after a day away. A notice appears once per newer stable Mac release, with a link
+to its release page; installation is manual. The preference stays on this Mac and does not sync
+through iCloud. Closing the app stops checks.
 
 > Dosebook is not medical advice and cannot check what is in your vial. The figures are estimates
 > from a simple model and published half-lives, not blood tests. Talk to whoever looks after your health.

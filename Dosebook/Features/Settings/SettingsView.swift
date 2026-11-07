@@ -45,6 +45,9 @@ struct SettingsView: View {
             RemindersSection()
             HealthSection()
             BackupsSection()
+            #if os(macOS)
+            MacUpdatesSection()
+            #endif
 
             Section {
                 Text(t("ios_data_note")).font(.footnote).foregroundStyle(.secondary)
