@@ -24,10 +24,10 @@ jobs:
         tz: [America/New_York, Europe/London, Asia/Kolkata, Australia/Sydney]
     steps:
       - uses: actions/checkout@v4
-      - name: Test BenchCore
+      - name: Test DosebookCore
         env:
           TZ: ${{ matrix.tz }}
-        run: swift test --package-path BenchCore
+        run: swift test --package-path DosebookCore
 
   build:
     name: Build apps (unsigned)
@@ -64,7 +64,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          xcodebuild -project Bench.xcodeproj -scheme Bench \
+          xcodebuild -project Dosebook.xcodeproj -scheme Dosebook \
             -destination 'generic/platform=iOS Simulator' ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build 2>&1 | tee "$RUNNER_TEMP/ios-build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
           grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/ios-build.log"
@@ -74,7 +74,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          xcodebuild -project Bench.xcodeproj -scheme BenchMac \
+          xcodebuild -project Dosebook.xcodeproj -scheme DosebookMac \
             -destination 'platform=macOS' ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build 2>&1 | tee "$RUNNER_TEMP/mac-build.log" | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
           grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/mac-build.log"
