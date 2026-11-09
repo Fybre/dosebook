@@ -55,7 +55,7 @@ done, on purpose: no release signing, no iCloud container, no App Group register
 
 **Strings edited after export:** `translations.json` is generated from the original, so re-running
 `tools/export-library.mjs` overwrites hand edits. Re-apply these: the Bench→Dosebook renames in `about_title`,
-`report_footer`, `settings_backups_*`, `nav_about`, `hwp_empty_title` ("Nothing in your Dosebook yet"), and
+`report_footer`, `settings_backups_*`, `nav_about`, `hwp_empty_title` ("Nothing in your Dosebook yet"), `stock_from_bottle`/`stock_not_tracked`/`stock_untracked_bottle` (the picker is for the water bottle, which the original's wording did not say), and
 `calc_intro` (the original claims the syringe is drawn to real proportions to hold against the screen; it is
 one shared barrel shape stretched to the screen, so the text now says it is not life-size).
 

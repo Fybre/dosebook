@@ -585,6 +585,101 @@ struct TabletSizeForm: View {
     }
 }
 
+/// Purchase and label details for several identical vials at once. A field starts at the value
+/// every vial shares, or blank when they differ, and only the fields that are changed are written.
+struct BulkVialEditForm: View {
+    @Environment(AppStore.self) private var store
+    var vials: [Vial]
+    @State private var loaded = false
+    @State private var supplier = ""
+    @State private var lot = ""
+    @State private var notes = ""
+    @State private var hasExpiry = false
+    @State private var expiry = Date()
+    @State private var cost: Double?
+    @State private var payCurrency = ""
+    @State private var strengthMg: Double = 0
+    @State private var start = Start()
+
+    /// What each field showed when the form opened, to tell which ones were edited.
+    private struct Start {
+        var supplier = "", lot = "", notes = "", hasExpiry = false, expiry = Date(), cost: Double?, currency = "", strengthMg = 0.0
+    }
+    /// Only whole, untouched vials: a mixed vial, a pack or a spray has more tied to its strength.
+    private var canEditStrength: Bool { vials.allSatisfy { $0.state == .sealed && !isPack($0) && !isSpray($0) } }
+    private var strengthValid: Bool {
+        !canEditStrength || (strengthMg.isFinite && strengthMg > 0 && strengthMg * 1000 >= (vials.map { $0.drawnMcg ?? 0 }.max() ?? 0))
+    }
+    private func shared<V: Equatable>(_ pick: (Vial) -> V?) -> V? {
+        let first = pick(vials[0])
+        return vials.allSatisfy { pick($0) == first } ? first : nil
+    }
+    private func differs<V: Equatable>(_ pick: (Vial) -> V?) -> Bool { shared(pick) == nil && vials.contains { pick($0) != nil } }
+    private func various(_ pick: (Vial) -> String?) -> String? { differs(pick) ? t("ios_vial_various") : nil }
+    private func clean(_ s: String) -> String? {
+        let value = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        return value.isEmpty ? nil : value
+    }
+    private var costValid: Bool { (cost == nil || (cost!.isFinite && cost! >= 0)) && strengthValid }
+
+    var body: some View {
+        Form {
+            Section {
+                Text(store.data.peptide(vials[0].peptideId)?.name ?? vials[0].peptideId).font(.headline)
+                Text(t("ios_vial_edit_all_note", ["n": .number(Double(vials.count))])).font(.footnote).foregroundStyle(.secondary)
+            }
+            if canEditStrength {
+                Section { AmountRow(label: t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000) }
+            }
+            Section(t("ios_vial_purchase")) {
+                TextField(various { $0.supplier } ?? t("stock_source"), text: $supplier)
+                TextField(various { $0.lot } ?? t("ios_scan_lot"), text: $lot).capitalisedCharacters()
+                Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
+                if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
+                OptionalNumberRow(label: t("stock_cost_per_vial_label"), value: $cost, suffix: payCurrency,
+                                  hint: differs { $0.cost } ? t("ios_vial_various") : nil)
+                Picker(t("stock_paid_in"), selection: $payCurrency) {
+                    ForEach(CURRENCIES, id: \.code) { Text("\($0.code) · \($0.label)").tag($0.code) }
+                }
+                TextField(various { $0.notes } ?? t("labs_notes"), text: $notes, axis: .vertical)
+            }
+        }
+        .formChrome(t("ios_vial_edit_all_title", ["n": .number(Double(vials.count))]), confirm: t("save"), disabled: !costValid, action: save)
+        .onAppear(perform: load)
+    }
+
+    private func load() {
+        guard !loaded else { return }; loaded = true
+        supplier = shared { $0.supplier } ?? ""; lot = shared { $0.lot } ?? ""; notes = shared { $0.notes } ?? ""
+        if let at = shared({ $0.expiresAt }) { hasExpiry = true; expiry = Date(millis: at) }
+        cost = shared { $0.cost }
+        payCurrency = shared { $0.currency } ?? store.data.settings.currency
+        strengthMg = vials[0].strengthMg
+        start = Start(supplier: supplier, lot: lot, notes: notes, hasExpiry: hasExpiry, expiry: expiry, cost: cost, currency: payCurrency,
+                      strengthMg: strengthMg)
+    }
+
+    private func save() {
+        let editSupplier = supplier != start.supplier, editLot = lot != start.lot, editNotes = notes != start.notes
+        let editExpiry = hasExpiry != start.hasExpiry || (hasExpiry && expiry != start.expiry)
+        let editCost = cost != start.cost, editCurrency = payCurrency != start.currency
+        let editStrength = canEditStrength && strengthMg != start.strengthMg
+        store.mutate { d in
+            for target in vials {
+                d.updateVial(target.id) { v in
+                    if editStrength { v.strengthMg = strengthMg }
+                    if editSupplier { v.supplier = clean(supplier) }
+                    if editLot { v.lot = clean(lot) }
+                    if editNotes { v.notes = clean(notes) }
+                    if editExpiry { v.expiresAt = hasExpiry ? endOfLocalDay(expiry.millis) : nil }
+                    if editCost { v.cost = cost }
+                    if editCost || editCurrency { v.currency = v.cost == nil ? nil : payCurrency }
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Water
 
 struct AddBottleForm: View {

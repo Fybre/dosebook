@@ -21,7 +21,7 @@ struct StockView: View {
     }
 
     enum StockSheet: Identifiable {
-        case add, scan, history(Vial), edit(Vial), left(Vial), reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), addBottle, useBottle(DiluentBottle)
+        case add, scan, history(Vial), edit(Vial), left(Vial), reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), editAll([Vial]), addBottle, useBottle(DiluentBottle)
         var id: String {
             switch self {
             case .add: "add"
@@ -33,6 +33,7 @@ struct StockView: View {
             case .topUp(let v): "t" + v.id
             case .transfer(let v): "s" + v.id
             case .tabletSize(let vs): "z" + vs[0].id
+            case .editAll(let vs): "ea" + vs[0].id
             case .addBottle: "bottle"
             case .useBottle(let b): "u" + b.id
             }
@@ -148,7 +149,7 @@ struct StockView: View {
                         if isPack(v) || data.peptide(v.peptideId)?.preparation == .tablet {
                             actions.append(.init(t("stock_set_tablet_size"), nil) { sheet = .tabletSize(g?.vials ?? [v]) })
                         }
-                        return VialRow(vial: v, group: g, ctx: ctx, actions: actions, onEdit: { sheet = .edit(v) }, onDelete: { deleting = v }, onHistory: { sheet = .history(v) })
+                        return VialRow(vial: v, group: g, ctx: ctx, actions: actions, onEdit: { sheet = .edit(v) }, onEditAll: g.map { g in { sheet = .editAll(g.vials) } }, onDelete: { deleting = v }, onHistory: { sheet = .history(v) })
                     }
                 } header: { Text(t("stock_sealed")).id("sealed") }
             }
@@ -242,6 +243,7 @@ struct StockView: View {
                 case .topUp(let v): TopUpForm(vial: v)
                 case .transfer(let v): TransferToSprayForm(vial: v)
                 case .tabletSize(let vs): TabletSizeForm(vials: vs)
+                case .editAll(let vs): BulkVialEditForm(vials: vs)
                 case .addBottle: AddBottleForm()
                 case .useBottle(let b): UseElsewhereForm(bottle: b)
                 }
@@ -360,6 +362,7 @@ private struct VialRow: View {
     var ctx: RowContext
     var actions: [VialAction]
     var onEdit: () -> Void
+    var onEditAll: (() -> Void)? = nil
     var onDelete: () -> Void
     var onHistory: (() -> Void)? = nil
 
@@ -445,6 +448,13 @@ private struct VialRow: View {
                             .frame(minHeight: 32)
                     }
                     .buttonStyle(.bordered)
+                    if many, let onEditAll, let g = group {
+                        Button(action: onEditAll) {
+                            Text(t("ios_vial_edit_all", ["n": .number(Double(g.count))]))
+                                .frame(minHeight: 32)
+                        }
+                        .buttonStyle(.bordered)
+                    }
                     Menu {
                         if let onHistory { Button(action: onHistory) { Text(t("ios_vial_history")) }; Divider() }
                         ForEach(actions.indices, id: \.self) { i in
