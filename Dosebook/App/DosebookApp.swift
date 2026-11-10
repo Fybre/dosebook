@@ -2,6 +2,7 @@ import SwiftUI
 import DosebookCore
 import DosebookStore
 import CoreData
+import os
 
 #if os(macOS) && !LOCAL_ONLY
 /// A Mac app has to ask for pushes itself. Even so, while the app sits in the background, development
@@ -180,10 +181,25 @@ enum Bootstrap {
         let wantsCloud = FileManager.default.ubiquityIdentityToken != nil
             && !ProcessInfo.processInfo.arguments.contains("-localOnly")
         #endif
-        if wantsCloud, let records = try? RecordStore(location: .cloud(containerId: containerId)) {
-            return AppStore(records: records)
+        // Which store this launch used, for Console and sysdiagnose when a device misbehaves.
+        let log = Logger(subsystem: "me.fybre.dosebook", category: "launch")
+        log.info("launch: iCloud account \(FileManager.default.ubiquityIdentityToken != nil, privacy: .public), cloud store wanted \(wantsCloud, privacy: .public)")
+        if wantsCloud {
+            do {
+                let records = try RecordStore(location: .cloud(containerId: containerId))
+                log.info("launch: using the iCloud store")
+                return AppStore(records: records)
+            } catch {
+                log.error("launch: iCloud store failed, falling back to this device: \(String(describing: error), privacy: .public)")
+            }
         }
-        if let records = try? RecordStore(location: .local) { return AppStore(records: records) }
+        do {
+            let records = try RecordStore(location: .local)
+            log.info("launch: using the local store")
+            return AppStore(records: records)
+        } catch {
+            log.error("launch: local store failed, using memory only: \(String(describing: error), privacy: .public)")
+        }
         // Last resort, so the app opens rather than crashing; nothing will persist.
         return AppStore(records: try! RecordStore(location: .memory))
     }
