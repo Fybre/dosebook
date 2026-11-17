@@ -584,3 +584,18 @@ private func stockOf(_ mcg: Double) -> Stock {
         #expect(loaded.settings.extra["stockSort"] == nil && loaded.settings.stockSort == .newestFirst)
     }
 }
+
+@Suite struct ReadyMadeLiquidTests {
+    @Test func oilKeepsToTheLabelDate() {
+        // 10 mL of 250 mg/mL, already in use: no beyond-use date, only the label's.
+        var oil = vial(strengthMg: 2500, state: .reconstituted, diluentMl: 10, expiresAt: NOW + DAY)
+        oil.diluent = .oil
+        #expect(isLiquid(oil) && vialConcentration(oil) == 250_000)
+        #expect(vialUsable(oil, NOW) && !vialExpired(oil, NOW))
+        #expect(vialExpired(oil, NOW + 2 * DAY) && !vialUsable(oil, NOW + 2 * DAY))
+        // Mixed with water, the same label date does not apply once it is open.
+        var mixed = vial(state: .reconstituted, diluentMl: 4, expiresAt: NOW - DAY)
+        mixed.diluent = .bacteriostatic
+        #expect(!isLiquid(mixed) && !vialExpired(mixed, NOW))
+    }
+}

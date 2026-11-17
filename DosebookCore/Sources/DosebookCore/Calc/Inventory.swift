@@ -35,10 +35,14 @@ private let UNAVAILABLE_STATES: [VialState] = DEAD_STATES + [.onOrder]
 
 public func vialUnavailableState(_ v: Vial) -> Bool { UNAVAILABLE_STATES.contains(v.state) }
 
-/// Past its beyond-use date, or past the manufacturer's date while sealed.
+/// A ready-made liquid such as testosterone in oil: sold already made up, so it has no
+/// water to add and no beyond-use date, only the date on the label.
+public func isLiquid(_ v: Vial) -> Bool { v.diluent == .oil }
+
+/// Past its beyond-use date, or past the manufacturer's date while sealed (a ready-made liquid is always held to it).
 public func vialExpired(_ v: Vial, _ nowMs: Millis) -> Bool {
     if let bud = v.budAt, bud < nowMs { return true }
-    if v.state == .sealed, let exp = v.expiresAt, exp < nowMs { return true }
+    if v.state == .sealed || isLiquid(v), let exp = v.expiresAt, exp < nowMs { return true }
     return false
 }
 

@@ -112,7 +112,7 @@ struct StockView: View {
                             .init(t("stock_it_arrived"), "shippingbox", prominent: true) {
                                 // The whole delivery: arriving happened once. Dated from today.
                                 let at = nowMillis()
-                                store.mutate { d in for v in g.vials { d.updateVial(v.id) { $0.state = .sealed; $0.acquiredAt = at } } }
+                                store.mutate { d in for v in g.vials { d.updateVial(v.id) { $0.state = isLiquid($0) ? .reconstituted : .sealed; $0.acquiredAt = at } } }
                             },
                         ], onEdit: { sheet = .edit(g.vials[0]) }, onDelete: { deleting = g.vials[0] }, onHistory: { sheet = .history(g.vials[0]) })
                     }
@@ -496,6 +496,8 @@ private struct VialRow: View {
                 if !spray, let bud = v.budAt {
                     Text(t("stock_use_by", ["date": .string(formatDate(bud, nowMs: ctx.now))])).foregroundStyle(budSoon ? Tone.rose.color : .secondary)
                 }
+                if isLiquid(v) { Text(t("stock_ready_made_badge")) }
+                if isLiquid(v), let expiresAt { Text("\(t("stock_expires_word")) \(formatDate(expiresAt, nowMs: ctx.now))") }
             } else {
                 if pack {
                     Text(t("stock_tablets_left", ["n": .number(tabletsRemaining(v))])).monospacedDigit()
