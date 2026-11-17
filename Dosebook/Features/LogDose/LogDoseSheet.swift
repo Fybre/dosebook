@@ -303,7 +303,7 @@ struct LogDoseSheet: View {
                         Text(jsNumberString(vialDosesAfter)).font(.title3.monospacedDigit()).foregroundStyle(Tone.tangerine.color)
                         Text(t("log_doses_left_in_vial", ["n": .number(vialDosesAfter), "dose": .string(doseLabel(doseMcg, peptide))])).font(.footnote).foregroundStyle(.secondary)
                     }
-                    Text("\(t("log_remaining_in_vial", ["left": .string(formatDose(leftAfter))])) · \(jsNumberString(max(0, stock.dosesRemaining - 1))) \(t("log_across_your_stock"))")
+                    Text("\(t("log_remaining_in_vial", ["left": .string(formatDoseWithIu(peptide, leftAfter))])) · \(jsNumberString(max(0, stock.dosesRemaining - 1))) \(t("log_across_your_stock"))")
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }

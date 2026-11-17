@@ -226,21 +226,39 @@ struct AmountRow: View {
     var base: MassBase = .mcg
     /// In `base`.
     var range: ClosedRange<Double>? = nil
+    /// Set for compounds counted in IU: adds IU as a third unit, and makes it the one shown first.
+    var iuPerMg: Double? = nil
     @State private var unit: DoseUnit?
+    @State private var iuMode: Bool?
+
+    private var iuRate: Double? { iuPerMg.flatMap { $0 > 0 ? $0 : nil } }
 
     var body: some View {
+        let inIu = iuRate != nil && (iuMode ?? true)
         let u = unit ?? naturalUnit(toMcg(value, base), base)
         LabeledContent(label) {
             HStack(spacing: 6) {
                 NumberField(title: label, value: Binding(
-                    get: { shown(toMcg(value, base), u) },
+                    get: { inIu ? jsFixed(mcgToIu(toMcg(value, base), iuRate!), 4) : shown(toMcg(value, base), u) },
                     set: { n in
+                        let mcg = inIu ? jsFixed(iuToMcg(n, iuRate!), 6) : typed(n, u)
                         if unit == nil { unit = u }
-                        let v = fromMcg(typed(n, u), base)
+                        if iuMode == nil { iuMode = inIu }
+                        let v = fromMcg(mcg, base)
                         value = range.map { min(max(v, $0.lowerBound), $0.upperBound) } ?? v
                     }))
-                    .id(u)
-                UnitToggle(unit: Binding(get: { u }, set: { unit = $0 }))
+                    .id("\(u.rawValue)\(inIu)")
+                if iuRate != nil {
+                    Button(inIu ? "IU" : u.rawValue) {
+                        // mcg, then mg, then IU.
+                        if inIu { unit = .mcg; iuMode = false }
+                        else if u == .mcg { unit = .mg }
+                        else { iuMode = true }
+                    }
+                    .buttonStyle(.bordered).controlSize(.mini).font(.caption.weight(.semibold))
+                } else {
+                    UnitToggle(unit: Binding(get: { u }, set: { unit = $0 }))
+                }
             }
             .frame(maxWidth: 190)
         }
@@ -310,7 +328,7 @@ struct DoseRow: View {
                 }
             }
         } else {
-            AmountRow(label: label, value: $value, range: range)
+            AmountRow(label: label, value: $value, range: range, iuPerMg: peptide?.iuPerMg)
         }
     }
 

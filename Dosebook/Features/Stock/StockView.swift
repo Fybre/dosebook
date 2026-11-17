@@ -425,9 +425,9 @@ private struct VialRow: View {
                     let n = (remainingMcg / dose).rounded(.down)
                     let times = ctx.timesPerDay(v.peptideId)
                     (Text(jsNumberString(n)).foregroundColor(Tone.tangerine.color).monospacedDigit()
-                     + Text(" " + t("stock_more_doses_suffix", ["n": .number(n), "per": .string(formatDose(dose)), "where": .string(many ? t("stock_across_these_vials") : t("stock_in_this_vial"))])
+                     + Text(" " + t("stock_more_doses_suffix", ["n": .number(n), "per": .string(formatDoseWithIu(ctx.data.peptide(v.peptideId), dose)), "where": .string(many ? t("stock_across_these_vials") : t("stock_in_this_vial"))])
                             + (times > 1 ? " · " + t("stock_times_per_day", ["n": .number(Double(times))]) : "")
-                            + " · " + t("stock_left_suffix", ["amount": .string(formatDose(remainingMcg))])).foregroundColor(.secondary))
+                            + " · " + t("stock_left_suffix", ["amount": .string(formatDoseWithIu(ctx.data.peptide(v.peptideId), remainingMcg))])).foregroundColor(.secondary))
                         .font(.caption)
                 }
                 switch ctx.outlook(v.peptideId) {

@@ -173,7 +173,7 @@ struct AddVialForm: View {
                     NumberRow(label: t("stock_volume_ml"), value: $ml, suffix: "mL", range: 0...1000)
                     Text(t("stock_liquid_total", ["mg": .string(trim(strengthMg, 3))])).font(.footnote).foregroundStyle(.secondary)
                 } else {
-                    AmountRow(label: tablets ? t("stock_mg_per_tablet") : t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
+                    AmountRow(label: tablets ? t("stock_mg_per_tablet") : t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000, iuPerMg: tablets ? nil : store.data.peptide(peptideId)?.iuPerMg).id(peptideId)
                 }
                 if tablets { NumberRow(label: t("stock_tablets_per_pack"), value: $tabletsPerPack, range: 1...10_000) }
                 if editingVial == nil {
@@ -683,7 +683,7 @@ struct BulkVialEditForm: View {
                         NumberRow(label: t("stock_volume_ml"), value: $volumeMl, suffix: "mL", range: 0...1000)
                         Text(t("stock_liquid_total", ["mg": .string(trim(newStrengthMg, 3))])).font(.footnote).foregroundStyle(.secondary)
                     } else {
-                        AmountRow(label: t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
+                        AmountRow(label: t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000, iuPerMg: store.data.peptide(vials.first?.peptideId ?? "")?.iuPerMg)
                     }
                 }
             }
