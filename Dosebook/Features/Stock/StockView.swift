@@ -112,7 +112,7 @@ struct StockView: View {
                             .init(t("stock_it_arrived"), "shippingbox", prominent: true) {
                                 // The whole delivery: arriving happened once. Dated from today.
                                 let at = nowMillis()
-                                store.mutate { d in for v in g.vials { d.updateVial(v.id) { $0.state = isLiquid($0) ? .reconstituted : .sealed; $0.acquiredAt = at } } }
+                                store.mutate { d in for v in g.vials { d.updateVial(v.id) { $0.state = .sealed; $0.acquiredAt = at } } }
                             },
                         ], onEdit: { sheet = .edit(g.vials[0]) }, onDelete: { deleting = g.vials[0] }, onHistory: { sheet = .history(g.vials[0]) })
                     }
@@ -141,7 +141,9 @@ struct StockView: View {
                 Section {
                     ForEach(rows, id: \.0.id) { v, g in
                         var actions: [VialAction] = []
-                        if isPack(v) {
+                        if isLiquid(v) {
+                            actions.append(.init(t("stock_open_vial"), nil, prominent: true) { store.mutate { $0.updateVial(v.id) { $0 = openPack($0, nowMillis()) } } })
+                        } else if isPack(v) {
                             actions.append(.init(t("stock_open_pack"), nil, prominent: true) { store.mutate { $0.updateVial(v.id) { $0 = openPack($0, nowMillis()) } } })
                         } else {
                             actions.append(.init((g?.count ?? 1) > 1 ? t("stock_reconstitute_one") : t("stock_reconstitute"), "drop.fill") { sheet = .reconstitute(v) })

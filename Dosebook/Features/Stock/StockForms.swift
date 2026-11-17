@@ -181,7 +181,8 @@ struct AddVialForm: View {
                 }
                 if liquid {
                     Picker(t("ios_vial_state"), selection: $state) {
-                        Text(t("stock_in_stock")).tag(VialState.reconstituted)
+                        Text(t("stock_unopened")).tag(VialState.sealed)
+                        Text(t("stock_open")).tag(VialState.reconstituted)
                         Text(t("stock_on_order")).tag(VialState.onOrder)
                     }
                 } else if !spray {
@@ -272,8 +273,8 @@ struct AddVialForm: View {
         .onChange(of: ml) { syncLiquidTotal() }
         .onChange(of: readyMade) {
             syncLiquidTotal()
-            // A liquid is in use from the start; switching back returns to what the vial was.
-            if readyMade { if state != .onOrder { state = .reconstituted } }
+            // A liquid starts unopened; switching back returns to what the vial was.
+            if readyMade { if state == .reconstituted && editingVial == nil { state = .sealed } }
             else if state == .reconstituted { state = editingVial.flatMap { isLiquid($0) ? nil : $0.state } ?? .sealed }
         }
         .onAppear(perform: load)
@@ -295,9 +296,9 @@ struct AddVialForm: View {
         if editingVial == nil { v.acquiredAt = nowMillis(); v.container = tablets ? .pack : nil }
         if tablets { v.mgPerTablet = strengthMg }
         if liquid {
-            // Already made up: in use from day one, and held only to the label's date.
+            // Already made up: held only to the label's date; opening it just starts it being used.
             v.diluentMl = ml; v.diluent = .oil; v.diluentBottleId = nil; v.budAt = nil
-            v.reconstitutedAt = editingVial?.reconstitutedAt ?? (state == .onOrder ? nil : nowMillis())
+            v.reconstitutedAt = state == .reconstituted ? (editingVial?.reconstitutedAt ?? nowMillis()) : nil
         } else if mixed {
             v.diluentMl = ml; v.diluent = diluent
             v.reconstitutedAt = min(nowMillis(), mixedOn.millis)
@@ -721,7 +722,6 @@ struct BulkVialEditForm: View {
         let editStrength = canEditStrength && (readyMade || strengthMg != start.strengthMg)
         let total = newStrengthMg
         let toLiquid = canEditStrength && readyMade
-        let now = nowMillis()
         store.mutate { d in
             for target in vials {
                 d.updateVial(target.id) { v in
@@ -729,7 +729,6 @@ struct BulkVialEditForm: View {
                     if toLiquid {
                         // Already made up: in use from the start, held only to the label's date.
                         v.diluent = .oil; v.diluentMl = volumeMl; v.diluentBottleId = nil; v.budAt = nil
-                        v.state = .reconstituted; v.reconstitutedAt = v.reconstitutedAt ?? now
                         v.drawnMcg = v.drawnMcg ?? 0
                     }
                     if editSupplier { v.supplier = clean(supplier) }

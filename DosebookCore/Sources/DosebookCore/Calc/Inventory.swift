@@ -109,7 +109,7 @@ public func drawFromVial(_ vials: [Vial], _ vialId: String, _ mcg: Double, _ atM
         let capacity = vialCapacityMcg(v)
         let drawnMcg = min(capacity, (v.drawnMcg ?? 0) + mcg)
         let emptied = drawnMcg >= capacity - 1e-6
-        var opened = matchesContainer(v, .pack) && v.state == .sealed ? openPack(v, atMs) : v
+        var opened = (matchesContainer(v, .pack) || isLiquid(v)) && v.state == .sealed ? openPack(v, atMs) : v
         opened.drawnMcg = drawnMcg
         if emptied && v.state != .discarded { opened.state = .finished }
         return opened
