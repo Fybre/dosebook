@@ -121,6 +121,8 @@ struct AddVialForm: View {
     @State private var purchaseExpanded = false
     /// Sold already made up (testosterone in oil): no water to add, only the label's date.
     @State private var readyMade = false
+    /// A ready-made liquid is labelled per mL; the total in the vial follows from it and the volume.
+    @State private var concMgMl: Double = 100
 
     private var tablets: Bool {
         editingVial.map(isPack) ?? (store.data.peptide(peptideId)?.preparation == .tablet)
@@ -162,23 +164,26 @@ struct AddVialForm: View {
                 Section { Text(store.data.peptide(peptideId)?.name ?? peptideId).font(.headline) }
             }
             Section {
-                AmountRow(label: tablets ? t("stock_mg_per_tablet") : liquid ? t("stock_total_in_vial") : t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
-                if tablets { NumberRow(label: t("stock_tablets_per_pack"), value: $tabletsPerPack, range: 1...10_000) }
-                if editingVial == nil {
-                    NumberRow(label: tablets ? t("stock_how_many_packs") : t("stock_how_many"), value: $count, range: 1...50)
-                }
                 if liquidOK {
                     Toggle(t("stock_ready_made"), isOn: $readyMade.animation())
                     if liquid { Text(t("stock_ready_made_hint")).font(.footnote).foregroundStyle(.secondary) }
+                }
+                if liquid {
+                    NumberRow(label: t("stock_strength_per_ml"), value: $concMgMl, suffix: "mg/mL", range: 0...5000)
+                    NumberRow(label: t("stock_volume_ml"), value: $ml, suffix: "mL", range: 0...1000)
+                    Text(t("stock_liquid_total", ["mg": .string(trim(strengthMg, 3))])).font(.footnote).foregroundStyle(.secondary)
+                } else {
+                    AmountRow(label: tablets ? t("stock_mg_per_tablet") : t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
+                }
+                if tablets { NumberRow(label: t("stock_tablets_per_pack"), value: $tabletsPerPack, range: 1...10_000) }
+                if editingVial == nil {
+                    NumberRow(label: tablets ? t("stock_how_many_packs") : t("stock_how_many"), value: $count, range: 1...50)
                 }
                 if liquid {
                     Picker(t("ios_vial_state"), selection: $state) {
                         Text(t("stock_in_stock")).tag(VialState.reconstituted)
                         Text(t("stock_on_order")).tag(VialState.onOrder)
                     }
-                    NumberRow(label: t("stock_volume_ml"), value: $ml, suffix: "mL", range: 0...1000)
-                    Text(t("stock_makes_conc", ["conc": .string(trim(ml > 0 ? strengthMg / ml : 0, 3))]))
-                        .font(.footnote).foregroundStyle(.secondary)
                 } else if !spray {
                     Picker(t("ios_vial_state"), selection: $state) {
                         Text(t("stock_sealed")).tag(VialState.sealed)
@@ -263,12 +268,19 @@ struct AddVialForm: View {
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choose($0.id) }) } }
         .sheet(isPresented: $scanning) { NavigationStack { ScanVialView(onScanned: apply) } }
         .onChange(of: diluent) { bottleId = "" }
+        .onChange(of: concMgMl) { syncLiquidTotal() }
+        .onChange(of: ml) { syncLiquidTotal() }
         .onChange(of: readyMade) {
+            syncLiquidTotal()
             // A liquid is in use from the start; switching back returns to what the vial was.
             if readyMade { if state != .onOrder { state = .reconstituted } }
             else if state == .reconstituted { state = editingVial.flatMap { isLiquid($0) ? nil : $0.state } ?? .sealed }
         }
         .onAppear(perform: load)
+    }
+
+    private func syncLiquidTotal() {
+        if liquid { strengthMg = jsFixed(concMgMl * ml, 6) }
     }
 
     /// Start with the existing record so edits retain metadata and all relationships.
@@ -341,6 +353,7 @@ struct AddVialForm: View {
             strengthMg = isPack(v) ? (v.mgPerTablet ?? v.strengthMg) : v.strengthMg
             tabletsPerPack = isPack(v) && strengthMg > 0 ? v.strengthMg / strengthMg : 30
             ml = v.diluentMl ?? 2; diluent = v.diluent ?? .bacteriostatic
+            if isLiquid(v), ml > 0 { concMgMl = jsFixed(v.strengthMg / ml, 6) }
             mixedOn = v.reconstitutedAt.map { Date(millis: $0) } ?? Date()
             fractionLeft = vialFractionRemaining(v); partiallyUsed = fractionLeft < 1
             supplier = v.supplier ?? ""; lot = v.lot ?? ""; notes = v.notes ?? ""
@@ -629,6 +642,7 @@ struct BulkVialEditForm: View {
     @State private var start = Start()
     @State private var readyMade = false
     @State private var volumeMl: Double = 10
+    @State private var concMgMl: Double = 100
 
     /// What each field showed when the form opened, to tell which ones were edited.
     private struct Start {
@@ -636,8 +650,10 @@ struct BulkVialEditForm: View {
     }
     /// Only whole, untouched vials: a mixed vial, a pack or a spray has more tied to its strength.
     private var canEditStrength: Bool { vials.allSatisfy { $0.state == .sealed && !isPack($0) && !isSpray($0) } }
+    /// What each vial will hold: entered directly, or for a ready-made liquid its strength per mL times its volume.
+    private var newStrengthMg: Double { readyMade ? jsFixed(concMgMl * volumeMl, 6) : strengthMg }
     private var strengthValid: Bool {
-        !canEditStrength || (strengthMg.isFinite && strengthMg > 0 && strengthMg * 1000 >= (vials.map { $0.drawnMcg ?? 0 }.max() ?? 0))
+        !canEditStrength || (newStrengthMg.isFinite && newStrengthMg > 0 && newStrengthMg * 1000 >= (vials.map { $0.drawnMcg ?? 0 }.max() ?? 0))
     }
     private func shared<V: Equatable>(_ pick: (Vial) -> V?) -> V? {
         let first = pick(vials[0])
@@ -661,11 +677,12 @@ struct BulkVialEditForm: View {
                 Section {
                     Toggle(t("stock_ready_made"), isOn: $readyMade.animation())
                     if readyMade { Text(t("stock_ready_made_hint")).font(.footnote).foregroundStyle(.secondary) }
-                    AmountRow(label: readyMade ? t("stock_total_in_vial") : t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
                     if readyMade {
+                        NumberRow(label: t("stock_strength_per_ml"), value: $concMgMl, suffix: "mg/mL", range: 0...5000)
                         NumberRow(label: t("stock_volume_ml"), value: $volumeMl, suffix: "mL", range: 0...1000)
-                        Text(t("stock_makes_conc", ["conc": .string(trim(volumeMl > 0 ? strengthMg / volumeMl : 0, 3))]))
-                            .font(.footnote).foregroundStyle(.secondary)
+                        Text(t("stock_liquid_total", ["mg": .string(trim(newStrengthMg, 3))])).font(.footnote).foregroundStyle(.secondary)
+                    } else {
+                        AmountRow(label: t("stock_strength"), value: $strengthMg, base: .mg, range: 0...100_000)
                     }
                 }
             }
@@ -701,13 +718,14 @@ struct BulkVialEditForm: View {
         let editSupplier = supplier != start.supplier, editLot = lot != start.lot, editNotes = notes != start.notes
         let editExpiry = hasExpiry != start.hasExpiry || (hasExpiry && expiry != start.expiry)
         let editCost = cost != start.cost, editCurrency = payCurrency != start.currency
-        let editStrength = canEditStrength && strengthMg != start.strengthMg
+        let editStrength = canEditStrength && (readyMade || strengthMg != start.strengthMg)
+        let total = newStrengthMg
         let toLiquid = canEditStrength && readyMade
         let now = nowMillis()
         store.mutate { d in
             for target in vials {
                 d.updateVial(target.id) { v in
-                    if editStrength { v.strengthMg = strengthMg }
+                    if editStrength { v.strengthMg = total }
                     if toLiquid {
                         // Already made up: in use from the start, held only to the label's date.
                         v.diluent = .oil; v.diluentMl = volumeMl; v.diluentBottleId = nil; v.budAt = nil
