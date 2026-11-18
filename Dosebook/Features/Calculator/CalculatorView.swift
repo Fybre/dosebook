@@ -81,9 +81,9 @@ struct CalculatorView: View {
                     ForEach(store.data.allPeptides) { Text($0.name).tag($0.id) }
                 }
                 Button { addingCompound = true } label: { Label(t("add_compound_inline"), systemImage: "plus") }
-                AmountRow(label: t("calc_vial_strength"), value: $vialMg, base: .mg, range: 0...100_000)
+                AmountRow(label: t("calc_vial_strength"), value: $vialMg, base: .mg, range: 0...100_000, iuPerMg: store.data.peptide(peptideId)?.iuPerMg).id(peptideId)
                 NumberRow(label: t("calc_water_to_add"), value: $diluentMl, suffix: "mL", range: 0...1000)
-                AmountRow(label: t("calc_dose_you_want"), value: $doseMcg, range: 0...100_000_000)
+                AmountRow(label: t("calc_dose_you_want"), value: $doseMcg, range: 0...100_000_000, iuPerMg: store.data.peptide(peptideId)?.iuPerMg).id(peptideId)
                 FooterRow { Text("\(t("calc_peptide_hint")) \(t("calc_water_hint"))") }
             } header: { Text(t("calc_vial_and_dose")) } footer: { FooterWrap { Text("\(t("calc_peptide_hint")) \(t("calc_water_hint"))") }}
 
@@ -98,7 +98,7 @@ struct CalculatorView: View {
                         }
                         GridRow {
                             stat(t("calc_concentration"), formatConcentration(draw.concentrationMcgPerMl), t("calc_mcg_per_mark", ["mcg": .string(trim(draw.mcgPerGraduation, 2))]), .neutral)
-                            stat(t("calc_doses_per_vial"), jsNumberString(draw.dosesPerVial), t("calc_at_each", ["dose": .string(formatDose(doseMcg))]), .sky)
+                            stat(t("calc_doses_per_vial"), jsNumberString(draw.dosesPerVial), t("calc_at_each", ["dose": .string(formatDoseWithIu(store.data.peptide(peptideId), doseMcg))]), .sky)
                         }
                     }
                     // The other barrel is never a guess.
@@ -153,7 +153,7 @@ struct CalculatorView: View {
             Section(t("calc_how_worked_out")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("concentration = \(jsNumberString(vialMg)) mg ÷ \(trim(diluentMl, 2)) mL = **\(trim(draw.concentrationMgPerMl, 4)) mg/mL**")
-                    Text("volume = \(formatDose(doseMcg)) ÷ \(trim(draw.concentrationMgPerMl, 4)) mg/mL = **\(trim(draw.volumeMl, 4)) mL**")
+                    Text("volume = \(formatDoseWithIu(store.data.peptide(peptideId), doseMcg)) ÷ \(trim(draw.concentrationMgPerMl, 4)) mg/mL = **\(trim(draw.volumeMl, 4)) mL**")
                     Text("\(t("calc_marks_formula", ["volume": .string(trim(draw.volumeMl, 4)), "per": .string(trim(graduationMl(syringe), 4))])) **\(trim(draw.volumeMl / graduationMl(syringe), 2))**")
                 }
                 .font(.caption.monospaced()).foregroundStyle(.secondary)
@@ -203,7 +203,7 @@ struct CalculatorView: View {
                 Text(t("ios_calc_use_choose")).font(.footnote).foregroundStyle(.secondary)
             } else {
                 Button { startingProtocol = true } label: {
-                    Label(t("ios_calc_start_protocol", ["dose": .string(formatDose(doseMcg))]), systemImage: "checklist")
+                    Label(t("ios_calc_start_protocol", ["dose": .string(formatDoseWithIu(store.data.peptide(peptideId), doseMcg))]), systemImage: "checklist")
                 }
                 if let vial = sealed.first {
                     Button { vialSheet = .mixExisting(vial) } label: {
