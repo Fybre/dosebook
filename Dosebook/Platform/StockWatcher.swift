@@ -24,6 +24,7 @@ final class StockWatcher {
     private static let pendingKey = "bench.emptyVialsPending"
     private static let lowKey = "bench.lowStockSent"
     private static let lowPrefix = "bench.stock.low."
+    private static let expiryPrefix = "bench.stock.expiry."
 
     private init() {
         pending = UserDefaults.standard.stringArray(forKey: Self.pendingKey) ?? []
@@ -39,6 +40,7 @@ final class StockWatcher {
     func update(_ data: AppData, now: Millis = nowMillis()) async {
         await watchEmptied(data, now: now)
         await armLowStock(data, now: now)
+        await armExpiry(data, now: now)
     }
 
     // MARK: Empty vials
@@ -118,6 +120,41 @@ final class StockWatcher {
                                                 trigger: UNCalendarNotificationTrigger(dateMatching: when, repeats: false))
             try? await center.add(request)
             sent[a.peptideId] = a.fireAt
+        }
+    }
+}
+
+extension StockWatcher {
+    /// Replaces the pending expiry notifications with what the vials say now. Each vial is told
+    /// once, at 9am, ahead of its date; a vial whose date has been changed is told afresh.
+    fileprivate func armExpiry(_ data: AppData, now: Millis) async {
+        let center = UNUserNotificationCenter.current()
+        let stale = await center.pendingNotificationRequests().map(\.identifier).filter { $0.hasPrefix(Self.expiryPrefix) }
+        center.removePendingNotificationRequests(withIdentifiers: stale)
+        let key = "bench.expirySent"
+        var sent = (UserDefaults.standard.dictionary(forKey: key) as? [String: Double]) ?? [:]
+        defer { UserDefaults.standard.set(sent, forKey: key) }
+        guard data.settings.expiryNotify, await canNotify(data) else { return }
+        let named = (data.settings.reminders ?? DEFAULT_REMINDERS).showCompound
+        for a in expiryAlerts(data, nowMs: now) {
+            // Keyed by the date it was told for, so correcting a date earns a new notice.
+            if sent[a.vialId] == Double(a.date) { continue }
+            guard let v = data.mine.vials.first(where: { $0.id == a.vialId }) else { continue }
+            let days = ((a.date - a.fireAt) / DAY_MS).rounded(.up)
+            let when = a.isLabelDate
+                ? (days <= 0 ? t("now_vial_past_expiry") : t(days == 1 ? "now_vial_expiry_in_one" : "now_vial_expiry_in_other", ["n": .number(days)]))
+                : (days <= 0 ? t("now_vial_past_bud") : t("now_vial_bud_in", ["n": .number(days)]))
+            let content = UNMutableNotificationContent()
+            content.title = named ? (data.peptide(v.peptideId)?.name ?? v.peptideId) : "Dosebook"
+            content.body = named
+                ? "\(t("now_vial_named", ["name": .string(data.peptide(v.peptideId)?.name ?? v.peptideId), "mg": .number(v.strengthMg)])) \(when)"
+                : t("ios_expiry_discreet")
+            content.sound = .default
+            let at = LocalTime.calendar.dateComponents([.year, .month, .day, .hour, .minute], from: Date(millis: a.fireAt))
+            let request = UNNotificationRequest(identifier: Self.expiryPrefix + a.vialId, content: content,
+                                                trigger: UNCalendarNotificationTrigger(dateMatching: at, repeats: false))
+            try? await center.add(request)
+            if a.fireAt <= now + DAY_MS { sent[a.vialId] = Double(a.date) }
         }
     }
 }

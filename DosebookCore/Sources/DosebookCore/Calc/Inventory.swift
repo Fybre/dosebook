@@ -40,6 +40,24 @@ public func vialUnavailableState(_ v: Vial) -> Bool { UNAVAILABLE_STATES.contain
 public func isLiquid(_ v: Vial) -> Bool { v.diluent == .oil }
 
 /// Past its beyond-use date, or past the manufacturer's date while sealed (a ready-made liquid is always held to it).
+/// The date a vial is next held to: the label date for one still sealed or a ready-made
+/// liquid, the beyond-use date for one that has been mixed. Nil when nothing applies.
+public func vialWarnDate(_ v: Vial) -> Millis? {
+    switch v.state {
+    case .sealed: return v.expiresAt
+    case .reconstituted: return isLiquid(v) ? v.expiresAt : v.budAt
+    default: return nil
+    }
+}
+
+/// Vials past that date, or within `warnDays` of it, soonest first.
+public func vialsExpiringSoon(_ vials: [Vial], _ nowMs: Millis, warnDays: Double) -> [Vial] {
+    vials.compactMap { v in vialWarnDate(v).map { (v, $0) } }
+        .filter { $0.1 - nowMs < warnDays * DAY_MS }
+        .sorted { $0.1 < $1.1 }
+        .map(\.0)
+}
+
 public func vialExpired(_ v: Vial, _ nowMs: Millis) -> Bool {
     if let bud = v.budAt, bud < nowMs { return true }
     if v.state == .sealed || isLiquid(v), let exp = v.expiresAt, exp < nowMs { return true }

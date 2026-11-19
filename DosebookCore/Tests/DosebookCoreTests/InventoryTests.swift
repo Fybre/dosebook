@@ -599,3 +599,25 @@ private func stockOf(_ mcg: Double) -> Stock {
         #expect(!isLiquid(mixed) && !vialExpired(mixed, NOW))
     }
 }
+
+@Suite struct ExpiryWarningTests {
+    @Test func eachVialGoesByTheRightDate() {
+        var oil = vial(strengthMg: 2500, state: .reconstituted, diluentMl: 10, expiresAt: NOW + 3 * DAY)
+        oil.diluent = .oil
+        let sealed = vial(state: .sealed, expiresAt: NOW + 4 * DAY)
+        var mixed = vial(state: .reconstituted, diluentMl: 2, expiresAt: NOW + DAY)
+        mixed.budAt = NOW + 20 * DAY
+        #expect(vialWarnDate(oil) == NOW + 3 * DAY)
+        #expect(vialWarnDate(sealed) == NOW + 4 * DAY)
+        // A mixed vial goes by its beyond-use date; the label date no longer applies.
+        #expect(vialWarnDate(mixed) == NOW + 20 * DAY)
+        let soon = vialsExpiringSoon([mixed, sealed, oil], NOW, warnDays: 5)
+        #expect(soon.map(\.id) == [oil.id, sealed.id])
+        #expect(vialsExpiringSoon([mixed, sealed, oil], NOW, warnDays: 1).isEmpty)
+    }
+
+    @Test func finishedOrOrderedVialsAreIgnored() {
+        #expect(vialWarnDate(vial(state: .finished, expiresAt: NOW - DAY)) == nil)
+        #expect(vialWarnDate(vial(state: .onOrder, expiresAt: NOW + DAY)) == nil)
+    }
+}

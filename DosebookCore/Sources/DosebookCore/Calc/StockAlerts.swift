@@ -22,6 +22,12 @@ extension Settings {
         set { extra["iosLowStockNotify"] = .bool(newValue) }
     }
 
+    /// A notification when a vial is about to pass its date.
+    public var expiryNotify: Bool {
+        get { if case .bool(let b)? = extra["iosExpiryNotify"] { b } else { true } }
+        set { extra["iosExpiryNotify"] = .bool(newValue) }
+    }
+
     /// A notification when a vial is used up.
     public var emptyVialNotify: Bool {
         get { if case .bool(let b)? = extra["iosEmptyVialNotify"] { b } else { true } }
@@ -106,4 +112,27 @@ public func vialUsedUp(_ v: Vial) -> Bool {
 /// How many more of this compound's containers are in stock and usable, for the empty-vial notice.
 public func vialsLeftInStock(_ data: AppData, like v: Vial, nowMs: Millis) -> Int {
     data.mine.vials.filter { $0.id != v.id && $0.peptideId == v.peptideId && matchesContainer($0, v.containerKind) && vialUsable($0, nowMs) }.count
+}
+
+
+/// An "about to expire" notification to send for one vial.
+public struct ExpiryAlert: Equatable, Sendable {
+    public var vialId: String
+    public var peptideId: String
+    public var fireAt: Millis
+    /// The date it is about to pass.
+    public var date: Millis
+    public var isLabelDate: Bool
+}
+
+/// One alert per vial, at 9am `warnDays` before its date, or at the next 9am if that has passed.
+/// A vial already past its date is told once, the next morning, rather than every day.
+public func expiryAlerts(_ data: AppData, nowMs: Millis) -> [ExpiryAlert] {
+    let warn = data.settings.budWarningDays
+    return data.mine.vials.compactMap { v -> ExpiryAlert? in
+        guard let date = vialWarnDate(v) else { return nil }
+        let early = atTimeOfDay(startOfLocalDay(date - warn * DAY_MS), LOW_STOCK_HOUR)
+        let fire = early > nowMs ? early : nextHour(nowMs)
+        return ExpiryAlert(vialId: v.id, peptideId: v.peptideId, fireAt: fire, date: date, isLabelDate: v.state == .sealed || isLiquid(v))
+    }.sorted { $0.fireAt < $1.fireAt }
 }

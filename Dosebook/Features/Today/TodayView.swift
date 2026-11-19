@@ -668,7 +668,7 @@ struct TodayView: View {
 
     @ViewBuilder private func worthSorting(_ tracks: [Track], data: AppData) -> some View {
         let low = tracks.filter { stockIsLow($0.stock, supplyDays: $0.supplyDays, data.settings) && $0.targetMcg > 0 && hasAnyVial(data, $0.protocol_.peptideId) }
-        let expiring = data.mine.vials.filter { $0.state == .reconstituted && $0.budAt.map { $0 - now < data.settings.budWarningDays * DAY_MS } == true }
+        let expiring = vialsExpiringSoon(data.mine.vials, now, warnDays: data.settings.budWarningDays)
         if !low.isEmpty || !expiring.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
                 Text(t("now_worth_sorting").uppercased()).font(.caption.bold()).foregroundStyle(.secondary)
@@ -681,8 +681,13 @@ struct TodayView: View {
                         .font(.footnote).callout(.tangerine)
                 }
                 ForEach(expiring) { v in
-                    let days = ((v.budAt! - now) / DAY_MS).rounded(.up)
-                    CalloutText("\(t("now_vial_named", ["name": .string(data.peptide(v.peptideId)?.name ?? v.peptideId), "mg": .number(v.strengthMg)])) \(days <= 0 ? t("now_vial_past_bud") : t("now_vial_bud_in", ["n": .number(days)])) \(t("now_bud_is_hygiene"))")
+                    let days = ((vialWarnDate(v)! - now) / DAY_MS).rounded(.up)
+                    // A sealed vial or an oil goes by the label; a mixed one by its beyond-use date.
+                    let label = v.state == .sealed || isLiquid(v)
+                    let when = label
+                        ? (days <= 0 ? t("now_vial_past_expiry") : t(days == 1 ? "now_vial_expiry_in_one" : "now_vial_expiry_in_other", ["n": .number(days)]))
+                        : (days <= 0 ? t("now_vial_past_bud") : t("now_vial_bud_in", ["n": .number(days)]))
+                    CalloutText("\(t("now_vial_named", ["name": .string(data.peptide(v.peptideId)?.name ?? v.peptideId), "mg": .number(v.strengthMg)])) \(when)\(label ? "" : " " + t("now_bud_is_hygiene"))")
                         .font(.footnote).callout(days <= 0 ? .rose : .tangerine)
                 }
             }

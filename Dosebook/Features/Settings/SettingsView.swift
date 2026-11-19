@@ -94,6 +94,7 @@ struct SettingsView: View {
                 }
                 Toggle(t("ios_stock_alert_low_notify"), isOn: setting(\.lowStockNotify))
                 Toggle(t("ios_stock_alert_empty_notify"), isOn: setting(\.emptyVialNotify))
+                Toggle(t("ios_stock_alert_expiry_notify"), isOn: setting(\.expiryNotify))
                 Text(t("ios_stock_alert_note")).font(.footnote).foregroundStyle(.secondary)
                 Picker(t("ios_stock_sort"), selection: setting(\.stockSort)) {
                     Text(t("ios_stock_sort_alpha")).tag(StockSort.alphabetical)

@@ -422,7 +422,12 @@
     "ios_guide_link": "How to use Dosebook",
     "ios_stock_in_open_vial": "{n} in the open vial",
     "ios_open_vial_short": "The open vial can't cover your next dose. Make up a new one.",
-    "ios_widget_doses_left": "{n} left"
+    "ios_widget_doses_left": "{n} left",
+    "now_vial_expiry_in_one": "reaches its expiry date in {n} day.",
+    "now_vial_expiry_in_other": "reaches its expiry date in {n} days.",
+    "now_vial_past_expiry": "is past its expiry date.",
+    "ios_stock_alert_expiry_notify": "Notify before a vial expires",
+    "ios_expiry_discreet": "A vial is about to expire."
   },
   "de": {
     "mac_updates_title": "App-Updates",
@@ -847,7 +852,12 @@
     "ios_guide_link": "So nutzt du Dosebook",
     "ios_stock_in_open_vial": "{n} im geöffneten Fläschchen",
     "ios_open_vial_short": "Das geöffnete Fläschchen reicht für die nächste Dosis nicht. Setze ein neues an.",
-    "ios_widget_doses_left": "{n} übrig"
+    "ios_widget_doses_left": "{n} übrig",
+    "now_vial_expiry_in_one": "läuft in {n} Tag ab.",
+    "now_vial_expiry_in_other": "läuft in {n} Tagen ab.",
+    "now_vial_past_expiry": "ist abgelaufen.",
+    "ios_stock_alert_expiry_notify": "Vor Ablauf eines Fläschchens benachrichtigen",
+    "ios_expiry_discreet": "Ein Fläschchen läuft bald ab."
   },
   "sl": {
     "mac_updates_title": "Posodobitve aplikacije",
@@ -1280,7 +1290,12 @@
     "ios_guide_link": "Kako uporabljati Dosebook",
     "ios_stock_in_open_vial": "{n} v odprti viali",
     "ios_open_vial_short": "Odprta viala ne zadošča za naslednji odmerek. Pripravite novo.",
-    "ios_widget_doses_left": "še {n}"
+    "ios_widget_doses_left": "še {n}",
+    "now_vial_expiry_in_one": "poteče čez {n} dan.",
+    "now_vial_expiry_in_other": "poteče čez {n} dni.",
+    "now_vial_past_expiry": "je preteklo.",
+    "ios_stock_alert_expiry_notify": "Obvesti pred iztekom viale",
+    "ios_expiry_discreet": "Viala bo kmalu potekla."
   },
   "pl": {
     "mac_updates_title": "Aktualizacje aplikacji",
@@ -1713,6 +1728,11 @@
     "ios_guide_link": "Jak używać Dosebook",
     "ios_stock_in_open_vial": "{n} w otwartej fiolce",
     "ios_open_vial_short": "Otwarta fiolka nie wystarczy na następną dawkę. Przygotuj nową.",
-    "ios_widget_doses_left": "zostało {n}"
+    "ios_widget_doses_left": "zostało {n}",
+    "now_vial_expiry_in_one": "traci ważność za {n} dzień.",
+    "now_vial_expiry_in_other": "traci ważność za {n} dni.",
+    "now_vial_past_expiry": "straciła ważność.",
+    "ios_stock_alert_expiry_notify": "Powiadom przed upływem ważności fiolki",
+    "ios_expiry_discreet": "Fiolka wkrótce straci ważność."
   }
 }
