@@ -22,7 +22,7 @@ func evenParts(_ parts: [ComponentDose]) -> Bool {
 /// The dose as a person would say it: "250 mcg each" for an even blend,
 /// "125 mcg CJC-1295 + 375 mcg Ipamorelin" for an uneven one, else the plain amount.
 public func doseLabel(_ doseMcg: Double, _ p: Peptide?, resolve: ((String) -> Peptide?)? = nil) -> String {
-    guard let parts = blendParts(p, doseMcg, resolve: resolve), !parts.isEmpty else { return formatDose(doseMcg) }
+    guard let parts = blendParts(p, doseMcg, resolve: resolve), !parts.isEmpty else { return formatDoseWithIu(p, doseMcg) }
     if evenParts(parts) { return "\(formatDose(parts[0].mcg)) each" }
     return parts.map { "\(formatDose($0.mcg)) \($0.name)" }.joined(separator: " + ")
 }

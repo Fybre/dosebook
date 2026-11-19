@@ -205,7 +205,7 @@ struct LogDoseSheet: View {
                     .disabled(peptideId.isEmpty || (!skipped && !(doseMcg > 0)))
             }
         }
-        .confirmationDialog(t("log_delete_returns", ["dose": .string(formatDose(editing?.doseMcg ?? 0))]), isPresented: $confirmDelete, titleVisibility: .visible) {
+        .confirmationDialog(t("log_delete_returns", ["dose": .string(doseLabel(editing?.doseMcg ?? 0, store.data.peptide(editing?.peptideId ?? "")))]), isPresented: $confirmDelete, titleVisibility: .visible) {
             Button(t("ios_log_delete"), role: .destructive) {
                 if let e = editing { store.mutate { $0.removeLog(e.id) } }
                 dismiss()

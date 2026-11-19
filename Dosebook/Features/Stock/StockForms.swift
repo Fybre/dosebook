@@ -235,7 +235,7 @@ struct AddVialForm: View {
                                 get: { remaining }, set: { fractionLeft = capacity > 0 ? $0 / capacity : 0 }),
                                       base: .mcg, range: 0...max(0, capacity))
                         }
-                        Text(t("ios_left_hint", ["amount": .string(formatDose(remaining)), "pct": .string(trim(fractionLeft * 100, 0))]))
+                        Text(t("ios_left_hint", ["amount": .string(formatDoseWithIu(store.data.peptide(peptideId), remaining)), "pct": .string(trim(fractionLeft * 100, 0))]))
                             .font(.footnote).foregroundStyle(.secondary)
                     }
                 }

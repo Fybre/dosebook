@@ -621,3 +621,25 @@ private func stockOf(_ mcg: Double) -> Stock {
         #expect(vialWarnDate(vial(state: .onOrder, expiresAt: NOW + DAY)) == nil)
     }
 }
+
+@Suite struct LiquidMlLeftTests {
+    @Test func millilitresFollowTheMass() {
+        var oil = vial(strengthMg: 2500, state: .reconstituted, diluentMl: 10)
+        oil.diluent = .oil
+        // 2500 mg in 10 mL; 1250 mg left is 5 mL.
+        #expect(liquidMlLeft(oil, remainingMcg: 1_250_000) == 5)
+        var water = vial(strengthMg: 10, state: .reconstituted, diluentMl: 2)
+        water.diluent = .bacteriostatic
+        #expect(liquidMlLeft(water, remainingMcg: 5000) == nil)
+    }
+}
+
+@Suite struct IuDoseLabelTests {
+    @Test func iuCompoundsReadInIu() {
+        var p = Library.peptides.first { $0.id == "hcg" }!
+        #expect(p.iuPerMg == 1000)
+        #expect(doseLabel(1000, p) == "1000 IU (1 mg)")
+        p.iuPerMg = nil
+        #expect(doseLabel(1000, p) == "1 mg")
+    }
+}

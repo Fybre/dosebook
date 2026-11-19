@@ -41,11 +41,11 @@ struct VialHistoryView: View {
             }
 
             Section {
-                row(t("ios_vh_drawn"), formatDose(h.drawnMcg))
-                row(t("ios_vh_left"), formatDose(h.remainingMcg))
+                row(t("ios_vh_drawn"), formatDoseWithIu(peptide, h.drawnMcg))
+                row(t("ios_vh_left"), formatDoseWithIu(peptide, h.remainingMcg))
                 if !h.doses.isEmpty {
                     row(t("ios_vh_taken"), String(h.doses.count))
-                    row(t("ios_vh_average"), formatDose(h.averageMcg))
+                    row(t("ios_vh_average"), formatDoseWithIu(peptide, h.averageMcg))
                     if let first = h.firstAt { row(t("ios_vh_first"), formatDate(first, nowMs: now)) }
                     if let last = h.lastAt { row(t("ios_vh_last"), formatDate(last, nowMs: now)) }
                 }

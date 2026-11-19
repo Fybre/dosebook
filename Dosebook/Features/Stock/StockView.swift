@@ -407,6 +407,7 @@ private struct VialRow: View {
                 if (v.state == .sealed || v.state == .reconstituted), strengthTotal.isFinite, strengthTotal > 0, remainingMcg.isFinite {
                     let fraction = min(1, max(0, remainingMcg / (strengthTotal * 1000)))
                     let percent = t("ios_stock_percent_left", ["percent": .string(trim(fraction * 100, 0))])
+                        + (liquidMlLeft(v, remainingMcg: remainingMcg).map { " · \(trim($0, 2)) mL" } ?? "")
                     HStack(spacing: 12) {
                         ProgressView(value: fraction)
                             .progressViewStyle(.linear)

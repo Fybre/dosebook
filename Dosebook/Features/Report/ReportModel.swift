@@ -35,7 +35,7 @@ struct ReportModel {
             rows: active.map { p in
                 let peptide = resolve(p.peptideId)
                 let a = adherence(p, logsForProtocol(p, mine.logs), max(p.startedAt, since), now)
-                return [peptide?.name ?? p.peptideId, peptide?.category.label ?? t("report_unknown"), formatDose(scheduledDoseMcg(p, now)),
+                return [peptide?.name ?? p.peptideId, peptide?.category.label ?? t("report_unknown"), formatDoseWithIu(peptide, scheduledDoseMcg(p, now)),
                         t("report_per_week", ["n": .string(trim(protocolDosesPerWeek(p, now), 2))]), formatDate(p.startedAt, nowMs: now),
                         a.expected > 0 ? t("report_taken_of", ["taken": .number(Double(a.taken)), "expected": .number(Double(a.expected))]) : t("report_na")]
             })

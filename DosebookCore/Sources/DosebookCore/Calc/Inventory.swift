@@ -50,6 +50,12 @@ public func vialWarnDate(_ v: Vial) -> Millis? {
     }
 }
 
+/// Millilitres left of a ready-made liquid, from what is left of its mass. Nil for anything else.
+public func liquidMlLeft(_ v: Vial, remainingMcg: Double) -> Double? {
+    guard isLiquid(v), (v.diluentMl ?? 0) > 0, v.strengthMg > 0, remainingMcg.isFinite else { return nil }
+    return remainingMcg / vialConcentration(v)
+}
+
 /// Vials past that date, or within `warnDays` of it, soonest first.
 public func vialsExpiringSoon(_ vials: [Vial], _ nowMs: Millis, warnDays: Double) -> [Vial] {
     vials.compactMap { v in vialWarnDate(v).map { (v, $0) } }
