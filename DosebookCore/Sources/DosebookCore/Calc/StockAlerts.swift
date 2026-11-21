@@ -22,6 +22,12 @@ extension Settings {
         set { extra["iosLowStockNotify"] = .bool(newValue) }
     }
 
+    /// Plan leaves out protocols that are stopped or paused, until they run again.
+    public var hidePausedProtocols: Bool {
+        get { if case .bool(let b)? = extra["iosHidePaused"] { b } else { false } }
+        set { extra["iosHidePaused"] = .bool(newValue) }
+    }
+
     /// A notification when a vial is about to pass its date.
     public var expiryNotify: Bool {
         get { if case .bool(let b)? = extra["iosExpiryNotify"] { b } else { true } }

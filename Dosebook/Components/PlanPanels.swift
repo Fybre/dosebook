@@ -273,6 +273,9 @@ struct ProtocolSortMenu: View {
                 Text(t("ios_protocol_sort_alpha")).tag(ProtocolSort.alphabetical)
                 Text(t("ios_protocol_sort_added")).tag(ProtocolSort.dateAdded)
             }
+            Toggle(t("ios_plan_hide_paused"), isOn: Binding(get: { store.data.settings.hidePausedProtocols }, set: { value in
+                store.mutate { $0.settings.hidePausedProtocols = value }
+            }))
         } label: { Label(t("ios_protocol_sort"), systemImage: "arrow.up.arrow.down") }
     }
 }

@@ -427,7 +427,15 @@
     "now_vial_expiry_in_other": "reaches its expiry date in {n} days.",
     "now_vial_past_expiry": "is past its expiry date.",
     "ios_stock_alert_expiry_notify": "Notify before a vial expires",
-    "ios_expiry_discreet": "A vial is about to expire."
+    "ios_expiry_discreet": "A vial is about to expire.",
+    "ios_nopack_title": "No pack of {name} in Stock",
+    "ios_nopack_message": "Add one now, so Stock counts down as you log.",
+    "ios_nopack_add": "Add a pack",
+    "ios_now_no_pack": "No pack of {name} in Stock yet. Add one so Stock counts down as you log.",
+    "ios_now_add_pack": "Add a pack",
+    "ios_now_no_pack_many": "Nothing in Stock yet for these. Add a pack so Stock counts down as you log.",
+    "ios_plan_hide_paused": "Hide paused protocols",
+    "ios_plan_paused_hidden": "{n} paused protocols hidden"
   },
   "de": {
     "mac_updates_title": "App-Updates",
@@ -857,7 +865,15 @@
     "now_vial_expiry_in_other": "läuft in {n} Tagen ab.",
     "now_vial_past_expiry": "ist abgelaufen.",
     "ios_stock_alert_expiry_notify": "Vor Ablauf eines Fläschchens benachrichtigen",
-    "ios_expiry_discreet": "Ein Fläschchen läuft bald ab."
+    "ios_expiry_discreet": "Ein Fläschchen läuft bald ab.",
+    "ios_nopack_title": "Keine Packung {name} im Vorrat",
+    "ios_nopack_message": "Füge jetzt eine hinzu, damit der Vorrat beim Erfassen abnimmt.",
+    "ios_nopack_add": "Packung hinzufügen",
+    "ios_now_no_pack": "Noch keine Packung {name} im Vorrat. Füge eine hinzu, damit der Vorrat beim Erfassen abnimmt.",
+    "ios_now_add_pack": "Packung hinzufügen",
+    "ios_now_no_pack_many": "Dafür ist noch nichts im Vorrat. Füge eine Packung hinzu, damit der Vorrat beim Erfassen abnimmt.",
+    "ios_plan_hide_paused": "Pausierte Protokolle ausblenden",
+    "ios_plan_paused_hidden": "{n} pausierte Protokolle ausgeblendet"
   },
   "sl": {
     "mac_updates_title": "Posodobitve aplikacije",
@@ -1295,7 +1311,15 @@
     "now_vial_expiry_in_other": "poteče čez {n} dni.",
     "now_vial_past_expiry": "je preteklo.",
     "ios_stock_alert_expiry_notify": "Obvesti pred iztekom viale",
-    "ios_expiry_discreet": "Viala bo kmalu potekla."
+    "ios_expiry_discreet": "Viala bo kmalu potekla.",
+    "ios_nopack_title": "V zalogi ni pakiranja {name}",
+    "ios_nopack_message": "Dodaj ga zdaj, da se zaloga ob beleženju zmanjšuje.",
+    "ios_nopack_add": "Dodaj pakiranje",
+    "ios_now_no_pack": "V zalogi še ni pakiranja {name}. Dodaj ga, da se zaloga ob beleženju zmanjšuje.",
+    "ios_now_add_pack": "Dodaj pakiranje",
+    "ios_now_no_pack_many": "Za te v zalogi še ni ničesar. Dodaj pakiranje, da se zaloga ob beleženju zmanjšuje.",
+    "ios_plan_hide_paused": "Skrij začasno ustavljene protokole",
+    "ios_plan_paused_hidden": "Skritih začasno ustavljenih protokolov: {n}"
   },
   "pl": {
     "mac_updates_title": "Aktualizacje aplikacji",
@@ -1733,6 +1757,14 @@
     "now_vial_expiry_in_other": "traci ważność za {n} dni.",
     "now_vial_past_expiry": "straciła ważność.",
     "ios_stock_alert_expiry_notify": "Powiadom przed upływem ważności fiolki",
-    "ios_expiry_discreet": "Fiolka wkrótce straci ważność."
+    "ios_expiry_discreet": "Fiolka wkrótce straci ważność.",
+    "ios_nopack_title": "Brak opakowania {name} w zapasach",
+    "ios_nopack_message": "Dodaj je teraz, aby zapasy malały przy zapisywaniu.",
+    "ios_nopack_add": "Dodaj opakowanie",
+    "ios_now_no_pack": "Brak jeszcze opakowania {name} w zapasach. Dodaj je, aby zapasy malały przy zapisywaniu.",
+    "ios_now_add_pack": "Dodaj opakowanie",
+    "ios_now_no_pack_many": "Dla tych nie ma jeszcze nic w zapasach. Dodaj opakowanie, aby zapasy malały przy zapisywaniu.",
+    "ios_plan_hide_paused": "Ukryj wstrzymane protokoły",
+    "ios_plan_paused_hidden": "Ukryte wstrzymane protokoły: {n}"
   }
 }

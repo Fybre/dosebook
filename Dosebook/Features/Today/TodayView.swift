@@ -256,7 +256,7 @@ struct TodayView: View {
                         if let track, track.targetMcg > 0 {
                             (stockLine(track, low: stockIsLow(track.stock, supplyDays: track.supplyDays, data.settings)) + openVialPart(track.stock)).font(.caption)
                             // The open vial has a little left but not a whole dose, and a sealed one is waiting.
-                            if track.stock.openCount > 0, track.stock.dosesInOpenVials == 0, track.stock.sealedCount > 0 {
+                            if track.peptide?.preparation != .tablet, track.stock.openCount > 0, track.stock.dosesInOpenVials == 0, track.stock.sealedCount > 0 {
                                 Text(t("ios_open_vial_short")).font(.caption).foregroundStyle(Tone.tangerine.color)
                             }
                         }
@@ -612,7 +612,7 @@ struct TodayView: View {
                     }
                     if low {
                         Button { addingVial = VialFor(peptideId: track.protocol_.peptideId) } label: {
-                            Label(t("stock_add_vial"), systemImage: "plus")
+                            Label(t(track.peptide?.preparation == .tablet ? "ios_now_add_pack" : "stock_add_vial"), systemImage: "plus")
                         }.buttonStyle(.bordered)
                     }
                 }
@@ -649,13 +649,14 @@ struct TodayView: View {
             .reduce(into: [Track]()) { out, t in if !out.contains(where: { $0.protocol_.peptideId == t.protocol_.peptideId }) { out.append(t) } }
         if !noVial.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                CalloutText(noVial.count == 1 ? t("ios_now_no_vial", ["name": .string(noVial[0].name)]) : t("ios_now_no_vial_many")).font(.footnote)
+                let allPacks = noVial.allSatisfy { data.peptide($0.protocol_.peptideId)?.preparation == .tablet }
+                CalloutText(noVial.count == 1 ? t(allPacks ? "ios_now_no_pack" : "ios_now_no_vial", ["name": .string(noVial[0].name)]) : t(allPacks ? "ios_now_no_pack_many" : "ios_now_no_vial_many")).font(.footnote)
                 ForEach(noVial) { track in
                     HStack(spacing: 8) {
                         if noVial.count > 1 { Text(track.name).font(.subheadline.weight(.medium)).lineLimit(1); Spacer(minLength: 4) }
-                        Button { addingVial = VialFor(peptideId: track.protocol_.peptideId) } label: { Label(t("ios_now_add_vial"), systemImage: "plus") }
+                        Button { addingVial = VialFor(peptideId: track.protocol_.peptideId) } label: { Label(t(data.peptide(track.protocol_.peptideId)?.preparation == .tablet ? "ios_now_add_pack" : "ios_now_add_vial"), systemImage: "plus") }
                             .buttonStyle(.bordered).controlSize(.small).fixedSize()
-                        if routeHasSite(track.protocol_.route) {
+                        if routeHasSite(track.protocol_.route) && data.peptide(track.protocol_.peptideId)?.preparation != .tablet {
                             Button(t("ios_now_add_mixed")) { addingVial = VialFor(peptideId: track.protocol_.peptideId, mixed: true) }
                                 .buttonStyle(.bordered).controlSize(.small).fixedSize()
                         }

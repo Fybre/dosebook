@@ -41,7 +41,11 @@ struct PlanView: View {
                     .opacity(protocols.filter(\.active).count >= 2 ? 1 : 0)
                     .frame(height: protocols.filter(\.active).count >= 2 ? nil : 0)
                 // Cards first: on a phone the fortnight list would push them a long way down.
-                ForEach(sortedProtocols(protocols, by: data.settings.protocolSort, now: now) { data.peptide($0.peptideId)?.name ?? $0.name }) { p in
+                let shown = data.settings.hidePausedProtocols ? protocols.filter { $0.active && !isPaused($0, now) } : protocols
+                if shown.count < protocols.count {
+                    Text(t("ios_plan_paused_hidden", ["n": .number(Double(protocols.count - shown.count))])).font(.footnote).foregroundStyle(.secondary)
+                }
+                ForEach(sortedProtocols(shown, by: data.settings.protocolSort, now: now) { data.peptide($0.peptideId)?.name ?? $0.name }) { p in
                     ProtocolCard(protocol_: p, nowMs: now, onEdit: { editing = .existing(p) })
                 }
                 if protocols.contains(where: \.active) { UpcomingView(nowMs: now) }

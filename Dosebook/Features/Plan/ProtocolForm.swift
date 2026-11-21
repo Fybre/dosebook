@@ -49,6 +49,7 @@ struct ProtocolForm: View {
     }
     private var titrationAutoAdvance: Bool { titration != nil ? true : (keepingExisting ? initial?.titrationAutoAdvance ?? false : false) }
     private var lockedDose: Double? { planMode == .phases ? phases.first?.doseMcg : titrationSteps?.first?.doseMcg }
+    private var isTablet: Bool { peptide?.preparation == .tablet }
     private var routes: [Route] { routeChoices(peptide?.routes ?? [], store.data.mine.vials, peptideId, peptide?.preparation) }
 
     private var schedule: Schedule {
@@ -215,11 +216,11 @@ struct ProtocolForm: View {
             NavigationStack { CustomCompoundForm(onCreated: { pick($0.id) }) }
         }
         // A new protocol with nothing in Stock to draw from: offer the vial now.
-        .confirmationDialog(t("ios_novial_title", ["name": .string(peptide?.name ?? peptideId)]), isPresented: $askVial, titleVisibility: .visible) {
-            Button(t("ios_novial_sealed")) { addingVial = VialFor(peptideId: peptideId) }
-            if routeHasSite(route) { Button(t("ios_novial_mixed")) { addingVial = VialFor(peptideId: peptideId, mixed: true) } }
+        .confirmationDialog(t(isTablet ? "ios_nopack_title" : "ios_novial_title", ["name": .string(peptide?.name ?? peptideId)]), isPresented: $askVial, titleVisibility: .visible) {
+            Button(t(isTablet ? "ios_nopack_add" : "ios_novial_sealed")) { addingVial = VialFor(peptideId: peptideId) }
+            if routeHasSite(route) && !isTablet { Button(t("ios_novial_mixed")) { addingVial = VialFor(peptideId: peptideId, mixed: true) } }
             Button(t("ios_novial_later"), role: .cancel) { dismiss() }
-        } message: { Text(t("ios_novial_message")) }
+        } message: { Text(t(isTablet ? "ios_nopack_message" : "ios_novial_message")) }
         // The edit put a dose earlier today that nothing is logged against: ask what it means.
         .confirmationDialog(t("ios_moved_title", ["time": .string(movedToday.map(formatTime) ?? "")]), isPresented: Binding(get: { movedToday != nil }, set: { if !$0 { movedToday = nil } }), titleVisibility: .visible) {
             Button(t("ios_moved_due")) { save(changedAt: startOfLocalDay(nowMillis())) }
