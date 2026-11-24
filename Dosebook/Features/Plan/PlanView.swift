@@ -112,6 +112,7 @@ struct ProtocolCard: View {
         let current = bands != nil ? phaseSpanAt(p, nowMs) : nil
         let showSchedule = current?.schedule ?? p.schedule
         let next = p.active ? protocolNextDoseTime(p, nowMs) : nil
+        let run = p.active ? runProgress(p, nowMs) : nil
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -119,6 +120,7 @@ struct ProtocolCard: View {
                         NavigationLink(value: p.peptideId) { Text(peptide?.name ?? p.peptideId).font(.headline) }
                             .buttonStyle(.plain)
                         if !p.active || isPaused(p, nowMs) { Pill(text: t("plan_paused")) }
+                        else if let run { Pill(text: runBadgeText(run), tone: .sky) }
                         if let bands, let current {
                             Pill(text: "\(p.phases?.isEmpty == false ? t("plan_week_band") : t("plan_step")) \(current.index + 1) \(t("plan_of")) \(bands.count)", tone: .sky)
                         }
@@ -141,8 +143,10 @@ struct ProtocolCard: View {
             }
             .font(.footnote)
             Text("\(hasStarted(p, nowMs) ? t("plan_started") : t("plan_starts")) \(formatDate(p.startedAt))"
+                 + (run.map { " · " + runLengthLine($0) } ?? "")
                  + ((p.sites?.isEmpty == false) ? " · " + t("plan_rotating_sites", ["n": .number(Double(p.sites!.count))]) : ""))
                 .font(.caption).foregroundStyle(.secondary)
+            if let cycle = run?.cycle, bands == nil { CycleBar(cycle: cycle) }
             if let bands, !bands.isEmpty {
                 Divider()
                 HStack(spacing: 3) {

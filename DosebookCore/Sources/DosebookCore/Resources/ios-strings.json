@@ -435,7 +435,18 @@
     "ios_now_add_pack": "Add a pack",
     "ios_now_no_pack_many": "Nothing in Stock yet for these. Add a pack so Stock counts down as you log.",
     "ios_plan_hide_paused": "Hide paused protocols",
-    "ios_plan_paused_hidden": "{n} paused protocols hidden"
+    "ios_plan_paused_hidden": "{n} paused protocols hidden",
+    "ios_run_wd": "{w}w {d}d",
+    "ios_run_d": "{d}d",
+    "ios_run_day": "Day {n}",
+    "ios_run_on_week": "On · week {n} of {total}",
+    "ios_run_off_week": "Off · week {n} of {total}",
+    "ios_run_finished": "Course finished",
+    "ios_run_in": "{length} in",
+    "ios_run_on_paused": "{length} on · {n} days paused",
+    "ios_run_then_off": "Then {n} weeks off, from {date}",
+    "ios_run_course_ends": "Course ends {date}",
+    "ios_run_back_on": "Back on {date}"
   },
   "de": {
     "mac_updates_title": "App-Updates",
@@ -873,7 +884,18 @@
     "ios_now_add_pack": "Packung hinzufügen",
     "ios_now_no_pack_many": "Dafür ist noch nichts im Vorrat. Füge eine Packung hinzu, damit der Vorrat beim Erfassen abnimmt.",
     "ios_plan_hide_paused": "Pausierte Protokolle ausblenden",
-    "ios_plan_paused_hidden": "{n} pausierte Protokolle ausgeblendet"
+    "ios_plan_paused_hidden": "{n} pausierte Protokolle ausgeblendet",
+    "ios_run_wd": "{w} Wo. {d} T.",
+    "ios_run_d": "{d} T.",
+    "ios_run_day": "Tag {n}",
+    "ios_run_on_week": "An · Woche {n} von {total}",
+    "ios_run_off_week": "Pause · Woche {n} von {total}",
+    "ios_run_finished": "Kur beendet",
+    "ios_run_in": "seit {length}",
+    "ios_run_on_paused": "{length} aktiv · {n} Tage pausiert",
+    "ios_run_then_off": "Danach {n} Wochen Pause, ab {date}",
+    "ios_run_course_ends": "Kur endet am {date}",
+    "ios_run_back_on": "Wieder ab {date}"
   },
   "sl": {
     "mac_updates_title": "Posodobitve aplikacije",
@@ -1319,7 +1341,18 @@
     "ios_now_add_pack": "Dodaj pakiranje",
     "ios_now_no_pack_many": "Za te v zalogi še ni ničesar. Dodaj pakiranje, da se zaloga ob beleženju zmanjšuje.",
     "ios_plan_hide_paused": "Skrij začasno ustavljene protokole",
-    "ios_plan_paused_hidden": "Skritih začasno ustavljenih protokolov: {n}"
+    "ios_plan_paused_hidden": "Skritih začasno ustavljenih protokolov: {n}",
+    "ios_run_wd": "{w} ted. {d} d.",
+    "ios_run_d": "{d} d.",
+    "ios_run_day": "Dan {n}",
+    "ios_run_on_week": "Vklop · teden {n} od {total}",
+    "ios_run_off_week": "Odmor · teden {n} od {total}",
+    "ios_run_finished": "Kura končana",
+    "ios_run_in": "{length} v poteku",
+    "ios_run_on_paused": "{length} aktivno · {n} dni v premoru",
+    "ios_run_then_off": "Nato {n} tednov odmora, od {date}",
+    "ios_run_course_ends": "Kura se konča {date}",
+    "ios_run_back_on": "Spet od {date}"
   },
   "pl": {
     "mac_updates_title": "Aktualizacje aplikacji",
@@ -1765,6 +1798,17 @@
     "ios_now_add_pack": "Dodaj opakowanie",
     "ios_now_no_pack_many": "Dla tych nie ma jeszcze nic w zapasach. Dodaj opakowanie, aby zapasy malały przy zapisywaniu.",
     "ios_plan_hide_paused": "Ukryj wstrzymane protokoły",
-    "ios_plan_paused_hidden": "Ukryte wstrzymane protokoły: {n}"
+    "ios_plan_paused_hidden": "Ukryte wstrzymane protokoły: {n}",
+    "ios_run_wd": "{w} tyg. {d} d.",
+    "ios_run_d": "{d} d.",
+    "ios_run_day": "Dzień {n}",
+    "ios_run_on_week": "Cykl · tydzień {n} z {total}",
+    "ios_run_off_week": "Przerwa · tydzień {n} z {total}",
+    "ios_run_finished": "Kuracja zakończona",
+    "ios_run_in": "trwa {length}",
+    "ios_run_on_paused": "{length} aktywnie · {n} dni wstrzymania",
+    "ios_run_then_off": "Potem {n} tyg. przerwy, od {date}",
+    "ios_run_course_ends": "Kuracja kończy się {date}",
+    "ios_run_back_on": "Wraca {date}"
   }
 }

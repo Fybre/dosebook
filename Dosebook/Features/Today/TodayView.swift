@@ -595,6 +595,10 @@ struct TodayView: View {
             }
             Divider()
             VStack(alignment: .leading, spacing: 4) {
+                if let run = runProgress(track.protocol_, now) {
+                    Text(runBadgeText(run)).foregroundStyle(.secondary) + Text(" · " + runLengthLine(run)).foregroundStyle(.secondary)
+                    if let cycle = run.cycle { CycleBar(cycle: cycle, tone: track.tone.color) }
+                }
                 Text(t("now_last_dose")).foregroundStyle(.secondary)
                     + Text(" " + (track.lastLoggedAt.map { relativeTime($0, nowMs: now) } ?? t("now_never")))
                     + Text(track.lastLog.flatMap { l in l.site.flatMap { routeHasSite(l.route) ? " · " + siteLabel($0) : nil } } ?? "")
