@@ -21,7 +21,7 @@ struct StockView: View {
     }
 
     enum StockSheet: Identifiable {
-        case add, scan, history(Vial), edit(Vial), left(Vial), reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), editAll([Vial]), addBottle, useBottle(DiluentBottle)
+        case add, scan, history(Vial), edit(Vial), left(Vial), reconstitute(Vial), topUp(Vial), transfer(Vial), tabletSize([Vial]), editAll([Vial]), addBottle, useBottle(DiluentBottle), vendors
         var id: String {
             switch self {
             case .add: "add"
@@ -35,6 +35,7 @@ struct StockView: View {
             case .tabletSize(let vs): "z" + vs[0].id
             case .editAll(let vs): "ea" + vs[0].id
             case .addBottle: "bottle"
+            case .vendors: "vendors"
             case .useBottle(let b): "u" + b.id
             }
         }
@@ -216,6 +217,8 @@ struct StockView: View {
                 Menu {
                     Button { sheet = .add } label: { Label(t("stock_add_vial"), systemImage: "square.and.pencil") }
                     Button { sheet = .scan } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
+                    Divider()
+                    Button { sheet = .vendors } label: { Label(t("ios_vc_title"), systemImage: "chart.bar.xaxis") }
                 } label: { Label(t("stock_add_vial"), systemImage: "plus") }
             }
         }
@@ -247,6 +250,7 @@ struct StockView: View {
                 case .tabletSize(let vs): TabletSizeForm(vials: vs)
                 case .editAll(let vs): BulkVialEditForm(vials: vs)
                 case .addBottle: AddBottleForm()
+                case .vendors: VendorCompareView()
                 case .useBottle(let b): UseElsewhereForm(bottle: b)
                 }
             }
