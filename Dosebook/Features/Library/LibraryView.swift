@@ -8,6 +8,7 @@ private let EVIDENCE_RANK: [EvidenceLevel] = [.anecdotal, .preclinical, .prelimi
 struct LibraryView: View {
     @Environment(AppStore.self) private var store
     @State private var query = ""
+    @State private var adding = false
 
     var body: some View {
         let peptides = store.data.allPeptides
@@ -36,6 +37,12 @@ struct LibraryView: View {
         .readableWidth()
         .searchable(text: $query, prompt: t("library_search_placeholder"))
         .navigationTitle(t("library_title"))
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { adding = true } label: { Label(t("library_add_your_own"), systemImage: "plus") }
+            }
+        }
+        .sheet(isPresented: $adding) { NavigationStack { CustomCompoundForm() } }
         .peptideDestination()
     }
 }

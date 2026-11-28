@@ -5,7 +5,7 @@ import DosebookCore
 /// Estimated levels for the last fortnight and the coming week. Dashed for a
 /// curve not measured in people. Touch to read any moment.
 struct PkChartView: View {
-    var series: [PkSeries]
+    var allSeries: [PkSeries]
     var now: Millis
     var describeVial: (String) -> String? = { _ in nil }
     /// Defaults to the last fortnight and the coming week.
@@ -13,6 +13,16 @@ struct PkChartView: View {
     /// Chart and readout only, for a single compound's demonstration curve.
     var compact = false
     @State private var picked: Date?
+    /// Compounds switched off from the legend, kept between launches (one id per line).
+    @AppStorage("pk.hidden") private var hiddenRaw = ""
+    private var hidden: Set<String> { Set(hiddenRaw.split(separator: "\n").map(String.init)) }
+    /// The compact demonstration chart has no legend, so it always shows everything.
+    private var series: [PkSeries] { compact ? allSeries : allSeries.filter { !hidden.contains($0.id) } }
+    private func toggle(_ id: String) {
+        var h = hidden
+        if h.contains(id) { h.remove(id) } else { h.insert(id) }
+        hiddenRaw = h.sorted().joined(separator: "\n")
+    }
 
     private var from: Millis { range?.lowerBound ?? now - 14 * DAY_MS }
     private var to: Millis { range?.upperBound ?? now + 7 * DAY_MS }
@@ -27,7 +37,8 @@ struct PkChartView: View {
         VStack(alignment: .leading, spacing: 10) {
             if !compact {
                 CardHeader(title: t("now_circulating"))
-                FlowLegend(series: series)
+                FlowLegend(series: allSeries, hidden: hidden, toggle: toggle)
+                if series.isEmpty { Text(t("ios_chart_all_hidden")).font(.caption).foregroundStyle(.secondary) }
             }
             Chart {
                 ForEach(samples, id: \.0.id) { s, points in
@@ -92,6 +103,8 @@ struct PkChartView: View {
 
 private struct FlowLegend: View {
     var series: [PkSeries]
+    var hidden: Set<String>
+    var toggle: (String) -> Void
     var body: some View {
         ViewThatFits(in: .horizontal) {
             HStack(spacing: 10) { items }
@@ -101,6 +114,8 @@ private struct FlowLegend: View {
     }
     @ViewBuilder private var items: some View {
         ForEach(series) { s in
+            let off = hidden.contains(s.id)
+            Button { toggle(s.id) } label: {
             HStack(spacing: 4) {
                 if s.basis == nil || s.basis == .published { Circle().fill(s.tone.color).frame(width: 8, height: 8) }
                 else { Circle().strokeBorder(s.tone.color, lineWidth: 1.5).frame(width: 8, height: 8) }
@@ -108,6 +123,13 @@ private struct FlowLegend: View {
                 if s.basis == .elsewhere { Text(t("now_estimated")).foregroundStyle(.tertiary) }
                 if s.basis == .yours { Text(t("now_your_figure")).foregroundStyle(.tertiary) }
             }
+            .opacity(off ? 0.4 : 1)
+            .strikethrough(off)
+            .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityValue(t(off ? "ios_chart_hidden" : "ios_chart_shown"))
+            .accessibilityHint(t("ios_chart_toggle_hint"))
         }
     }
 }

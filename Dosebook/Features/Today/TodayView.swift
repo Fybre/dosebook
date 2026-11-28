@@ -108,7 +108,7 @@ struct TodayView: View {
                 if !c.active.isEmpty { UpcomingView(nowMs: now, comingUp: true) }
             case .chart:
                 if !c.series.isEmpty {
-                    PkChartView(series: c.series, now: now,
+                    PkChartView(allSeries: c.series, now: now,
                                 describeVial: { describeVial($0, data) })
                         .card()
                         .id("chart")

@@ -479,7 +479,12 @@
     "ios_stock_type_all": "All types",
     "ios_stock_type_vials": "Powder vials",
     "ios_stock_type_liquids": "Liquids and oils",
-    "ios_stock_type_packs": "Tablets and packs"
+    "ios_stock_type_packs": "Tablets and packs",
+    "ios_chart_all_hidden": "Every compound is switched off. Tap a name above to show it.",
+    "ios_chart_hidden": "Hidden",
+    "ios_chart_shown": "Shown",
+    "ios_chart_toggle_hint": "Shows or hides this compound on the chart",
+    "ios_edit_compound": "Edit or delete"
   },
   "de": {
     "mac_updates_title": "App-Updates",
@@ -961,7 +966,12 @@
     "ios_stock_type_all": "Alle Arten",
     "ios_stock_type_vials": "Pulver-Fläschchen",
     "ios_stock_type_liquids": "Flüssigkeiten und Öle",
-    "ios_stock_type_packs": "Tabletten und Packungen"
+    "ios_stock_type_packs": "Tabletten und Packungen",
+    "ios_chart_all_hidden": "Alle Wirkstoffe sind ausgeblendet. Tippe oben auf einen Namen, um ihn zu zeigen.",
+    "ios_chart_hidden": "Ausgeblendet",
+    "ios_chart_shown": "Angezeigt",
+    "ios_chart_toggle_hint": "Zeigt oder verbirgt diesen Wirkstoff im Diagramm",
+    "ios_edit_compound": "Bearbeiten oder löschen"
   },
   "sl": {
     "mac_updates_title": "Posodobitve aplikacije",
@@ -1451,7 +1461,12 @@
     "ios_stock_type_all": "Vse vrste",
     "ios_stock_type_vials": "Viale s praškom",
     "ios_stock_type_liquids": "Tekočine in olja",
-    "ios_stock_type_packs": "Tablete in pakiranja"
+    "ios_stock_type_packs": "Tablete in pakiranja",
+    "ios_chart_all_hidden": "Vse učinkovine so skrite. Tapnite ime zgoraj, da ga prikažete.",
+    "ios_chart_hidden": "Skrito",
+    "ios_chart_shown": "Prikazano",
+    "ios_chart_toggle_hint": "Prikaže ali skrije to učinkovino na grafu",
+    "ios_edit_compound": "Uredi ali izbriši"
   },
   "pl": {
     "mac_updates_title": "Aktualizacje aplikacji",
@@ -1941,6 +1956,11 @@
     "ios_stock_type_all": "Wszystkie rodzaje",
     "ios_stock_type_vials": "Fiolki z proszkiem",
     "ios_stock_type_liquids": "Płyny i oleje",
-    "ios_stock_type_packs": "Tabletki i opakowania"
+    "ios_stock_type_packs": "Tabletki i opakowania",
+    "ios_chart_all_hidden": "Wszystkie substancje są ukryte. Dotknij nazwy powyżej, aby ją pokazać.",
+    "ios_chart_hidden": "Ukryte",
+    "ios_chart_shown": "Widoczne",
+    "ios_chart_toggle_hint": "Pokazuje lub ukrywa tę substancję na wykresie",
+    "ios_edit_compound": "Edytuj lub usuń"
   }
 }

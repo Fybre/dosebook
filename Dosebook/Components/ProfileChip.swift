@@ -17,6 +17,8 @@ struct ProfileChip: View {
                 Text(active.name).font(.subheadline.weight(.medium)).lineLimit(1)
             }
             .fixedSize()
+            // Room inside the toolbar's own highlight, which hugs its content.
+            .padding(.horizontal, 8).padding(.vertical, 3)
             .contentShape(Rectangle())
             .contextMenu {
                 Picker(t("ios_profile_switch"), selection: Binding(get: { data.activeProfileId }, set: { id in store.mutate { $0.switchProfile(id) } })) {

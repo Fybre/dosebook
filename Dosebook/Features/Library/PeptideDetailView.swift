@@ -14,7 +14,10 @@ private func evidenceTone(_ e: EvidenceLevel) -> Tone {
 /// One compound: how it works, what it does in the body, doses, and sources.
 struct PeptideDetailView: View {
     @Environment(AppStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
     var peptideId: String
+    @State private var editing: Peptide?
+    @State private var confirmingDelete = false
 
     var body: some View {
         if let p = store.data.peptide(peptideId) {
@@ -143,6 +146,31 @@ struct PeptideDetailView: View {
         .debugAnchor(proxy)
         }
         .navigationTitle(p.name)
+        .toolbar {
+            // Only a compound you added can be changed or removed.
+            if data.customPeptides.contains(where: { $0.id == p.id }) {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button { editing = p } label: { Label(t("library_edit_name", ["name": .string(p.name)]), systemImage: "pencil") }
+                        Button(role: .destructive) { confirmingDelete = true } label: { Label(t("library_delete_name", ["name": .string(p.name)]), systemImage: "trash") }
+                    } label: { Label(t("ios_edit_compound"), systemImage: "ellipsis.circle") }
+                }
+            }
+        }
+        .sheet(item: $editing) { c in NavigationStack { CustomCompoundForm(editing: c) } }
+        .confirmationDialog(t("library_delete_compound", ["name": .string(p.name)]), isPresented: $confirmingDelete, titleVisibility: .visible) {
+            Button(t("library_delete_compound", ["name": .string(p.name)]), role: .destructive) {
+                store.mutate { $0.removeCustomPeptide(p.id) }
+                dismiss()
+            }
+            Button(t("library_keep_it"), role: .cancel) {}
+        } message: {
+            let protocols = data.protocols.filter { $0.peptideId == p.id }.count
+            let logs = data.logs.filter { $0.peptideId == p.id }.count
+            Text(logs > 0 || protocols > 0
+                 ? t("library_delete_in_use", ["logs": .string(String(logs)), "protocols": .string(String(protocols)), "name": .string(p.name)])
+                 : t("library_delete_safe", ["name": .string(p.name)]))
+        }
     }
 
     @ViewBuilder private func pkContent(_ p: Peptide, mine: HalfLifeOverride?, intervalHours: Double) -> some View {
@@ -209,7 +237,7 @@ struct PeptideDetailView: View {
         }
         if !series.isEmpty {
             let longest = series.map(\.params.halfLifeHours).max() ?? 24
-            PkChartView(series: series, now: now, range: now...(now + min(longest * 5, 24 * 21) * HOUR_MS), compact: true)
+            PkChartView(allSeries: series, now: now, range: now...(now + min(longest * 5, 24 * 21) * HOUR_MS), compact: true)
             Text(t("ios_blend_curve_note", ["dose": .string(formatDose(dose))])).font(.caption).foregroundStyle(.secondary)
         }
     }
@@ -220,7 +248,7 @@ struct PeptideDetailView: View {
         let span = min(curve.params.halfLifeHours * 5, 24 * 21)
         let series = PkSeries(id: p.id, label: p.name, doses: [DoseEvent(at: now, amountMcg: 1000)], params: curve.params,
                               referenceMcg: 1000, basis: curve.basis, tone: .tangerine)
-        return PkChartView(series: [series], now: now, range: now...(now + span * HOUR_MS), compact: true)
+        return PkChartView(allSeries: [series], now: now, range: now...(now + span * HOUR_MS), compact: true)
     }
 }
 
