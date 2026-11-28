@@ -472,7 +472,14 @@
     "ios_vc_above": "{pct}% above {vendor}",
     "ios_vc_below": "{pct}% below {vendor}",
     "ios_vc_same_as": "About the same as {vendor}",
-    "ios_vc_no_vendor": "No vendor listed"
+    "ios_vc_no_vendor": "No vendor listed",
+    "ios_stock_add": "Add stock",
+    "ios_stock_new": "Add stock",
+    "ios_stock_filter": "Show",
+    "ios_stock_type_all": "All types",
+    "ios_stock_type_vials": "Powder vials",
+    "ios_stock_type_liquids": "Liquids and oils",
+    "ios_stock_type_packs": "Tablets and packs"
   },
   "de": {
     "mac_updates_title": "App-Updates",
@@ -947,7 +954,14 @@
     "ios_vc_above": "{pct} % über {vendor}",
     "ios_vc_below": "{pct} % unter {vendor}",
     "ios_vc_same_as": "Etwa wie {vendor}",
-    "ios_vc_no_vendor": "Kein Anbieter angegeben"
+    "ios_vc_no_vendor": "Kein Anbieter angegeben",
+    "ios_stock_add": "Bestand hinzufügen",
+    "ios_stock_new": "Bestand hinzufügen",
+    "ios_stock_filter": "Anzeigen",
+    "ios_stock_type_all": "Alle Arten",
+    "ios_stock_type_vials": "Pulver-Fläschchen",
+    "ios_stock_type_liquids": "Flüssigkeiten und Öle",
+    "ios_stock_type_packs": "Tabletten und Packungen"
   },
   "sl": {
     "mac_updates_title": "Posodobitve aplikacije",
@@ -1430,7 +1444,14 @@
     "ios_vc_above": "{pct} % nad {vendor}",
     "ios_vc_below": "{pct} % pod {vendor}",
     "ios_vc_same_as": "Približno enako kot {vendor}",
-    "ios_vc_no_vendor": "Brez ponudnika"
+    "ios_vc_no_vendor": "Brez ponudnika",
+    "ios_stock_add": "Dodaj zalogo",
+    "ios_stock_new": "Dodaj zalogo",
+    "ios_stock_filter": "Prikaži",
+    "ios_stock_type_all": "Vse vrste",
+    "ios_stock_type_vials": "Viale s praškom",
+    "ios_stock_type_liquids": "Tekočine in olja",
+    "ios_stock_type_packs": "Tablete in pakiranja"
   },
   "pl": {
     "mac_updates_title": "Aktualizacje aplikacji",
@@ -1913,6 +1934,13 @@
     "ios_vc_above": "{pct}% powyżej {vendor}",
     "ios_vc_below": "{pct}% poniżej {vendor}",
     "ios_vc_same_as": "Mniej więcej tyle co {vendor}",
-    "ios_vc_no_vendor": "Brak dostawcy"
+    "ios_vc_no_vendor": "Brak dostawcy",
+    "ios_stock_add": "Dodaj zapas",
+    "ios_stock_new": "Dodaj zapas",
+    "ios_stock_filter": "Pokaż",
+    "ios_stock_type_all": "Wszystkie rodzaje",
+    "ios_stock_type_vials": "Fiolki z proszkiem",
+    "ios_stock_type_liquids": "Płyny i oleje",
+    "ios_stock_type_packs": "Tabletki i opakowania"
   }
 }

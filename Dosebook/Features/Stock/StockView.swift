@@ -10,6 +10,7 @@ struct StockView: View {
     @State private var finishing: Vial?
     @State private var now = nowMillis()
     @State private var search = ""
+    @State private var typeFilter: StockTypeFilter = .all
     /// The Mac can show the shelf as a table instead of rows.
     @AppStorage("bench.stock.table") private var tableOn = false
     private var tableMode: Bool {
@@ -18,6 +19,19 @@ struct StockView: View {
         #else
         false
         #endif
+    }
+
+    /// Which kind of stock to show: powder vials, ready liquids and oils, or tablets and packs.
+    enum StockTypeFilter: Hashable {
+        case all, vials, liquids, packs
+        func includes(_ v: Vial) -> Bool {
+            switch self {
+            case .all: true
+            case .packs: isPack(v)
+            case .liquids: isLiquid(v) && !isPack(v)
+            case .vials: !isPack(v) && !isLiquid(v)
+            }
+        }
     }
 
     enum StockSheet: Identifiable {
@@ -46,8 +60,8 @@ struct StockView: View {
         let settings = data.settings
         let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
         let matching = mine.vials.filter { v in
-            query.isEmpty || [data.peptide(v.peptideId)?.name ?? v.peptideId, v.supplier ?? "", v.lot ?? ""]
-                .contains { $0.localizedStandardContains(query) }
+            typeFilter.includes(v) && (query.isEmpty || [data.peptide(v.peptideId)?.name ?? v.peptideId, v.supplier ?? "", v.lot ?? ""]
+                .contains { $0.localizedStandardContains(query) })
         }
         let vials = sortedStockVials(matching, by: settings.stockSort) { data.peptide($0)?.name ?? $0 }
         let currency = settings.currency
@@ -95,13 +109,14 @@ struct StockView: View {
 
             if query.isEmpty && settings.waterAtBottom != true { waterShelf(mine, settings) }
 
-            if vials.isEmpty && !query.isEmpty {
-                ContentUnavailableView.search(text: query)
+            if vials.isEmpty && (!query.isEmpty || typeFilter != .all) {
+                if query.isEmpty { ContentUnavailableView(t("stock_no_vials"), systemImage: "line.3.horizontal.decrease.circle") }
+                else { ContentUnavailableView.search(text: query) }
             } else if vials.isEmpty {
                 ContentUnavailableView {
                     Label(t("stock_no_vials"), systemImage: "testtube.2")
                 } description: { Text(t("stock_empty_desc")) } actions: {
-                    Button(t("stock_add_vial")) { sheet = .add }.buttonStyle(.borderedProminent)
+                    Button(t("ios_stock_add")) { sheet = .add }.buttonStyle(.borderedProminent)
                 }
             }
 
@@ -203,6 +218,16 @@ struct StockView: View {
             #endif
             ToolbarItem(placement: .primaryAction) {
                 Menu {
+                    Picker(t("ios_stock_filter"), selection: $typeFilter) {
+                        Text(t("ios_stock_type_all")).tag(StockTypeFilter.all)
+                        Text(t("ios_stock_type_vials")).tag(StockTypeFilter.vials)
+                        Text(t("ios_stock_type_liquids")).tag(StockTypeFilter.liquids)
+                        Text(t("ios_stock_type_packs")).tag(StockTypeFilter.packs)
+                    }
+                } label: { Label(t("ios_stock_filter"), systemImage: typeFilter == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill") }
+            }
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
                     Picker(t("ios_stock_sort"), selection: Binding(get: { settings.stockSort }, set: { value in
                         store.mutate { $0.settings.stockSort = value }
                     })) {
@@ -214,9 +239,9 @@ struct StockView: View {
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
-                    Button { sheet = .add } label: { Label(t("stock_add_vial"), systemImage: "square.and.pencil") }
+                    Button { sheet = .add } label: { Label(t("ios_stock_add"), systemImage: "square.and.pencil") }
                     Button { sheet = .scan } label: { Label(t("ios_scan_title"), systemImage: "camera.viewfinder") }
-                } label: { Label(t("stock_add_vial"), systemImage: "plus") }
+                } label: { Label(t("ios_stock_add"), systemImage: "plus") }
             }
         }
         .onAppear { now = nowMillis() }

@@ -649,12 +649,24 @@ struct TodayView: View {
     /// Never had a vial is not running low: near the top, with a way to add one.
     /// Running low stays under "worth sorting".
     @ViewBuilder private func noVialCards(_ tracks: [Track], data: AppData) -> some View {
-        let noVial = tracks.filter { $0.targetMcg > 0 && !hasAnyVial(data, $0.protocol_.peptideId) }
+        let noVial = tracks.filter { $0.targetMcg > 0 && !hasAnyVial(data, $0.protocol_.peptideId) && !data.settings.dismissedNoStock.contains($0.protocol_.peptideId) }
             .reduce(into: [Track]()) { out, t in if !out.contains(where: { $0.protocol_.peptideId == t.protocol_.peptideId }) { out.append(t) } }
         if !noVial.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 let allPacks = noVial.allSatisfy { data.peptide($0.protocol_.peptideId)?.preparation == .tablet }
-                CalloutText(noVial.count == 1 ? t(allPacks ? "ios_now_no_pack" : "ios_now_no_vial", ["name": .string(noVial[0].name)]) : t(allPacks ? "ios_now_no_pack_many" : "ios_now_no_vial_many")).font(.footnote)
+                HStack(alignment: .top, spacing: 4) {
+                    CalloutText(noVial.count == 1 ? t(allPacks ? "ios_now_no_pack" : "ios_now_no_vial", ["name": .string(noVial[0].name)]) : t(allPacks ? "ios_now_no_pack_many" : "ios_now_no_vial_many")).font(.footnote)
+                    Spacer(minLength: 0)
+                    Button {
+                        let ids = noVial.map { $0.protocol_.peptideId }
+                        store.mutate { $0.settings.dismissedNoStock.formUnion(ids) }
+                    } label: {
+                        Image(systemName: "xmark").font(.footnote.weight(.semibold))
+                            .frame(width: 32, height: 32).contentShape(Rectangle())
+                    }
+                    .buttonStyle(.borderless)
+                    .accessibilityLabel(t("dismiss"))
+                }
                 ForEach(noVial) { track in
                     HStack(spacing: 8) {
                         if noVial.count > 1 { Text(track.name).font(.subheadline.weight(.medium)).lineLimit(1); Spacer(minLength: 4) }

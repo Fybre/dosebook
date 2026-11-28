@@ -265,7 +265,7 @@ struct AddVialForm: View {
             }
         }
         // Closes only once saved: a draft that does not hold together stays open with a message.
-        .formChrome(t(editingVial == nil ? "stock_new_vial" : "ios_vial_edit"), confirm: t("save"), disabled: !valid, dismissAfter: false, action: save)
+        .formChrome(t(editingVial == nil ? "ios_stock_new" : "ios_vial_edit"), confirm: t("save"), disabled: !valid, dismissAfter: false, action: save)
         .sheet(isPresented: $addingCompound) { NavigationStack { CustomCompoundForm(onCreated: { choose($0.id) }) } }
         .sheet(isPresented: $scanning) { NavigationStack { ScanVialView(onScanned: apply) } }
         .onChange(of: diluent) { bottleId = "" }

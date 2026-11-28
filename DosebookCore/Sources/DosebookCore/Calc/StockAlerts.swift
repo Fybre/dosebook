@@ -28,6 +28,15 @@ extension Settings {
         set { extra["iosHidePaused"] = .bool(newValue) }
     }
 
+    /// Compounds whose "no stock yet" card on Today was dismissed.
+    public var dismissedNoStock: Set<String> {
+        get {
+            guard case .array(let a)? = extra["iosDismissedNoStock"] else { return [] }
+            return Set(a.compactMap { if case .string(let s) = $0 { s } else { nil } })
+        }
+        set { extra["iosDismissedNoStock"] = .array(newValue.sorted().map { .string($0) }) }
+    }
+
     /// A notification when a vial is about to pass its date.
     public var expiryNotify: Bool {
         get { if case .bool(let b)? = extra["iosExpiryNotify"] { b } else { true } }
