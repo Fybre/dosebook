@@ -52,7 +52,7 @@ struct CustomCompoundForm: View {
             Section {
                 // A blend has no half-life of its own; each part keeps its library one.
                 if draft.components.isEmpty {
-                    OptionalNumberRow(label: t("ccf_half_life"), value: $draft.halfLifeHours, suffix: t("hours"), hint: t("ccf_half_life_hint"), error: error(.halfLifeHours))
+                    HalfLifeRow(label: t("ccf_half_life"), hours: $draft.halfLifeHours, hint: t("ccf_half_life_hint"), error: error(.halfLifeHours))
                 }
                 OptionalAmountRow(label: t("ccf_dose_low"), value: $draft.doseLowMcg, error: error(.doseLowMcg))
                 OptionalAmountRow(label: t("ccf_dose_high"), value: $draft.doseHighMcg, error: error(.doseHighMcg))
@@ -169,5 +169,38 @@ struct CustomCompoundForm: View {
             onCreated?(p)
         }
         dismiss()
+    }
+}
+
+
+/// A half-life typed in hours or days, held in hours either way. Until it is toggled the
+/// unit follows the value, so a stored 168 reads 7 days.
+private struct HalfLifeRow: View {
+    var label: String
+    @Binding var hours: Double?
+    var hint: String? = nil
+    var error: String? = nil
+    @State private var inDays: Bool?
+
+    var body: some View {
+        let days = inDays ?? (hours.map { $0 >= 24 && jsFixed($0 / 24, 3) * 24 == jsFixed($0, 6) } ?? false)
+        VStack(alignment: .leading, spacing: 4) {
+            LabeledContent(label) {
+                HStack(spacing: 6) {
+                    OptionalNumberField(title: label, boxed: false, value: Binding(
+                        get: { hours.map { days ? jsFixed($0 / 24, 4) : $0 } },
+                        set: { n in
+                            if inDays == nil { inDays = days }
+                            hours = n.map { days ? jsFixed($0 * 24, 6) : $0 }
+                        }))
+                        .id(days)
+                    Button(t(days ? "days" : "hours")) { inDays = !days }
+                        .buttonStyle(.bordered).controlSize(.mini).font(.caption.weight(.semibold))
+                }
+                .inputBox()
+                .frame(width: INPUT_BOX_WIDTH)
+            }
+            if let msg = error ?? hint { Text(msg).font(.caption).foregroundStyle(error != nil ? Tone.rose.color : .secondary) }
+        }
     }
 }
