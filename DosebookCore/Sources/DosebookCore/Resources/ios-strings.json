@@ -484,7 +484,8 @@
     "ios_chart_hidden": "Hidden",
     "ios_chart_shown": "Shown",
     "ios_chart_toggle_hint": "Shows or hides this compound on the chart",
-    "ios_edit_compound": "Edit or delete"
+    "ios_edit_compound": "Edit or delete",
+    "ios_library_all_categories": "All categories"
   },
   "de": {
     "mac_updates_title": "App-Updates",
@@ -971,7 +972,8 @@
     "ios_chart_hidden": "Ausgeblendet",
     "ios_chart_shown": "Angezeigt",
     "ios_chart_toggle_hint": "Zeigt oder verbirgt diesen Wirkstoff im Diagramm",
-    "ios_edit_compound": "Bearbeiten oder löschen"
+    "ios_edit_compound": "Bearbeiten oder löschen",
+    "ios_library_all_categories": "Alle Kategorien"
   },
   "sl": {
     "mac_updates_title": "Posodobitve aplikacije",
@@ -1466,7 +1468,8 @@
     "ios_chart_hidden": "Skrito",
     "ios_chart_shown": "Prikazano",
     "ios_chart_toggle_hint": "Prikaže ali skrije to učinkovino na grafu",
-    "ios_edit_compound": "Uredi ali izbriši"
+    "ios_edit_compound": "Uredi ali izbriši",
+    "ios_library_all_categories": "Vse kategorije"
   },
   "pl": {
     "mac_updates_title": "Aktualizacje aplikacji",
@@ -1961,6 +1964,7 @@
     "ios_chart_hidden": "Ukryte",
     "ios_chart_shown": "Widoczne",
     "ios_chart_toggle_hint": "Pokazuje lub ukrywa tę substancję na wykresie",
-    "ios_edit_compound": "Edytuj lub usuń"
+    "ios_edit_compound": "Edytuj lub usuń",
+    "ios_library_all_categories": "Wszystkie kategorie"
   }
 }

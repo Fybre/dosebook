@@ -9,11 +9,14 @@ struct LibraryView: View {
     @Environment(AppStore.self) private var store
     @State private var query = ""
     @State private var adding = false
+    @State private var categoryFilter: PeptideCategory?
 
     var body: some View {
         let peptides = store.data.allPeptides
+        let categories = peptides.reduce(into: [PeptideCategory]()) { if !$0.contains($1.category) { $0.append($1.category) } }
         let q = query.trimmingCharacters(in: .whitespaces).lowercased()
-        let filtered = q.isEmpty ? peptides : peptides.filter {
+        let inCategory = categoryFilter.map { c in peptides.filter { $0.category == c } } ?? peptides
+        let filtered = q.isEmpty ? inCategory : inCategory.filter {
             $0.name.lowercased().contains(q) || $0.aka.contains { $0.lowercased().contains(q) }
                 || $0.summary.lowercased().contains(q) || $0.category.label.lowercased().contains(q)
         }
@@ -25,7 +28,7 @@ struct LibraryView: View {
             if filtered.isEmpty {
                 ContentUnavailableView.search(text: query)
             }
-            CustomCompoundsSection()
+            if categoryFilter == nil { CustomCompoundsSection() }
             ForEach(byCategory, id: \.0.rawValue) { category, items in
                 Section(category.label) {
                     ForEach(items) { p in
@@ -38,6 +41,14 @@ struct LibraryView: View {
         .searchable(text: $query, prompt: t("library_search_placeholder"))
         .navigationTitle(t("library_title"))
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Picker(t("ios_stock_filter"), selection: $categoryFilter) {
+                        Text(t("ios_library_all_categories")).tag(PeptideCategory?.none)
+                        ForEach(categories, id: \.rawValue) { c in Text(c.label).tag(PeptideCategory?.some(c)) }
+                    }
+                } label: { Label(t("ios_stock_filter"), systemImage: categoryFilter == nil ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill") }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button { adding = true } label: { Label(t("library_add_your_own"), systemImage: "plus") }
             }
