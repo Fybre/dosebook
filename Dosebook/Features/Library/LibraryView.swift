@@ -95,7 +95,7 @@ private struct CustomCompoundsSection: View {
                 let logs = data.logs.filter { $0.peptideId == p.id }.count
                 VStack(alignment: .leading, spacing: 4) {
                     FlowLayout(spacing: 6) {
-                        Text(p.name).font(.subheadline.bold())
+                        Text(p.name).font(.body)
                         Pill(text: t("library_your_badge"), tone: .grape)
                         Pill(text: p.category.label)
                         // A blend's curves come from its parts, so it has no half-life to miss.

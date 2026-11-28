@@ -65,3 +65,20 @@ import Testing
         #expect(d.settings.extra["iosVendorQuotes"] == nil)
     }
 }
+
+@Suite struct OilCompoundTests {
+    @Test func oilKeepsStrengthAndBottleThroughEditing() {
+        var draft = CustomDraft(name: "Primo", preparation: .solution)
+        draft.strengthMgPerMl = 100; draft.bottleMl = 10
+        let p = draftToPeptide(draft)
+        #expect(p.concentrationsMgPerMl == [100])
+        #expect(p.vialSizesMg == [1000])
+        let back = peptideToDraft(p)
+        #expect(back.strengthMgPerMl == 100 && back.bottleMl == 10)
+    }
+    @Test func powderIgnoresOilFields() {
+        var draft = CustomDraft(name: "Powder one", preparation: .powder)
+        draft.strengthMgPerMl = 100; draft.bottleMl = 10
+        #expect(draftToPeptide(draft).concentrationsMgPerMl == nil)
+    }
+}

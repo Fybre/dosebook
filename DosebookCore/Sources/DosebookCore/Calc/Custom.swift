@@ -18,6 +18,10 @@ public struct CustomDraft: Equatable, Sendable {
     public var frequency: String?
     public var perWeek: Double?
     public var vialSizeMg: Double?
+    /// For a solution or oil: what the label says per mL, and the size of the bottle. The total in the
+    /// bottle follows from the two, and is kept as the compound's vial size.
+    public var strengthMgPerMl: Double?
+    public var bottleMl: Double?
     public var iuPerMg: Double?
     public var notes: String?
     /// What a blend holds; empty for a single compound.
@@ -37,7 +41,7 @@ public struct CustomDraft: Equatable, Sendable {
 }
 
 public enum DraftField: String, Sendable {
-    case name, routes, halfLifeHours, doseLowMcg, doseHighMcg, perWeek, iuPerMg, vialSizeMg, components
+    case name, routes, halfLifeHours, doseLowMcg, doseHighMcg, perWeek, iuPerMg, vialSizeMg, components, strengthMgPerMl, bottleMl
 }
 
 public struct DraftProblem: Equatable, Sendable {
@@ -92,6 +96,12 @@ public func validateDraft(_ draft: CustomDraft, existing: [Peptide], editingId: 
     }
     if let v = draft.vialSizeMg, !(v > 0) {
         problems.append(DraftProblem(field: .vialSizeMg, message: "A vial size has to be more than zero."))
+    }
+    if let s = draft.strengthMgPerMl, !(s > 0) {
+        problems.append(DraftProblem(field: .strengthMgPerMl, message: "A strength has to be more than zero."))
+    }
+    if let b = draft.bottleMl, !(b > 0) {
+        problems.append(DraftProblem(field: .bottleMl, message: "A bottle size has to be more than zero."))
     }
     if !draft.components.isEmpty {
         let parts = draft.components
@@ -153,6 +163,10 @@ public func draftToPeptide(_ draft: CustomDraft) -> Peptide {
         ? "You did not give a half-life, so no curve is drawn for this compound. Doses are still logged and counted."
         : "Your own figure. Not checked against any published source."
     p.preparation = draft.preparation
+    if draft.preparation == .solution, draft.components.isEmpty, let strength = draft.strengthMgPerMl, strength > 0 {
+        p.concentrationsMgPerMl = [strength]
+        if let ml = draft.bottleMl, ml > 0 { p.vialSizesMg = [jsFixed(strength * ml, 6)] }
+    }
     p.iuPerMg = draft.iuPerMg
     p.reconstitutedDays = draft.preparation == .powder ? 28 : nil
     p.cautionBanner = "You created this entry. Every figure in it is yours, and none of it has been checked against a published source."
@@ -177,6 +191,10 @@ public func peptideToDraft(_ p: Peptide) -> CustomDraft {
                        frequency: dose?.frequency, perWeek: dose?.perWeek, vialSizeMg: p.vialSizesMg.first,
                        iuPerMg: p.iuPerMg, notes: p.mechanism)
     draft.components = p.components ?? []
+    if p.preparation == .solution, draft.components.isEmpty, let strength = p.concentrationsMgPerMl?.first, strength > 0 {
+        draft.strengthMgPerMl = strength
+        if let total = p.vialSizesMg.first, total > 0 { draft.bottleMl = jsFixed(total / strength, 6) }
+    }
     draft.blendDosing = blendDosing(p)
     // A vial size that is only the sum of the parts stays derived, so changing a part moves it.
     if let v = draft.vialSizeMg, !draft.components.isEmpty {

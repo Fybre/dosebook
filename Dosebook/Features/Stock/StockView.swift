@@ -531,6 +531,13 @@ private struct VialRow: View {
                     Text(t("stock_tablets_left", ["n": .number(tabletsRemaining(v))])).monospacedDigit()
                     if mgPerTablet(v) > 0 { Text(t("stock_per_tablet", ["mg": .string(trim(mgPerTablet(v), 3))])).monospacedDigit() }
                     else { Text(t("stock_no_tablet_size")).foregroundStyle(Tone.rose.color) }
+                } else if isLiquid(v) {
+                    // An oil or other ready-made liquid is not a powder.
+                    Text(t("stock_ready_made_badge"))
+                    if let ml = v.diluentMl, ml > 0 {
+                        Text(formatConcentration(st.concentrationMcgPerMl)).monospacedDigit()
+                        Text("\(trim(ml, 2)) mL").monospacedDigit()
+                    }
                 } else {
                     Text(t("stock_lyophilised"))
                 }

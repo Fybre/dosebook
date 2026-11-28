@@ -165,8 +165,8 @@ struct AddVialForm: View {
             }
             Section {
                 if liquidOK {
-                    Toggle(t("stock_ready_made"), isOn: $readyMade.animation())
-                    if liquid { Text(t("stock_ready_made_hint")).font(.footnote).foregroundStyle(.secondary) }
+                    Toggle(t("ios_stock_oil_toggle"), isOn: $readyMade.animation())
+                    if liquid { Text(t("ios_stock_oil_hint")).font(.footnote).foregroundStyle(.secondary) }
                 }
                 if liquid {
                     NumberRow(label: t("stock_strength_per_ml"), value: $concMgMl, suffix: "mg/mL", range: 0...5000)
@@ -377,6 +377,21 @@ struct AddVialForm: View {
     private func choose(_ id: String) {
         peptideId = id
         useRememberedMix(id)
+        // A compound set up as a solution or oil in the Library starts as one here too.
+        if editingVial == nil {
+            let p = store.data.peptide(id)
+            readyMade = p?.preparation == .solution
+            if readyMade, p?.components?.isEmpty ?? true {
+                // The strength on the label, and the bottle it usually comes in.
+                let strength = p?.concentrationsMgPerMl?.first ?? 0
+                if strength > 0 {
+                    concMgMl = strength
+                    let total = p?.vialSizesMg.first ?? 0
+                    ml = isCustomId(id) && total > 0 ? jsFixed(total / strength, 6) : 10
+                } else { ml = 10 }
+                syncLiquidTotal()
+            }
+        }
         if let first = store.data.peptide(id)?.vialSizesMg.first { strengthMg = first }
         fractionLeft = 1; partiallyUsed = false
     }
@@ -647,7 +662,7 @@ struct BulkVialEditForm: View {
 
     /// What each field showed when the form opened, to tell which ones were edited.
     private struct Start {
-        var supplier = "", lot = "", notes = "", hasExpiry = false, expiry = Date(), cost: Double?, currency = "", strengthMg = 0.0
+        var supplier = "", lot = "", notes = "", hasExpiry = false, expiry = Date(), cost: Double?, currency = "", strengthMg = 0.0, readyMade = false, volumeMl = 0.0
     }
     /// Only whole, untouched vials: a mixed vial, a pack or a spray has more tied to its strength.
     private var canEditStrength: Bool { vials.allSatisfy { $0.state == .sealed && !isPack($0) && !isSpray($0) } }
@@ -676,8 +691,8 @@ struct BulkVialEditForm: View {
             }
             if canEditStrength {
                 Section {
-                    Toggle(t("stock_ready_made"), isOn: $readyMade.animation())
-                    if readyMade { Text(t("stock_ready_made_hint")).font(.footnote).foregroundStyle(.secondary) }
+                    Toggle(t("ios_stock_oil_toggle"), isOn: $readyMade.animation())
+                    if readyMade { Text(t("ios_stock_oil_hint")).font(.footnote).foregroundStyle(.secondary) }
                     if readyMade {
                         NumberRow(label: t("stock_strength_per_ml"), value: $concMgMl, suffix: "mg/mL", range: 0...5000)
                         NumberRow(label: t("stock_volume_ml"), value: $volumeMl, suffix: "mL", range: 0...1000)
@@ -711,17 +726,26 @@ struct BulkVialEditForm: View {
         cost = shared { $0.cost }
         payCurrency = shared { $0.currency } ?? store.data.settings.currency
         strengthMg = vials[0].strengthMg
+        // Vials that are already oils or ready-made liquids open as such, with their volume and strength per mL.
+        if canEditStrength, vials.allSatisfy({ isLiquid($0) }) {
+            readyMade = true
+            volumeMl = shared({ $0.diluentMl }) ?? vials[0].diluentMl ?? 10
+            if volumeMl > 0 { concMgMl = jsFixed(strengthMg / volumeMl, 6) }
+        }
         start = Start(supplier: supplier, lot: lot, notes: notes, hasExpiry: hasExpiry, expiry: expiry, cost: cost, currency: payCurrency,
-                      strengthMg: strengthMg)
+                      strengthMg: strengthMg, readyMade: readyMade, volumeMl: volumeMl)
     }
 
     private func save() {
         let editSupplier = supplier != start.supplier, editLot = lot != start.lot, editNotes = notes != start.notes
         let editExpiry = hasExpiry != start.hasExpiry || (hasExpiry && expiry != start.expiry)
         let editCost = cost != start.cost, editCurrency = payCurrency != start.currency
-        let editStrength = canEditStrength && (readyMade || strengthMg != start.strengthMg)
+        let editStrength = canEditStrength && (readyMade
+            ? (!start.readyMade || newStrengthMg != start.strengthMg || volumeMl != start.volumeMl)
+            : (start.readyMade || strengthMg != start.strengthMg))
         let total = newStrengthMg
-        let toLiquid = canEditStrength && readyMade
+        let toLiquid = canEditStrength && readyMade && (!start.readyMade || volumeMl != start.volumeMl)
+        let toPowder = canEditStrength && !readyMade && start.readyMade
         store.mutate { d in
             for target in vials {
                 d.updateVial(target.id) { v in
@@ -731,6 +755,7 @@ struct BulkVialEditForm: View {
                         v.diluent = .oil; v.diluentMl = volumeMl; v.diluentBottleId = nil; v.budAt = nil
                         v.drawnMcg = v.drawnMcg ?? 0
                     }
+                    if toPowder { v.diluent = nil; v.diluentMl = nil; v.diluentBottleId = nil; v.budAt = nil }
                     if editSupplier { v.supplier = clean(supplier) }
                     if editLot { v.lot = clean(lot) }
                     if editNotes { v.notes = clean(notes) }

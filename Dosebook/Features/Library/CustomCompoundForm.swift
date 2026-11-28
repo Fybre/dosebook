@@ -57,7 +57,13 @@ struct CustomCompoundForm: View {
                 OptionalAmountRow(label: t("ccf_dose_low"), value: $draft.doseLowMcg, error: error(.doseLowMcg))
                 OptionalAmountRow(label: t("ccf_dose_high"), value: $draft.doseHighMcg, error: error(.doseHighMcg))
                 OptionalNumberRow(label: t("ccf_per_week"), value: $draft.perWeek, hint: t("ccf_per_week_hint"), error: error(.perWeek))
-                OptionalAmountRow(label: t("ccf_vial_size"), value: $draft.vialSizeMg, base: .mg, hint: vialHint, error: error(.vialSizeMg))
+                if draft.preparation == .solution && draft.components.isEmpty {
+                    // An oil is labelled per mL: strength and bottle size, not a total in mg.
+                    OptionalNumberRow(label: t("ios_ccf_strength_per_ml"), value: $draft.strengthMgPerMl, suffix: "mg/mL", hint: t("ios_ccf_strength_hint"), error: error(.strengthMgPerMl))
+                    OptionalNumberRow(label: t("ios_ccf_bottle_ml"), value: $draft.bottleMl, suffix: "mL", hint: t("labs_optional"), error: error(.bottleMl))
+                } else {
+                    OptionalAmountRow(label: t("ccf_vial_size"), value: $draft.vialSizeMg, base: .mg, hint: vialHint, error: error(.vialSizeMg))
+                }
                 OptionalNumberRow(label: t("ccf_iu_per_mg"), value: $draft.iuPerMg, hint: t("ccf_iu_hint"), error: error(.iuPerMg))
             }
 

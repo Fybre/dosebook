@@ -485,7 +485,12 @@
     "ios_chart_shown": "Shown",
     "ios_chart_toggle_hint": "Shows or hides this compound on the chart",
     "ios_edit_compound": "Edit or delete",
-    "ios_library_all_categories": "All categories"
+    "ios_library_all_categories": "All categories",
+    "ios_stock_oil_toggle": "This is an oil or ready-made liquid",
+    "ios_stock_oil_hint": "An oil or solution that comes already made up, like testosterone in oil. There is no water to add, and it keeps to the date on the label. Enter the strength per mL and the volume of the bottle.",
+    "ios_ccf_strength_per_ml": "Usual strength",
+    "ios_ccf_strength_hint": "As on the label. It fills in when you add stock.",
+    "ios_ccf_bottle_ml": "Usual bottle size"
   },
   "de": {
     "mac_updates_title": "App-Updates",
@@ -973,7 +978,12 @@
     "ios_chart_shown": "Angezeigt",
     "ios_chart_toggle_hint": "Zeigt oder verbirgt diesen Wirkstoff im Diagramm",
     "ios_edit_compound": "Bearbeiten oder löschen",
-    "ios_library_all_categories": "Alle Kategorien"
+    "ios_library_all_categories": "Alle Kategorien",
+    "ios_stock_oil_toggle": "Das ist ein Öl oder eine fertige Flüssigkeit",
+    "ios_stock_oil_hint": "Ein Öl oder eine Lösung, die gebrauchsfertig geliefert wird, etwa Testosteron in Öl. Es wird kein Wasser zugegeben, und es gilt das Datum auf dem Etikett. Gib die Stärke pro mL und das Volumen der Flasche an.",
+    "ios_ccf_strength_per_ml": "Übliche Stärke",
+    "ios_ccf_strength_hint": "Wie auf dem Etikett. Wird beim Hinzufügen von Bestand vorausgefüllt.",
+    "ios_ccf_bottle_ml": "Übliche Flaschengröße"
   },
   "sl": {
     "mac_updates_title": "Posodobitve aplikacije",
@@ -1469,7 +1479,12 @@
     "ios_chart_shown": "Prikazano",
     "ios_chart_toggle_hint": "Prikaže ali skrije to učinkovino na grafu",
     "ios_edit_compound": "Uredi ali izbriši",
-    "ios_library_all_categories": "Vse kategorije"
+    "ios_library_all_categories": "Vse kategorije",
+    "ios_stock_oil_toggle": "To je olje ali že pripravljena tekočina",
+    "ios_stock_oil_hint": "Olje ali raztopina, ki je že pripravljena, na primer testosteron v olju. Vode ni treba dodati, velja datum na etiketi. Vnesite jakost na mL in prostornino stekleničke.",
+    "ios_ccf_strength_per_ml": "Običajna jakost",
+    "ios_ccf_strength_hint": "Kot na etiketi. Izpolni se ob dodajanju zaloge.",
+    "ios_ccf_bottle_ml": "Običajna velikost stekleničke"
   },
   "pl": {
     "mac_updates_title": "Aktualizacje aplikacji",
@@ -1965,6 +1980,11 @@
     "ios_chart_shown": "Widoczne",
     "ios_chart_toggle_hint": "Pokazuje lub ukrywa tę substancję na wykresie",
     "ios_edit_compound": "Edytuj lub usuń",
-    "ios_library_all_categories": "Wszystkie kategorie"
+    "ios_library_all_categories": "Wszystkie kategorie",
+    "ios_stock_oil_toggle": "To jest olej lub gotowy płyn",
+    "ios_stock_oil_hint": "Olej lub roztwór sprzedawany gotowy, na przykład testosteron w oleju. Nie dodaje się wody, obowiązuje data z etykiety. Podaj stężenie na mL i objętość butelki.",
+    "ios_ccf_strength_per_ml": "Zwykłe stężenie",
+    "ios_ccf_strength_hint": "Jak na etykiecie. Uzupełnia się przy dodawaniu zapasu.",
+    "ios_ccf_bottle_ml": "Zwykła wielkość butelki"
   }
 }
