@@ -245,8 +245,8 @@ struct AddVialForm: View {
             }
             Section {
                 DisclosureGroup(t("ios_vial_purchase"), isExpanded: $purchaseExpanded) {
-                    TextField(t("stock_source"), text: $supplier)
-                    TextField(t("ios_scan_lot"), text: $lot).capitalisedCharacters()
+                    TextField(t("stock_source"), text: $supplier).inputBox()
+                    TextField(t("ios_scan_lot"), text: $lot).capitalisedCharacters().inputBox()
                     Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
                     if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
                     OptionalNumberRow(label: pricedAsKit ? t("stock_cost_kit") : t("stock_cost_per_vial_label"), value: $cost, suffix: payCurrency)
@@ -260,7 +260,7 @@ struct AddVialForm: View {
                         ForEach(CURRENCIES, id: \.code) { Text("\($0.code) · \($0.label)").tag($0.code) }
                     }
                     if editingVial == nil { OptionalNumberRow(label: t("stock_shipping_order"), value: $shipping, suffix: payCurrency) }
-                    TextField(t("labs_notes"), text: $notes, axis: .vertical)
+                    TextField(t("labs_notes"), text: $notes, axis: .vertical).inputBox()
                 }
             }
         }
@@ -703,8 +703,8 @@ struct BulkVialEditForm: View {
                 }
             }
             Section(t("ios_vial_purchase")) {
-                TextField(various { $0.supplier } ?? t("stock_source"), text: $supplier)
-                TextField(various { $0.lot } ?? t("ios_scan_lot"), text: $lot).capitalisedCharacters()
+                TextField(various { $0.supplier } ?? t("stock_source"), text: $supplier).inputBox()
+                TextField(various { $0.lot } ?? t("ios_scan_lot"), text: $lot).capitalisedCharacters().inputBox()
                 Toggle(t("ios_scan_has_expiry"), isOn: $hasExpiry)
                 if hasExpiry { DatePicker(t("ios_scan_expiry"), selection: $expiry, displayedComponents: .date) }
                 OptionalNumberRow(label: t("stock_cost_per_vial_label"), value: $cost, suffix: payCurrency,
@@ -712,7 +712,7 @@ struct BulkVialEditForm: View {
                 Picker(t("stock_paid_in"), selection: $payCurrency) {
                     ForEach(CURRENCIES, id: \.code) { Text("\($0.code) · \($0.label)").tag($0.code) }
                 }
-                TextField(various { $0.notes } ?? t("labs_notes"), text: $notes, axis: .vertical)
+                TextField(various { $0.notes } ?? t("labs_notes"), text: $notes, axis: .vertical).inputBox()
             }
         }
         .formChrome(t("ios_vial_edit_all_title", ["n": .number(Double(vials.count))]), confirm: t("save"), disabled: !costValid, action: save)

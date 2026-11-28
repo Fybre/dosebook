@@ -20,14 +20,14 @@ struct CustomCompoundForm: View {
         Form {
             Section {
                 VStack(alignment: .leading, spacing: 4) {
-                    TextField(t("ccf_name_placeholder"), text: $draft.name)
+                    TextField(t("ccf_name_placeholder"), text: $draft.name).inputBox()
                     if let e = error(.name), !draft.name.isEmpty { Text(e).font(.caption).foregroundStyle(Tone.rose.color) }
                 }
                 Picker(t("ccf_category"), selection: $draft.category) {
                     ForEach(PeptideCategory.allCases, id: \.self) { Text($0.label).tag($0) }
                 }
                 VStack(alignment: .leading, spacing: 4) {
-                    TextField(t("ccf_aka_placeholder"), text: Binding(get: { draft.aka ?? "" }, set: { draft.aka = $0 }))
+                    TextField(t("ccf_aka_placeholder"), text: Binding(get: { draft.aka ?? "" }, set: { draft.aka = $0 })).inputBox()
                     Text(t("ccf_aka_hint")).font(.caption).foregroundStyle(.secondary)
                 }
                 FooterRow { Text(t("ccf_category_hint")) }
@@ -68,7 +68,7 @@ struct CustomCompoundForm: View {
             }
 
             Section(t("ccf_notes")) {
-                TextField(t("ccf_notes_placeholder"), text: Binding(get: { draft.notes ?? "" }, set: { draft.notes = $0 }), axis: .vertical)
+                TextField(t("ccf_notes_placeholder"), text: Binding(get: { draft.notes ?? "" }, set: { draft.notes = $0 }), axis: .vertical).inputBox()
             }
             Section { Text(t("ccf_not_saved")).font(.caption).foregroundStyle(.secondary) }
         }
@@ -125,7 +125,7 @@ struct CustomCompoundForm: View {
                             ForEach(partChoices) { Text($0.name).tag(Optional($0.id)) }
                         }
                         if draft.components[i].peptideId == nil {
-                            TextField(t("ios_ccf_part_name"), text: $draft.components[i].name)
+                            TextField(t("ios_ccf_part_name"), text: $draft.components[i].name).inputBox()
                         }
                         OptionalAmountRow(label: t("ios_ccf_part_amount"), value: $draft.components[i].mgPerVial, base: .mg)
                     }

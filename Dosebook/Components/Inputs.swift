@@ -1,11 +1,32 @@
 import SwiftUI
 import DosebookCore
 
+struct MaybeBox: ViewModifier {
+    var on: Bool
+    var focused: Bool
+    func body(content: Content) -> some View { if on { content.inputBox(focused: focused) } else { content } }
+}
+
+/// Every number box is this wide, so a column of them lines up.
+let INPUT_BOX_WIDTH: CGFloat = 190
+
+extension View {
+    /// A filled, rounded box around an input so it reads as something to tap and type in,
+    /// with an accent outline while it has focus.
+    func inputBox(focused: Bool = false) -> some View {
+        padding(.horizontal, 10).padding(.vertical, 7)
+            .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(focused ? Color.accentColor : Color.secondary.opacity(0.25), lineWidth: focused ? 1.5 : 1))
+    }
+}
+
 /// A number field that can be emptied: the text as typed is shown for as long
 /// as it still means the number held (`shownValue` in DosebookCore), so a field
 /// showing 0 can be cleared and typing 250 does not give 0250.
 struct NumberField: View {
     var title: String
+    /// Rows that put a unit beside the field draw one box around both.
+    var boxed = true
     @Binding var value: Double
     var suffix: String? = nil
     var range: ClosedRange<Double>? = nil
@@ -29,6 +50,7 @@ struct NumberField: View {
                 .monospacedDigit()
             if let suffix { Text(suffix).foregroundStyle(.secondary) }
         }
+        .modifier(MaybeBox(on: boxed, focused: focused))
         .onChange(of: focused) { _, f in if !f { draft = nil } }
     }
 }
@@ -40,7 +62,7 @@ struct NumberRow: View {
     var suffix: String? = nil
     var range: ClosedRange<Double>? = nil
     var body: some View {
-        LabeledContent(label) { NumberField(title: label, value: $value, suffix: suffix, range: range).frame(maxWidth: 160) }
+        LabeledContent(label) { NumberField(title: label, value: $value, suffix: suffix, range: range).frame(width: INPUT_BOX_WIDTH) }
     }
 }
 
@@ -148,6 +170,7 @@ struct CardHeader: View {
 /// A number that may be absent: an empty field means nil, not zero.
 struct OptionalNumberField: View {
     var title: String
+    var boxed = true
     @Binding var value: Double?
     var suffix: String? = nil
     @State private var text = ""
@@ -171,6 +194,7 @@ struct OptionalNumberField: View {
                 }
             if let suffix { Text(suffix).foregroundStyle(.secondary) }
         }
+        .modifier(MaybeBox(on: boxed, focused: focused))
         .onAppear {
             if !loaded { text = value.map(jsNumberString) ?? ""; loaded = true }
         }
@@ -186,7 +210,7 @@ struct OptionalNumberRow: View {
     var error: String? = nil
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            LabeledContent(label) { OptionalNumberField(title: label, value: $value, suffix: suffix).frame(maxWidth: 160) }
+            LabeledContent(label) { OptionalNumberField(title: label, value: $value, suffix: suffix).frame(width: INPUT_BOX_WIDTH) }
             if let msg = error ?? hint { Text(msg).font(.caption).foregroundStyle(error != nil ? Tone.rose.color : .secondary) }
         }
     }
@@ -238,7 +262,7 @@ struct AmountRow: View {
         let u = unit ?? naturalUnit(toMcg(value, base), base)
         LabeledContent(label) {
             HStack(spacing: 6) {
-                NumberField(title: label, value: Binding(
+                NumberField(title: label, boxed: false, value: Binding(
                     get: { inIu ? jsFixed(mcgToIu(toMcg(value, base), iuRate!), 4) : shown(toMcg(value, base), u) },
                     set: { n in
                         let mcg = inIu ? jsFixed(iuToMcg(n, iuRate!), 6) : typed(n, u)
@@ -260,7 +284,8 @@ struct AmountRow: View {
                     UnitToggle(unit: Binding(get: { u }, set: { unit = $0 }))
                 }
             }
-            .frame(maxWidth: 190)
+            .inputBox()
+            .frame(width: INPUT_BOX_WIDTH)
         }
     }
 }
@@ -279,7 +304,7 @@ struct OptionalAmountRow: View {
         VStack(alignment: .leading, spacing: 4) {
             LabeledContent(label) {
                 HStack(spacing: 6) {
-                    OptionalNumberField(title: label, value: Binding(
+                    OptionalNumberField(title: label, boxed: false, value: Binding(
                         get: { value.map { shown(toMcg($0, base), u) } },
                         set: { n in
                             if unit == nil { unit = u }
@@ -288,7 +313,8 @@ struct OptionalAmountRow: View {
                         .id(u)
                     UnitToggle(unit: Binding(get: { u }, set: { unit = $0 }))
                 }
-                .frame(maxWidth: 190)
+                .inputBox()
+                .frame(width: INPUT_BOX_WIDTH)
             }
             if let msg = error ?? hint { Text(msg).font(.caption).foregroundStyle(error != nil ? Tone.rose.color : .secondary) }
         }
