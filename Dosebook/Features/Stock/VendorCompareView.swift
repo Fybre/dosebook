@@ -5,7 +5,6 @@ import DosebookStore
 /// Who is cheaper for a compound, on price per mg, and how a new quote compares.
 struct VendorCompareView: View {
     @Environment(AppStore.self) private var store
-    @Environment(\.dismiss) private var dismiss
     @State private var peptideId = ""
     @State private var includeShipping = false
     @State private var quoteVendor = ""
@@ -45,7 +44,8 @@ struct VendorCompareView: View {
                 if let comparison { quoteSection(comparison) }
             }
         }
-        .formChrome(t("ios_vc_title"), confirm: t("done"), dismissAfter: true) { }
+        .navigationTitle(t("ios_vc_title"))
+        .inlineTitle()
         .onAppear { if peptideId.isEmpty { peptideId = compounds.first ?? "" } }
     }
 

@@ -18,7 +18,7 @@ struct RootView: View {
     @State private var logDoseRequests = 0
     @Environment(\.horizontalSizeClass) private var sizeClass
     /// Shown only in the sidebar; a narrow window has no sidebar, so they go under More.
-    private static let sidebarOnly: Set<String> = ["calculator", "library", "labs", "report", "settings", "about", "guide"]
+    private static let sidebarOnly: Set<String> = ["calculator", "vendors", "library", "labs", "report", "settings", "about", "guide"]
 
     var body: some View {
         TabView(selection: Binding(get: { tab }, set: { next in
@@ -36,6 +36,7 @@ struct RootView: View {
             if sizeClass != .compact {
                 TabSection(t("more")) {
                     Tab(t("nav_calc"), systemImage: "function", value: "calculator") { NavigationStack { CalculatorView() }.environment(\.screenActive, tab == "calculator") }
+                    Tab(t("ios_vc_title"), systemImage: "chart.bar.xaxis", value: "vendors") { NavigationStack { VendorCompareView() }.environment(\.screenActive, tab == "vendors") }
                     Tab(t("nav_library"), systemImage: "books.vertical", value: "library") { NavigationStack { LibraryView() }.environment(\.screenActive, tab == "library") }
                     Tab(t("nav_bloodwork"), systemImage: "drop", value: "labs") { NavigationStack { LabsView() }.environment(\.screenActive, tab == "labs") }
                     Tab(t("settings_report_clinician"), systemImage: "doc.text", value: "report") { NavigationStack { ReportView() }.environment(\.screenActive, tab == "report") }
@@ -94,7 +95,7 @@ struct RootView: View {
 }
 
 struct MoreView: View {
-    enum Screen: String, Hashable { case calculator, library, labs, report, settings, about, importer, guide }
+    enum Screen: String, Hashable { case calculator, vendors, library, labs, report, settings, about, importer, guide }
 
     var body: some View {
         List {
@@ -103,6 +104,7 @@ struct MoreView: View {
             }
             Section {
                 NavigationLink(value: Screen.calculator) { Label(t("nav_calc"), systemImage: "function") }
+                NavigationLink(value: Screen.vendors) { Label(t("ios_vc_title"), systemImage: "chart.bar.xaxis") }
                 NavigationLink(value: Screen.library) { Label(t("nav_library"), systemImage: "books.vertical") }
                 NavigationLink(value: Screen.labs) { Label(t("nav_bloodwork"), systemImage: "drop") }
                 NavigationLink(value: Screen.report) { Label(t("settings_report_clinician"), systemImage: "doc.text") }
@@ -117,6 +119,7 @@ struct MoreView: View {
         .navigationDestination(for: Screen.self) { s in
             switch s {
             case .calculator: CalculatorView()
+            case .vendors: VendorCompareView()
             case .library: LibraryView()
             case .labs: LabsView()
             case .report: ReportView()
